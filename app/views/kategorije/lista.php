@@ -5,12 +5,14 @@
 
 <?php if (isset($_GET['msg']) && $_GET['msg'] === 'kreirana'): ?>
     <div class="alert alert-success">Kategorija je uspješno kreirana.</div>
+<?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'azurirana'): ?>
+    <div class="alert alert-success">Kategorija je uspješno ažurirana.</div>
 <?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'obrisana'): ?>
     <div class="alert alert-success">Kategorija je uspješno obrisana.</div>
-<?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'greska'): ?>
-    <div class="alert alert-warning">Greška pri operaciji.</div>
 <?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'deaktivirana'): ?>
     <div class="alert alert-warning">Kategorija je deaktivirana jer sadrži usluge u cjenovniku.</div>
+<?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'greska'): ?>
+    <div class="alert alert-warning">Greška pri operaciji.</div>
 <?php endif; ?>
 
 <div class="main-content-fw">
@@ -58,4 +60,24 @@
       <input type="hidden" name="id" id="id-brisanja">
       <div style="text-align: center;">
         <button type="button" class="btn btn-secondary" onclick="zatvoriModal()">Otkaži</button>
-        <bu
+        <button type="submit" class="btn btn-danger">Da, obriši</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function potvrdiBrisanje(id) {
+  document.getElementById('id-brisanja').value = id;
+  document.getElementById('brisanje-modal').style.display = 'block';
+  document.getElementById('modal-overlay').style.display = 'block';
+}
+
+function zatvoriModal() {
+  document.getElementById('brisanje-modal').style.display = 'none';
+  document.getElementById('modal-overlay').style.display = 'none';
+}
+
+// Zatvori modal klikom na overlay
+document.getElementById('modal-overlay').addEventListener('click', zatvoriModal);
+</script>
