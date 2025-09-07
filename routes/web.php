@@ -123,6 +123,18 @@ elseif ($uri === '/kategorije/uredi') {
 elseif ($uri === '/kategorije/obrisi') {
     require_once __DIR__ . '/../app/controllers/ObrisiKategorijuController.php';
 }
+elseif ($uri === '/cjenovnik') {
+    require_once __DIR__ . '/../app/controllers/CjenovnikController.php';
+}
+elseif ($uri === '/cjenovnik/kreiraj') {
+    require_once __DIR__ . '/../app/controllers/KreirajUslugुController.php';
+}
+elseif ($uri === '/cjenovnik/uredi') {
+    require_once __DIR__ . '/../app/controllers/UrediUslugुController.php';
+}
+elseif ($uri === '/cjenovnik/obrisi') {
+    require_once __DIR__ . '/../app/controllers/ObrisiUsluguController.php';
+}
 /*
 else {
     http_response_code(404);
