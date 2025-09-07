@@ -9,7 +9,6 @@ if (!is_logged_in()) {
 
 $user = current_user();
 
-// Samo admin i recepcioner mogu pristupiti
 if (!in_array($user['uloga'], ['admin', 'recepcioner'])) {
     header('Location: /dashboard');
     exit;
@@ -25,7 +24,12 @@ try {
 }
 
 $title = "Kategorije usluga";
-require_once __DIR__ . '/../views/layout/header.php';
+
+// Capture view output
+ob_start();
 require_once __DIR__ . '/../views/kategorije/lista.php';
-require_once __DIR__ . '/../views/layout/footer.php';
+$content = ob_get_clean();
+
+// Include layout
+require_once __DIR__ . '/../views/layout.php';
 ?>
