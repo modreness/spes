@@ -9,6 +9,8 @@
     <div class="alert alert-success">Kategorija je uspješno obrisana.</div>
 <?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'greska'): ?>
     <div class="alert alert-warning">Greška pri operaciji.</div>
+<?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'deaktivirana'): ?>
+    <div class="alert alert-warning">Kategorija je deaktivirana jer sadrži usluge u cjenovniku.</div>
 <?php endif; ?>
 
 <div class="main-content-fw">
