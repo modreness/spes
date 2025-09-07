@@ -111,6 +111,18 @@ elseif ($uri === '/kartoni/print-karton' && isset($_GET['id'])) {
 elseif ($uri === '/kartoni/print-tretmani' && isset($_GET['id'])) {
     require_once __DIR__ . '/../app/controllers/KartonTretmaniPdfController.php';
 }
+elseif ($uri === '/kategorije') {
+    require_once __DIR__ . '/../app/controllers/KategorijeController.php';
+}
+elseif ($uri === '/kategorije/kreiraj') {
+    require_once __DIR__ . '/../app/controllers/KreirajKategorijuController.php';
+}
+elseif ($uri === '/kategorije/uredi') {
+    require_once __DIR__ . '/../app/controllers/UrediKategorijuController.php';
+}
+elseif ($uri === '/kategorije/obrisi') {
+    require_once __DIR__ . '/../app/controllers/ObrisiKategorijuController.php';
+}
 /*
 else {
     http_response_code(404);
