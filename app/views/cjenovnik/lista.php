@@ -11,6 +11,8 @@
     <div class="alert alert-success">Usluga je uspješno obrisana.</div>
 <?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'greska'): ?>
     <div class="alert alert-warning">Greška pri operaciji.</div>
+<?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'deaktivirana'): ?>
+    <div class="alert alert-warning">Usluga je deaktivirana jer je korištena u terminima.</div>
 <?php endif; ?>
 
 <div class="main-content-fw">
