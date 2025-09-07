@@ -127,10 +127,10 @@ elseif ($uri === '/cjenovnik') {
     require_once __DIR__ . '/../app/controllers/CjenovnikController.php';
 }
 elseif ($uri === '/cjenovnik/kreiraj') {
-    require_once __DIR__ . '/../app/controllers/KreirajUslugुController.php';
+    require_once __DIR__ . '/../app/controllers/KreirajUsluguController.php';
 }
 elseif ($uri === '/cjenovnik/uredi') {
-    require_once __DIR__ . '/../app/controllers/UrediUslugुController.php';
+    require_once __DIR__ . '/../app/controllers/UrediUsluguController.php';
 }
 elseif ($uri === '/cjenovnik/obrisi') {
     require_once __DIR__ . '/../app/controllers/ObrisiUsluguController.php';
