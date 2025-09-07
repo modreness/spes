@@ -1,0 +1,241 @@
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Osnovni stil */
+body {
+    font-family: 'Montserrat', sans-serif;
+    background: #f1f1f5;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+::placeholder {
+    font-family: 'Montserrat', sans-serif;
+    color: #666;
+    font-size: 14px;
+    opacity: 1; /* Firefox fix */
+}
+
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    text-align: center;
+}
+
+.logo {
+    width: 120px;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 16px;
+    color: #3a5a97;
+    margin-bottom: 30px;
+    font-weight: 600;
+}
+
+form {
+    width: 100%;
+}
+
+.form-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+.form-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+.form-group label {
+    color:#646464;
+    margin-bottom:10px;
+    font-size:14px;
+    font-weight:600;
+}
+
+
+.form-group input {
+    width: 100%;
+    padding: 12px 12px 12px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 14px;
+    margin-top:5px;
+    box-sizing:border-box;
+    font-family:Montserrat;
+}
+.icon-input .icon {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: #777;
+}
+
+.icon-input input {
+    width: 100%;
+    padding: 12px 12px 12px 42px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 14px;
+}
+
+.form-links {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    font-size: 12px;
+}
+
+.form-links a {
+    color: #888;
+    text-decoration: none;
+}
+
+.form-links a:hover {
+    text-decoration: underline;
+}
+
+.login-button {
+    padding: 12px 40px;
+    background: linear-gradient(90deg, #255AA5, #289CC6);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-block;
+    margin-top: 20px;
+    text-align: center;
+    text-decoration: none;
+    transition: background 0.3s ease;
+    font-family:Montserrat;
+}
+
+
+.login-button:hover {
+    background: linear-gradient(90deg, #1e4781, #207a99);
+}
+
+.login-error {
+    color: #d32f2f;
+    margin-top: 15px;
+    font-size: 14px;
+}
+.lost-password {
+    margin:10px 0 20px 0;
+}
+.lost-password h2 {
+    font-size:24px;
+    font-family:Montserrat;
+    color:#3a5a97;
+}
+.lost-password p {
+    margin-top:20px;
+    background:#f7f7f7;
+    padding:15px;
+    border-radius:10px;
+    font-size:16px;
+    color:#666;
+    font-family:Montserrat;
+    font-weight:400;
+}
+
+.not-found {
+    display:flex;
+    flex-direction:column;
+    width:100%;
+    align-items:center;
+    justify-content:center;
+    min-height:500px;
+    font-family:Montserrat;
+    row-gap:10px;
+}
+.not-found h1 {
+    font-size:62px;
+    color:#3a5a97;
+    line-height:1.1;
+}
+.not-found p {
+    font-size:18px;
+    color:#666;
+}
+
+.not-found a {
+    padding: 12px 40px;
+    background: linear-gradient(90deg, #255AA5, #289CC6);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-block;
+    margin-top: 20px;
+    text-align: center;
+    text-decoration: none;
+    transition: background 0.3s ease;
+    font-family:Montserrat;
+}
+
+
+.not-found a:hover {
+    background: linear-gradient(90deg, #1e4781, #207a99);
+}
+
+/*PASSWORD GENERATOR*/
+.password-wrapper {
+    display:flex;
+    column-gap:5%;
+    flex-direction:row;
+    align-items:center;
+}
+.lozinka-wrap {
+    width:60%;
+    position:relative;
+}
+.lozinka-wrap input[type="password"],
+.lozinka-wrap input[type="text"] {
+  padding-right: 40px; /* prostor za dugme */
+  box-sizing:border-box;
+  font-family:Montserrat;
+}
+
+.toggle-password {
+  position: absolute;
+  top: 55%;
+  right: 10px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #666;
+}
+.generator {
+    width:35%;
+    background:#ccc;
+    padding: 12px 12px;
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-block;
+    margin-top: 5px;
+    text-align: center;
+    text-decoration: none;
+    transition: background 0.3s ease;
+    font-family:Montserrat;
+}

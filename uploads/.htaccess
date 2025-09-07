@@ -1,0 +1,3 @@
+<FilesMatch "\.(php|js|sh)$">
+  Deny from all
+</FilesMatch>
