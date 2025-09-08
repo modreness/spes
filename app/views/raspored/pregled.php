@@ -3,7 +3,7 @@
     <a href="/raspored" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Povratak</a>
 </div>
 
-<div class="main-content">
+<div class="main-content-fw">
     <!-- Header sa filterom -->
     <div class="schedule-header" style="background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 25px;">
         <div style="text-align: center; margin-bottom: 20px;">
