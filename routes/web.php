@@ -147,6 +147,18 @@ elseif ($uri === '/timetable') {
 elseif ($uri === '/timetable/uredi') {
     require_once __DIR__ . '/../app/controllers/UrediTimetableController.php';
 }
+elseif ($uri === '/termini') {
+    require_once __DIR__ . '/../app/controllers/TerminiController.php';
+}
+elseif ($uri === '/termini/kalendar') {
+    require_once __DIR__ . '/../app/controllers/KalendarController.php';
+}
+elseif ($uri === '/termini/kreiraj') {
+    require_once __DIR__ . '/../app/controllers/KreirajTerminController.php';
+}
+elseif ($uri === '/termini/uredi') {
+    require_once __DIR__ . '/../app/controllers/UrediTerminController.php';
+}
 /*
 else {
     http_response_code(404);
