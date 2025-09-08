@@ -29,9 +29,6 @@ if ($uri === '' || $uri === '/') {
 elseif ($uri === '/dashboard') {
     require_once __DIR__ . '/../app/controllers/DashboardController.php';
 }
-elseif ($uri === '/raspored') {
-    require_once __DIR__ . '/../app/controllers/RasporedController.php';
-}
 elseif ($uri === '/profil/lozinka') {
     require_once __DIR__ . '/../app/views/lozinka.php';
 }
@@ -134,6 +131,15 @@ elseif ($uri === '/cjenovnik/uredi') {
 }
 elseif ($uri === '/cjenovnik/obrisi') {
     require_once __DIR__ . '/../app/controllers/ObrisiUsluguController.php';
+}
+elseif ($uri === '/raspored') {
+    require_once __DIR__ . '/../app/controllers/RasporedController.php';
+}
+elseif ($uri === '/raspored/dodaj') {
+    require_once __DIR__ . '/../app/controllers/DodajRasporedController.php';
+}
+elseif ($uri === '/raspored/pregled') {
+    require_once __DIR__ . '/../app/controllers/PregledRasporedaController.php';
 }
 /*
 else {
