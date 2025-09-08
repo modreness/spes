@@ -171,6 +171,15 @@ elseif ($uri === '/termini/obrisi') {
 elseif ($uri === '/pretraga') {
     require_once __DIR__ . '/../app/controllers/PretragaController.php';
 }
+elseif ($uri === '/izvjestaji') {
+    require_once __DIR__ . '/../app/controllers/IzvjestajiController.php';
+}
+elseif ($uri === '/izvjestaji/finansijski') {
+    require_once __DIR__ . '/../app/controllers/FinansijskiIzvjestajController.php';
+}
+elseif ($uri === '/izvjestaji/operativni') {
+    require_once __DIR__ . '/../app/controllers/OperativniIzvjestajController.php';
+}
 /*
 else {
     http_response_code(404);

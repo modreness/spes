@@ -53,7 +53,7 @@ $user = current_user();
 
           <li><a href="/kartoni/lista"><img src="/assets/icons/karton.svg" alt="">  Kartoni</a></li>
           <li><a href="/pretraga"><img src="/assets/icons/search.svg" alt=""> Pretraga</a></li>
-          <li><a href="/korisnici"><img src="/assets/icons/izvjestaj.svg" alt=""> Izvještaji</a></li>
+          <li><a href="/izvjestaji"><img src="/assets/icons/izvjestaj.svg" alt=""> Izvještaji</a></li>
           <li><a href="/kategorije"><img src="/assets/icons/kategorija.svg" alt=""> Kategorije</a></li>
           <li><a href="/cjenovnik"><img src="/assets/icons/cijene.svg" alt=""> Cjenovnik</a></li>
           <li><a href="/raspored"><img src="/assets/icons/clock.svg" alt=""> Raspored terapeuta</a></li>
