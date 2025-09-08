@@ -168,6 +168,9 @@ elseif ($uri === '/termini/status') {
 elseif ($uri === '/termini/obrisi') {
     require_once __DIR__ . '/../app/controllers/ObrisiTerminController.php';
 }
+elseif ($uri === '/pretraga') {
+    require_once __DIR__ . '/../app/controllers/PretragaController.php';
+}
 /*
 else {
     http_response_code(404);
