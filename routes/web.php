@@ -141,6 +141,12 @@ elseif ($uri === '/raspored/dodaj') {
 elseif ($uri === '/raspored/pregled') {
     require_once __DIR__ . '/../app/controllers/PregledRasporedaController.php';
 }
+elseif ($uri === '/timetable') {
+    require_once __DIR__ . '/../app/controllers/TimetableController.php';
+}
+elseif ($uri === '/timetable/uredi') {
+    require_once __DIR__ . '/../app/controllers/UrediTimetableController.php';
+}
 /*
 else {
     http_response_code(404);
