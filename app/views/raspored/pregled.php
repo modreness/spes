@@ -51,7 +51,12 @@
                         <div class="shift-block" style="flex: 1; min-width: 200px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid <?= $smjena_colors[$key] ?>;">
                             <div style="display: flex; align-items: center; margin-bottom: 10px;">
                                 <div style="width: 12px; height: 12px; background: <?= $smjena_colors[$key] ?>; border-radius: 50%; margin-right: 8px;"></div>
-                                <strong style="color: #2c3e50; font-size: 16px;"><?= $naziv ?></strong>
+                                <strong style="color: #2c3e50; font-size: 16px;">
+                                    <?php 
+                                    $smjene_vremena = smjene_sa_vremenima();
+                                    echo $smjene_vremena[$key] ?? $naziv;
+                                    ?>
+                                </strong>
                             </div>
                             
                             <?php if (!empty($terapeuti_u_smjeni)): ?>
