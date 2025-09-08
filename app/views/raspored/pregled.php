@@ -6,22 +6,20 @@
 <div class="main-content">
     <!-- Header sa filterom -->
     <div class="schedule-header" style="background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 25px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
-            <div>
-                <h3 style="margin: 0; color: #2c3e50;">Sedmica: <?= $start_date->format('d.m.Y') ?> - <?= $end_date->format('d.m.Y') ?></h3>
-                <p style="margin: 5px 0 0 0; color: #7f8c8d;">Pregled rasporeda terapeuta</p>
-            </div>
-            
-            <form method="get" style="display: flex; align-items: center; gap: 10px;">
-                <label for="filter_datum_od" style="font-weight: 500; color: #34495e;">Sedmica počinje:</label>
-                <input type="date" id="filter_datum_od" name="filter_datum_od" 
-                       value="<?= htmlspecialchars($datum_od) ?>"
-                       style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px;">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fa-solid fa-search"></i> Prikaži
-                </button>
-            </form>
+        <div style="text-align: center; margin-bottom: 20px;">
+            <h3 style="margin: 0; color: #2c3e50;">Sedmica: <?= $start_date->format('d.m.Y') ?> - <?= $end_date->format('d.m.Y') ?></h3>
+            <p style="margin: 5px 0 0 0; color: #7f8c8d;">Pregled rasporeda terapeuta</p>
         </div>
+        
+        <form method="get" style="display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap;">
+            <label for="filter_datum_od" style="font-weight: 500; color: #34495e;">Sedmica počinje:</label>
+            <input type="date" id="filter_datum_od" name="filter_datum_od" 
+                   value="<?= htmlspecialchars($datum_od) ?>"
+                   style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px;">
+            <button type="submit" class="btn btn-primary">
+                <i class="fa-solid fa-search"></i> Prikaži
+            </button>
+        </form>
     </div>
 
     <!-- Raspored grid -->
