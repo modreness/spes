@@ -12,6 +12,8 @@
     <div class="alert alert-success">Termin je otkazan.</div>
 <?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'greska'): ?>
     <div class="alert alert-warning">Greška pri operaciji.</div>
+<?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'obavljen'): ?>
+    <div class="alert alert-success">Termin je označen kao obavljen.</div>
 <?php endif; ?>
 
 <div class="main-content-fw">
@@ -99,7 +101,9 @@
                         <a href="/termini/uredi?id=<?= $t['id'] ?>" class="btn btn-sm btn-edit" title="Uredi">
                             <i class="fa-solid fa-edit"></i>
                         </a>
-                        
+                        <button class="btn btn-sm btn-danger" onclick="potvrdiBrisanje(<?= $t['id'] ?>)" title="Obriši">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
                         <?php if ($t['status'] == 'zakazan'): ?>
                             <button class="btn btn-sm btn-warning" onclick="promeniStatus(<?= $t['id'] ?>, 'otkazan')" title="Otkaži">
                                 <i class="fa-solid fa-times"></i>
@@ -141,4 +145,35 @@ function promeniStatus(terminId, noviStatus) {
         form.submit();
     }
 }
+</script>
+
+<!-- Modal za brisanje -->
+<div id="modal-overlay" class="modal-overlay" style="display: none;"></div>
+
+<div id="brisanje-modal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <p>Da li ste sigurni da želite obrisati ovaj termin?</p>
+        <form method="post" action="/termini/obrisi" style="margin-top: 20px;">
+            <input type="hidden" name="id" id="id-brisanja">
+            <div style="text-align: center;">
+                <button type="button" class="btn btn-secondary" onclick="zatvoriModal()">Otkaži</button>
+                <button type="submit" class="btn btn-danger">Da, obriši</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function potvrdiBrisanje(id) {
+    document.getElementById('id-brisanja').value = id;
+    document.getElementById('brisanje-modal').style.display = 'block';
+    document.getElementById('modal-overlay').style.display = 'block';
+}
+
+function zatvoriModal() {
+    document.getElementById('brisanje-modal').style.display = 'none';
+    document.getElementById('modal-overlay').style.display = 'none';
+}
+
+document.getElementById('modal-overlay').addEventListener('click', zatvoriModal);
 </script>

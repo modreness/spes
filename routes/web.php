@@ -162,6 +162,12 @@ elseif ($uri === '/termini/uredi') {
 elseif ($uri === '/termini/lista') {
     require_once __DIR__ . '/../app/controllers/ListaTerminaController.php';
 }
+elseif ($uri === '/termini/status') {
+    require_once __DIR__ . '/../app/controllers/StatusTerminaController.php';
+}
+elseif ($uri === '/termini/obrisi') {
+    require_once __DIR__ . '/../app/controllers/ObrisiTerminController.php';
+}
 /*
 else {
     http_response_code(404);
