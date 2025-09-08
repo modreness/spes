@@ -22,23 +22,23 @@
         </form>
     </div>
 
-    <!-- Raspored grid - 7 kolona za 7 dana -->
-    <div class="schedule-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 15px;">
+    <!-- Raspored vertikalno - dan po dan -->
+    <div class="schedule-vertical">
         <?php foreach (dani() as $slug => $label): ?>
             <?php 
-            $dan_datum = date('d.m', strtotime("+".array_search($slug, array_keys(dani()))." days", strtotime($datum_od)));
+            $dan_datum = date('d.m.Y', strtotime("+".array_search($slug, array_keys(dani()))." days", strtotime($datum_od)));
             $ima_terapeute = !empty($raspored_po_danu[$slug]);
             ?>
-            <div class="day-card" style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden; border: 1px solid <?= $ima_terapeute ? '#e8f5e8' : '#f8f9fa' ?>; min-height: 200px;">
+            <div class="day-row" style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 20px; overflow: hidden; border: 1px solid <?= $ima_terapeute ? '#e8f5e8' : '#f8f9fa' ?>;">
                 
                 <!-- Dan header -->
-                <div class="day-header" style="background: <?= $ima_terapeute ? 'linear-gradient(135deg, #27ae60, #2ecc71)' : '#f8f9fa' ?>; padding: 12px 15px; color: <?= $ima_terapeute ? '#fff' : '#7f8c8d' ?>; text-align: center;">
-                    <h4 style="margin: 0; font-size: 14px; font-weight: 600;"><?= $label ?></h4>
-                    <small style="opacity: 0.9; font-size: 12px;"><?= $dan_datum ?></small>
+                <div class="day-header" style="background: <?= $ima_terapeute ? 'linear-gradient(135deg, #27ae60, #2ecc71)' : '#f8f9fa' ?>; padding: 15px 25px; color: <?= $ima_terapeute ? '#fff' : '#7f8c8d' ?>;">
+                    <h4 style="margin: 0; font-size: 18px; font-weight: 600;"><?= $label ?></h4>
+                    <small style="opacity: 0.9;"><?= $dan_datum ?></small>
                 </div>
 
-                <!-- Smjene -->
-                <div class="day-content" style="padding: 12px;">
+                <!-- Smjene u redu -->
+                <div class="day-content" style="padding: 20px; display: flex; gap: 20px; flex-wrap: wrap;">
                     <?php foreach (smjene() as $key => $naziv): ?>
                         <?php 
                         $terapeuti_u_smjeni = $raspored_po_danu[$slug][$key] ?? [];
@@ -48,25 +48,25 @@
                             'vecer' => '#9b59b6'
                         ];
                         ?>
-                        <div class="shift-block" style="margin-bottom: 8px; padding: 8px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid <?= $smjena_colors[$key] ?>;">
-                            <div style="display: flex; align-items: center; margin-bottom: 5px;">
-                                <div style="width: 8px; height: 8px; background: <?= $smjena_colors[$key] ?>; border-radius: 50%; margin-right: 6px;"></div>
-                                <strong style="color: #2c3e50; font-size: 12px;"><?= $naziv ?></strong>
+                        <div class="shift-block" style="flex: 1; min-width: 200px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid <?= $smjena_colors[$key] ?>;">
+                            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                                <div style="width: 12px; height: 12px; background: <?= $smjena_colors[$key] ?>; border-radius: 50%; margin-right: 8px;"></div>
+                                <strong style="color: #2c3e50; font-size: 16px;"><?= $naziv ?></strong>
                             </div>
                             
                             <?php if (!empty($terapeuti_u_smjeni)): ?>
                                 <div class="therapists-list">
                                     <?php foreach ($terapeuti_u_smjeni as $ime): ?>
-                                        <div class="therapist-tag" style="font-size: 11px; color: #34495e; margin: 2px 0; padding: 2px 0;">
-                                            <i class="fa-solid fa-user-doctor" style="margin-right: 4px; color: <?= $smjena_colors[$key] ?>; font-size: 10px;"></i>
+                                        <div class="therapist-tag" style="display: block; background: #fff; padding: 8px 12px; margin: 5px 0; border-radius: 6px; font-size: 14px; color: #34495e; border: 1px solid #e0e0e0;">
+                                            <i class="fa-solid fa-user-doctor" style="margin-right: 8px; color: <?= $smjena_colors[$key] ?>;"></i>
                                             <?= htmlspecialchars($ime) ?>
                                         </div>
                                     <?php endforeach; ?>
                                 </div>
                             <?php else: ?>
-                                <div style="color: #95a5a6; font-style: italic; text-align: center; font-size: 11px; padding: 5px 0;">
-                                    <i class="fa-solid fa-calendar-xmark" style="margin-right: 3px;"></i>
-                                    Nema
+                                <div style="color: #95a5a6; font-style: italic; text-align: center; padding: 15px; background: #fff; border-radius: 6px;">
+                                    <i class="fa-solid fa-calendar-xmark" style="margin-right: 5px;"></i>
+                                    Nema terapeuta
                                 </div>
                             <?php endif; ?>
                         </div>
