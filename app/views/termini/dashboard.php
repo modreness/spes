@@ -42,6 +42,13 @@
                 <i class="fa-solid fa-plus"></i> Kreiraj termin
             </a>
         </div>
+        <div class="action-card">
+            <h3>Lista termina</h3>
+            <p>Pregled svih termina u tabeli sa filterima</p>
+            <a href="/termini/lista" class="btn btn-primary">
+                <i class="fa-solid fa-list"></i> Lista termina
+            </a>
+        </div>
     </div>
 
     <!-- Najnoviji termini -->

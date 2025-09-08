@@ -159,6 +159,9 @@ elseif ($uri === '/termini/kreiraj') {
 elseif ($uri === '/termini/uredi') {
     require_once __DIR__ . '/../app/controllers/UrediTerminController.php';
 }
+elseif ($uri === '/termini/lista') {
+    require_once __DIR__ . '/../app/controllers/ListaTerminaController.php';
+}
 /*
 else {
     http_response_code(404);
