@@ -9,23 +9,26 @@
     <div class="admin-stats-grid">
         <div class="admin-stat-card" style="background: linear-gradient(135deg, #3498db, #2980b9);">
             <h3>Ukupno pacijenata</h3>
-            <div class="stat-number"><?= $dashboard_data['ukupno_pacijenata'] ?? 0 ?></div>
+            <div class="admin-stat-number"><?= $dashboard_data['ukupno_pacijenata'] ?? 0 ?></div>
                  <div class="admin-stat-icon"><i class="fa-solid fa-users"></i></div>
         </div>
         
-        <div class="stat-card" style="background: linear-gradient(135deg, #2ecc71, #27ae60);">
+        <div class="admin-stat-card" style="background: linear-gradient(135deg, #2ecc71, #27ae60);">
             <h3>Aktivnih terapeuta</h3>
-            <div class="stat-number"><?= $dashboard_data['ukupno_terapeuta'] ?? 0 ?></div>
+            <div class="admin-stat-number"><?= $dashboard_data['ukupno_terapeuta'] ?? 0 ?></div>
+             <div class="admin-stat-icon"><i class="fa-solid fa-user-doctor"></i></div>
         </div>
         
-        <div class="stat-card" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+        <div class="admin-stat-card" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
             <h3>Termini danas</h3>
-            <div class="stat-number"><?= $dashboard_data['termini_danas'] ?? 0 ?></div>
+            <div class="admin-stat-number"><?= $dashboard_data['termini_danas'] ?? 0 ?></div>
+              <div class="admin-stat-icon"><i class="fa-solid fa-calendar-day"></i></div>
         </div>
         
-        <div class="stat-card" style="background: linear-gradient(135deg, #f39c12, #e67e22);">
+        <div class="admin-stat-card" style="background: linear-gradient(135deg, #f39c12, #e67e22);">
             <h3>Prihod danas</h3>
-            <div class="stat-number"><?= number_format($dashboard_data['prihod_danas'] ?? 0, 2) ?> KM</div>
+            <div class="admin-stat-number"><?= number_format($dashboard_data['prihod_danas'] ?? 0, 2) ?> KM</div>
+            <div class="admin-stat-icon"><i class="fa-solid fa-coins"></i></div>
         </div>
     </div>
 
