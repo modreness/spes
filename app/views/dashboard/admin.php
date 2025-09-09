@@ -29,7 +29,7 @@
     </div>
 
     <!-- Mesečni pregled -->
-    <div class="main-content" style="margin-bottom: 30px;">
+    <div class="main-content-stats" style="margin-bottom: 30px;">
         <h3 style="margin: 0 0 20px 0; color: #2c3e50;">Pregled ovog meseca</h3>
         <div class="stats-grid" style="margin-bottom: 0;">
             <div class="stat-card" style="background: linear-gradient(135deg, #9b59b6, #8e44ad);">
