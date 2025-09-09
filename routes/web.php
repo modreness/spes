@@ -180,6 +180,9 @@ elseif ($uri === '/izvjestaji/finansijski') {
 elseif ($uri === '/izvjestaji/operativni') {
     require_once __DIR__ . '/../app/controllers/OperativniIzvjestajController.php';
 }
+elseif ($uri === '/izvjestaji/medicinski') {
+    require_once __DIR__ . '/../app/controllers/MedicinskiIzvjestajController.php';
+}
 /*
 else {
     http_response_code(404);
