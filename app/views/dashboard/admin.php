@@ -6,11 +6,11 @@
     </div>
 
     <!-- Statisticki kartoni -->
-    <div class="stats-grid">
-        <div class="stat-card" style="background: linear-gradient(135deg, #3498db, #2980b9);">
+    <div class="admin-stats-grid">
+        <div class="admin-stat-card" style="background: linear-gradient(135deg, #3498db, #2980b9);">
             <h3>Ukupno pacijenata</h3>
             <div class="stat-number"><?= $dashboard_data['ukupno_pacijenata'] ?? 0 ?></div>
-                 <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+                 <div class="admin-stat-icon"><i class="fa-solid fa-users"></i></div>
         </div>
         
         <div class="stat-card" style="background: linear-gradient(135deg, #2ecc71, #27ae60);">
