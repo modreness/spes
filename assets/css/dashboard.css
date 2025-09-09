@@ -1126,7 +1126,13 @@ margin-bottom:20px;
     transform: translateY(-5px);
     box-shadow: 0 8px 25px rgba(0,0,0,0.15);
 }
-
+.stat-icon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 2rem;
+    opacity: 0.3;
+}
 .admin-stat-blue {
     background: linear-gradient(135deg, #3498db, #2980b9);
 }
