@@ -104,114 +104,110 @@
         </div>
     </div>
 
+
     <!-- Pregled aktivnosti -->
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 30px;">
+    <div class="admin-activity-grid">
         <!-- Predstojeci termini -->
-        <div class="main-content">
-            <h3 style="margin: 0 0 20px 0; color: #2c3e50;">Predstojeci termini danas</h3>
-            
-            <?php if (empty($dashboard_data['predstojeci_termini'])): ?>
-                <div style="text-align: center; color: #7f8c8d; padding: 40px;">
-                    <i class="fa-solid fa-calendar-xmark" style="font-size: 3em; margin-bottom: 15px; opacity: 0.3;"></i>
-                    <p>Nema zakazanih termina danas</p>
-                </div>
-            <?php else: ?>
-                <table class="table-standard">
-                    <thead>
-                        <tr>
-                            <th>Pacijent</th>
-                            <th>Usluga</th>
-                            <th>Terapeut</th>
-                            <th>Vrijeme</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($dashboard_data['predstojeci_termini'] as $termin): ?>
-                        <tr>
-                            <td style="font-weight: 600;">
+        <div class="admin-activity-section">
+            <div class="admin-activity-header">
+                <h3>Predstojeci termini danas</h3>
+            </div>
+            <div class="admin-activity-content">
+                <?php if (empty($dashboard_data['predstojeci_termini'])): ?>
+                    <div class="admin-empty-state">
+                        <i class="fa-solid fa-calendar-xmark"></i>
+                        <p>Nema zakazanih termina danas</p>
+                    </div>
+                <?php else: ?>
+                    <?php foreach ($dashboard_data['predstojeci_termini'] as $termin): ?>
+                    <div class="admin-list-item">
+                        <div>
+                            <div class="admin-list-name">
                                 <?= htmlspecialchars($termin['pacijent_ime']) ?>
-                            </td>
-                            <td><?= htmlspecialchars($termin['usluga']) ?></td>
-                            <td><?= htmlspecialchars($termin['terapeut_ime']) ?></td>
-                            <td style="font-weight: 600; color: #255AA5;">
-                                <?= date('H:i', strtotime($termin['vrijeme'])) ?>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-                <div class="bottom-foot">
-                    <a href="/termini" class="btn btn-secondary btn-no-margin">Svi termini</a>
-                </div>
-            <?php endif; ?>
+                            </div>
+                            <div class="admin-list-details">
+                                <?= htmlspecialchars($termin['usluga']) ?> - <?= htmlspecialchars($termin['terapeut_ime']) ?>
+                            </div>
+                        </div>
+                        <div class="admin-list-time">
+                            <?= date('H:i', strtotime($termin['vrijeme'])) ?>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                    <div class="admin-activity-footer">
+                        <a href="/termini" class="admin-btn admin-btn-outline admin-btn-sm">Svi termini</a>
+                    </div>
+                <?php endif; ?>
+            </div>
         </div>
 
         <!-- Nedavni kartoni -->
-        <div class="main-content">
-            <h3 style="margin: 0 0 20px 0; color: #2c3e50;">Nedavno kreirani kartoni</h3>
-            
-            <?php if (empty($dashboard_data['nedavni_kartoni'])): ?>
-                <div style="text-align: center; color: #7f8c8d; padding: 40px;">
-                    <i class="fa-solid fa-folder-open" style="font-size: 3em; margin-bottom: 15px; opacity: 0.3;"></i>
-                    <p>Nema novih kartona</p>
-                </div>
-            <?php else: ?>
-                <table class="table-standard">
-                    <thead>
-                        <tr>
-                            <th>Pacijent</th>
-                            <th>Dijagnoza</th>
-                            <th>Terapeut</th>
-                            <th>Datum</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($dashboard_data['nedavni_kartoni'] as $karton): ?>
-                        <tr>
-                            <td style="font-weight: 600;">
+        <div class="admin-activity-section">
+            <div class="admin-activity-header">
+                <h3>Nedavno kreirani kartoni</h3>
+            </div>
+            <div class="admin-activity-content">
+                <?php if (empty($dashboard_data['nedavni_kartoni'])): ?>
+                    <div class="admin-empty-state">
+                        <i class="fa-solid fa-folder-open"></i>
+                        <p>Nema novih kartona</p>
+                    </div>
+                <?php else: ?>
+                    <?php foreach ($dashboard_data['nedavni_kartoni'] as $karton): ?>
+                    <div class="admin-list-item admin-list-vertical">
+                        <div>
+                            <div class="admin-list-name">
                                 <?= htmlspecialchars($karton['pacijent_ime']) ?>
-                            </td>
-                            <td><?= htmlspecialchars($karton['dijagnoza']) ?></td>
-                            <td><?= htmlspecialchars($karton['terapeut_ime']) ?></td>
-                            <td><?= date('d.m.Y', strtotime($karton['datum_kreiranja'])) ?></td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-                <div class="bottom-foot">
-                    <a href="/kartoni/lista" class="btn btn-secondary btn-no-margin">Svi kartoni</a>
-                </div>
-            <?php endif; ?>
+                            </div>
+                            <div class="admin-list-details">
+                                <?= htmlspecialchars($karton['dijagnoza']) ?>
+                            </div>
+                            <div class="admin-list-extra">
+                                Terapeut: <?= htmlspecialchars($karton['terapeut_ime']) ?>
+                            </div>
+                        </div>
+                        <div class="admin-list-date">
+                            <?= date('d.m.Y', strtotime($karton['datum_kreiranja'])) ?>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                    <div class="admin-activity-footer">
+                        <a href="/kartoni/lista" class="admin-btn admin-btn-outline admin-btn-sm">Svi kartoni</a>
+                    </div>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
 
     <!-- Brza navigacija -->
-    <div class="main-content" style="margin-top: 30px;">
-        <h3 style="margin: 0 0 20px 0; color: #2c3e50;">Brza navigacija</h3>
+    <div class="admin-quick-nav">
+        <div class="admin-quick-nav-header">
+            <h3>Brza navigacija</h3>
+        </div>
         
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-            <a href="/kartoni/lista" class="openlink" style="display: flex; align-items: center; gap: 10px; padding: 15px; background: #f8f9fa; border-radius: 8px; transition: all 0.3s ease;">
-                <i class="fa-solid fa-folder-open" style="color: #255AA5;"></i>
+        <div class="admin-quick-nav-grid">
+            <a href="/kartoni/lista" class="admin-quick-link">
+                <i class="fa-solid fa-folder-open"></i>
                 <span>Kartoni pacijenata</span>
             </a>
-            <a href="/kategorije" class="openlink" style="display: flex; align-items: center; gap: 10px; padding: 15px; background: #f8f9fa; border-radius: 8px; transition: all 0.3s ease;">
-                <i class="fa-solid fa-tags" style="color: #255AA5;"></i>
+            <a href="/kategorije" class="admin-quick-link">
+                <i class="fa-solid fa-tags"></i>
                 <span>Kategorije usluga</span>
             </a>
-            <a href="/cjenovnik" class="openlink" style="display: flex; align-items: center; gap: 10px; padding: 15px; background: #f8f9fa; border-radius: 8px; transition: all 0.3s ease;">
-                <i class="fa-solid fa-money-bill" style="color: #255AA5;"></i>
+            <a href="/cjenovnik" class="admin-quick-link">
+                <i class="fa-solid fa-money-bill"></i>
                 <span>Cjenovnik</span>
             </a>
-            <a href="/timetable" class="openlink" style="display: flex; align-items: center; gap: 10px; padding: 15px; background: #f8f9fa; border-radius: 8px; transition: all 0.3s ease;">
-                <i class="fa-solid fa-business-time" style="color: #255AA5;"></i>
+            <a href="/timetable" class="admin-quick-link">
+                <i class="fa-solid fa-business-time"></i>
                 <span>Radna vremena</span>
             </a>
-            <a href="/backup" class="openlink" style="display: flex; align-items: center; gap: 10px; padding: 15px; background: #f8f9fa; border-radius: 8px; transition: all 0.3s ease;">
-                <i class="fa-solid fa-database" style="color: #255AA5;"></i>
+            <a href="/backup" class="admin-quick-link">
+                <i class="fa-solid fa-database"></i>
                 <span>Backup sistema</span>
             </a>
-            <a href="/logs" class="openlink" style="display: flex; align-items: center; gap: 10px; padding: 15px; background: #f8f9fa; border-radius: 8px; transition: all 0.3s ease;">
-                <i class="fa-solid fa-file-lines" style="color: #255AA5;"></i>
+            <a href="/logs" class="admin-quick-link">
+                <i class="fa-solid fa-file-lines"></i>
                 <span>System logs</span>
             </a>
         </div>
