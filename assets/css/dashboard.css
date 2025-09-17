@@ -532,10 +532,31 @@ display: inline-block;
     font-family:Montserrat;
 }
 
+.submit-button-grey {
+    padding: 12px 40px;
+    background: #ccc;
+    color: #333;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-block;
+    margin-top: 20px;
+    text-align: center;
+    text-decoration: none;
+    transition: background 0.3s ease;
+    font-family:Montserrat;
+}
 
 .submit-button:hover {
     background: linear-gradient(90deg, #1e4781, #207a99);
 }
+
+.submit-button-grey:hover {
+    background: #bbb;
+}
+
 ::placeholder {
     font-family: 'Montserrat', sans-serif;
     color: #646464;
