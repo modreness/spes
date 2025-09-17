@@ -59,10 +59,10 @@
             <h3>Upravljanje korisnicima</h3>
             <p>Dodaj novi profil, uredi postojeće korisnike ili promeni uloge</p>
             <div style="display: flex; gap: 10px; justify-content: center;">
-                <a href="/profil/kreiraj" class="btn btn-add">
+                <a href="/profil/kreiraj" class="submit-button btn-no-margin">
                     <i class="fa-solid fa-user-plus"></i> Novi korisnik
                 </a>
-                <a href="/profil/admin" class="btn btn-secondary">
+                <a href="/profil/admin" class="submit-button-grey btn-no-margin">
                     <i class="fa-solid fa-users"></i> Svi korisnici
                 </a>
             </div>
@@ -75,7 +75,7 @@
                 <a href="/termini" class="submit-button btn-no-margin">
                     <i class="fa-solid fa-calendar"></i> Termini
                 </a>
-                <a href="/raspored" class="btn btn-secondary">
+                <a href="/raspored" class="submit-button-grey btn-no-margin">
                     <i class="fa-solid fa-clock"></i> Raspored
                 </a>
             </div>
@@ -88,7 +88,7 @@
                 <a href="/izvjestaji" class="submit-button btn-no-margin">
                     <i class="fa-solid fa-chart-line"></i> Izvještaji
                 </a>
-                <a href="/izvjestaji/medicinski" class="btn btn-secondary">
+                <a href="/izvjestaji/medicinski" class="submit-button-grey btn-no-margin">
                     <i class="fa-solid fa-file-medical"></i> Medicinski
                 </a>
             </div>
