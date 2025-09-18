@@ -125,7 +125,7 @@
             <div class="admin-activity-header">
                 <h3>Termini danas</h3>
                 <div class="admin-header-actions">
-                    <a href="/termini/novi" class="admin-btn admin-btn-primary admin-btn-xs">
+                    <a href="/termini/kreiraj" class="admin-btn admin-btn-primary admin-btn-xs">
                         <i class="fa-solid fa-plus"></i> Novi
                     </a>
                     <a href="/termini" class="admin-btn admin-btn-outline admin-btn-xs">Svi termini</a>
@@ -159,7 +159,7 @@
                                 </div>
                             </div>
                             <div class="admin-timeline-actions">
-                                <a href="/termini/uredi/<?= $termin['id'] ?>" class="admin-btn admin-btn-outline admin-btn-xs">
+                                <a href="/termini/uredi/id=<?= $termin['id'] ?>" class="admin-btn admin-btn-outline admin-btn-xs">
                                     <i class="fa-solid fa-edit"></i>
                                 </a>
                                 <?php if ($termin['status'] === 'obavljen' && $termin['karton_id']): ?>

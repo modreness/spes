@@ -46,7 +46,7 @@
             <h3>Termini i zakazivanje</h3>
             <p>Upravljanje terminima, zakazivanje i otkazivanje</p>
             <div class="recepcioner-action-buttons">
-                <a href="/termini/novi" class="recepcioner-btn recepcioner-btn-primary recepcioner-btn-sm">
+                <a href="/termini/kreiraj" class="recepcioner-btn recepcioner-btn-primary recepcioner-btn-sm">
                     <i class="fa-solid fa-plus"></i> Novi termin
                 </a>
                 <a href="/termini" class="recepcioner-btn recepcioner-btn-outline recepcioner-btn-sm">
@@ -137,7 +137,7 @@
                                 </div>
                             </div>
                             <div class="recepcioner-timeline-actions">
-                                <a href="/termini/uredi/<?= $termin['id'] ?>" class="recepcioner-btn recepcioner-btn-outline recepcioner-btn-xs">
+                                <a href="/termini/uredi/id=<?= $termin['id'] ?>" class="recepcioner-btn recepcioner-btn-outline recepcioner-btn-xs">
                                     <i class="fa-solid fa-edit"></i>
                                 </a>
                                 <?php if ($termin['status'] === 'obavljen' && $termin['karton_id']): ?>
