@@ -123,30 +123,49 @@
         <!-- Predstojeci termini -->
         <div class="admin-activity-section">
             <div class="admin-activity-header">
-                <h3>Predstojeci termini danas</h3>
+                <h3>Termini danas</h3>
+                <div class="admin-header-actions">
+                    <a href="/termini/novi" class="admin-btn admin-btn-primary admin-btn-xs">
+                        <i class="fa-solid fa-plus"></i> Novi
+                    </a>
+                    <a href="/termini" class="admin-btn admin-btn-outline admin-btn-xs">Svi termini</a>
+                </div>
             </div>
             <div class="admin-activity-content">
                 <?php if (empty($dashboard_data['predstojeci_termini'])): ?>
                     <div class="admin-empty-state">
                         <i class="fa-solid fa-calendar-xmark"></i>
-                        <p>Nema zakazanih termina danas</p>
+                        <p>Nema termina za danas</p>
+                        <a href="/termini/novi" class="admin-btn admin-btn-primary admin-btn-sm">Zakaži prvi termin</a>
                     </div>
                 <?php else: ?>
-                    <?php foreach ($dashboard_data['predstojeci_termini'] as $termin): ?>
-                    <div class="admin-list-item">
-                        <div>
-                            <div class="admin-list-name">
-                                <?= htmlspecialchars($termin['pacijent_ime']) ?>
+                    <div class="admin-timeline">
+                        <?php foreach ($dashboard_data['predstojeci_termini'] as $termin): ?>
+                        <div class="admin-timeline-item admin-status-<?= $termin['status'] ?>">
+                            <div class="admin-timeline-time">
+                                <?= date('H:i', strtotime($termin['vrijeme'])) ?>
                             </div>
-                            <div class="admin-list-details">
-                                <?= htmlspecialchars($termin['usluga']) ?> - <?= htmlspecialchars($termin['terapeut_ime']) ?>
+                            <div class="admin-timeline-content">
+                                <div class="admin-timeline-title">
+                                    <?= htmlspecialchars($termin['pacijent_ime']) ?>
+                                </div>
+                                <div class="admin-timeline-details">
+                                    <?= htmlspecialchars($termin['usluga']) ?> - <?= htmlspecialchars($termin['terapeut_ime']) ?>
+                                </div>
+                                <div class="admin-timeline-status">
+                                    <span class="admin-status-badge admin-status-<?= $termin['status'] ?>">
+                                        <?= ucfirst($termin['status']) ?>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="admin-timeline-actions">
+                                <a href="/termini/uredi/<?= $termin['id'] ?>" class="admin-btn admin-btn-outline admin-btn-xs">
+                                    <i class="fa-solid fa-edit"></i>
+                                </a>
                             </div>
                         </div>
-                        <div class="admin-list-time">
-                            <?= date('H:i', strtotime($termin['vrijeme'])) ?>
-                        </div>
+                        <?php endforeach; ?>
                     </div>
-                    <?php endforeach; ?>
                     <div class="admin-activity-footer">
                         <a href="/termini" class="admin-btn admin-btn-outline admin-btn-sm">Svi termini</a>
                     </div>
