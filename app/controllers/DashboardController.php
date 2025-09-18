@@ -23,7 +23,7 @@ try {
         $stmt->execute();
         $dashboard_data['termini_danas'] = $stmt->fetchColumn();
         
-        $stmt = $pdo->prepare("SELECT COUNT(*) FROM kartoni WHERE DATE(datum_kreiranja) = CURDATE()");
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM kartoni WHERE DATE(datum_otvaranja) = CURDATE()");
         $stmt->execute();
         $dashboard_data['novi_kartoni_danas'] = $stmt->fetchColumn();
         
@@ -82,15 +82,15 @@ try {
         $stmt->execute();
         $dashboard_data['predstojeci_termini'] = $stmt->fetchAll();
         
-        // Nedavni kartoni
+        // Nedavni kartoni (popravljeno)
         $stmt = $pdo->prepare("
             SELECT k.*, 
                    CONCAT(p.ime, ' ', p.prezime) as pacijent_ime,
-                   CONCAT(t.ime, ' ', t.prezime) as terapeut_ime
+                   CONCAT(o.ime, ' ', o.prezime) as otvorio_ime
             FROM kartoni k
             JOIN users p ON k.pacijent_id = p.id
-            JOIN users t ON k.terapeut_id = t.id
-            ORDER BY k.datum_kreiranja DESC
+            JOIN users o ON k.otvorio_id = o.id
+            ORDER BY k.datum_otvaranja DESC
             LIMIT 5
         ");
         $stmt->execute();
