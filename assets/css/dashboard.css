@@ -1579,7 +1579,104 @@ margin-bottom:20px;
     }
 }
 
+/* Admin header actions */
+.admin-header-actions {
+    display: flex;
+    gap: 8px;
+}
 
+/* Admin timeline (kao recepcioner) */
+.admin-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.admin-timeline-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #dee2e6;
+    transition: all 0.3s ease;
+}
+
+.admin-timeline-item:hover {
+    background: #f8f9fa;
+    transform: translateX(5px);
+}
+
+.admin-timeline-item.admin-status-zakazan {
+    border-left-color: #3498db;
+    background: rgba(52, 152, 219, 0.05);
+}
+
+.admin-timeline-item.admin-status-obavljen {
+    border-left-color: #2ecc71;
+    background: rgba(46, 204, 113, 0.05);
+}
+
+.admin-timeline-item.admin-status-otkazan {
+    border-left-color: #e74c3c;
+    background: rgba(231, 76, 60, 0.05);
+}
+
+.admin-timeline-time {
+    font-weight: 700;
+    color: #3498db;
+    font-size: 1.1rem;
+    min-width: 60px;
+}
+
+.admin-timeline-content {
+    flex: 1;
+}
+
+.admin-timeline-title {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 4px;
+}
+
+.admin-timeline-details {
+    font-size: 0.9em;
+    color: #7f8c8d;
+    margin-bottom: 8px;
+}
+
+.admin-status-badge {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75em;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.admin-status-badge.admin-status-zakazan {
+    background: rgba(52, 152, 219, 0.2);
+    color: #3498db;
+}
+
+.admin-status-badge.admin-status-obavljen {
+    background: rgba(46, 204, 113, 0.2);
+    color: #2ecc71;
+}
+
+.admin-status-badge.admin-status-otkazan {
+    background: rgba(231, 76, 60, 0.2);
+    color: #e74c3c;
+}
+
+.admin-timeline-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.admin-btn-xs {
+    padding: 4px 8px;
+    font-size: 0.8rem;
+}
 
 /* RECEPCIONER DASHBOARD STILOVI */
 .recepcioner-dashboard {
