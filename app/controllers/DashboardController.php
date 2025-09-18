@@ -63,7 +63,7 @@ try {
         $stmt->execute();
         $dashboard_data['top_terapeut'] = $stmt->fetch();
         
-        // Predstojeci termini danas
+        // Termini danas - SVI termini (ne samo zakazani)
         $stmt = $pdo->prepare("
             SELECT t.*, 
                    CONCAT(p.ime, ' ', p.prezime) as pacijent_ime,
@@ -75,7 +75,6 @@ try {
             JOIN users te ON t.terapeut_id = te.id
             JOIN cjenovnik c ON t.usluga_id = c.id
             WHERE DATE(t.datum_vrijeme) = CURDATE()
-            AND t.status = 'zakazan'
             ORDER BY t.datum_vrijeme ASC
             LIMIT 10
         ");
