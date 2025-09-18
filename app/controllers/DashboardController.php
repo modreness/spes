@@ -97,7 +97,16 @@ try {
         $dashboard_data['nedavni_kartoni'] = $stmt->fetchAll();
         
     } elseif ($user['uloga'] === 'recepcioner') {
-        // Recepcioner podaci - termini danas, zakazivanje, pacijenti
+        // Recepcioner podaci - pristup gotovo svim podacima kao admin
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE uloga = 'pacijent'");
+        $stmt->execute();
+        $dashboard_data['ukupno_pacijenata'] = $stmt->fetchColumn();
+        
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM termini WHERE DATE(datum_vrijeme) = CURDATE()");
+        $stmt->execute();
+        $dashboard_data['broj_termina_danas'] = $stmt->fetchColumn();
+        
+        // Termini danas - isti kao admin
         $stmt = $pdo->prepare("
             SELECT t.*, 
                    CONCAT(p.ime, ' ', p.prezime) as pacijent_ime,
@@ -114,13 +123,19 @@ try {
         $stmt->execute();
         $dashboard_data['termini_danas'] = $stmt->fetchAll();
         
-        $stmt = $pdo->prepare("SELECT COUNT(*) FROM termini WHERE DATE(datum_vrijeme) = CURDATE() AND status = 'zakazan'");
+        // Nedavni kartoni - isti kao admin
+        $stmt = $pdo->prepare("
+            SELECT k.*, 
+                   CONCAT(p.ime, ' ', p.prezime) as pacijent_ime,
+                   CONCAT(o.ime, ' ', o.prezime) as otvorio_ime
+            FROM kartoni k
+            JOIN users p ON k.pacijent_id = p.id
+            JOIN users o ON k.otvorio_id = o.id
+            ORDER BY k.datum_otvaranja DESC
+            LIMIT 5
+        ");
         $stmt->execute();
-        $dashboard_data['broj_termina_danas'] = $stmt->fetchColumn();
-        
-        $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE uloga = 'pacijent'");
-        $stmt->execute();
-        $dashboard_data['ukupno_pacijenata'] = $stmt->fetchColumn();
+        $dashboard_data['nedavni_kartoni'] = $stmt->fetchAll();
         
     } elseif ($user['uloga'] === 'terapeut') {
         // Terapeut podaci - moji termini, moji pacijenti

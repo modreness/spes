@@ -2,24 +2,24 @@
     <!-- Uvodni naslov -->
     <div class="recepcioner-header">
         <h2>Recepcioner Dashboard</h2>
-        <p>Upravljanje terminima, zakazivanje i rad sa pacijentima</p>
+        <p>Kompletni pregled klinike i upravljanje operativnim aktivnostima</p>
     </div>
 
     <!-- Statisticki pregled -->
     <div class="recepcioner-stats-grid">
         <div class="recepcioner-stat-card recepcioner-stat-blue">
             <div class="recepcioner-stat-content">
-                <div class="recepcioner-stat-number"><?= $dashboard_data['broj_termina_danas'] ?? 0 ?></div>
-                <div class="recepcioner-stat-label">Termini danas</div>
-                <div class="recepcioner-stat-icon"><i class="fa-solid fa-calendar-day"></i></div>
+                <div class="recepcioner-stat-number"><?= $dashboard_data['ukupno_pacijenata'] ?? 0 ?></div>
+                <div class="recepcioner-stat-label">Ukupno pacijenata</div>
+                <div class="recepcioner-stat-icon"><i class="fa-solid fa-users"></i></div>
             </div>
         </div>
         
         <div class="recepcioner-stat-card recepcioner-stat-green">
             <div class="recepcioner-stat-content">
-                <div class="recepcioner-stat-number"><?= $dashboard_data['ukupno_pacijenata'] ?? 0 ?></div>
-                <div class="recepcioner-stat-label">Ukupno pacijenata</div>
-                <div class="recepcioner-stat-icon"><i class="fa-solid fa-users"></i></div>
+                <div class="recepcioner-stat-number"><?= $dashboard_data['broj_termina_danas'] ?? 0 ?></div>
+                <div class="recepcioner-stat-label">Termini danas</div>
+                <div class="recepcioner-stat-icon"><i class="fa-solid fa-calendar-day"></i></div>
             </div>
         </div>
         
@@ -30,32 +30,68 @@
                 <div class="recepcioner-stat-icon"><i class="fa-solid fa-clock"></i></div>
             </div>
         </div>
+        
+        <div class="recepcioner-stat-card recepcioner-stat-purple">
+            <div class="recepcioner-stat-content">
+                <div class="recepcioner-stat-number"><?= count($dashboard_data['nedavni_kartoni'] ?? []) ?></div>
+                <div class="recepcioner-stat-label">Novi kartoni</div>
+                <div class="recepcioner-stat-icon"><i class="fa-solid fa-folder-open"></i></div>
+            </div>
+        </div>
     </div>
 
-    <!-- Brze akcije -->
-    <div class="recepcioner-quick-actions">
+    <!-- Glavne akcije -->
+    <div class="recepcioner-action-cards">
         <div class="recepcioner-action-card">
-            <h3>Novi termin</h3>
-            <p>Zakažite novi termin za pacijenta</p>
-            <a href="/termini/novi" class="recepcioner-btn recepcioner-btn-primary">
-                <i class="fa-solid fa-plus"></i> Zakaži termin
-            </a>
+            <h3>Termini i zakazivanje</h3>
+            <p>Upravljanje terminima, zakazivanje i otkazivanje</p>
+            <div class="recepcioner-action-buttons">
+                <a href="/termini/novi" class="recepcioner-btn recepcioner-btn-primary recepcioner-btn-sm">
+                    <i class="fa-solid fa-plus"></i> Novi termin
+                </a>
+                <a href="/termini" class="recepcioner-btn recepcioner-btn-outline recepcioner-btn-sm">
+                    <i class="fa-solid fa-calendar"></i> Svi termini
+                </a>
+            </div>
         </div>
         
         <div class="recepcioner-action-card">
-            <h3>Pretraga pacijenata</h3>
-            <p>Pronađite karton pacijenta</p>
-            <a href="/kartoni/lista" class="recepcioner-btn recepcioner-btn-success">
-                <i class="fa-solid fa-search"></i> Pretraži kartone
-            </a>
+            <h3>Pacijenti i kartoni</h3>
+            <p>Upravljanje kartonima pacijenata i registracija</p>
+            <div class="recepcioner-action-buttons">
+                <a href="/profil/kreiraj" class="recepcioner-btn recepcioner-btn-success recepcioner-btn-sm">
+                    <i class="fa-solid fa-user-plus"></i> Novi pacijent
+                </a>
+                <a href="/kartoni/lista" class="recepcioner-btn recepcioner-btn-outline recepcioner-btn-sm">
+                    <i class="fa-solid fa-folder-open"></i> Svi kartoni
+                </a>
+            </div>
         </div>
         
         <div class="recepcioner-action-card">
-            <h3>Novi pacijent</h3>
-            <p>Registruj novog pacijenta</p>
-            <a href="/profil/kreiraj" class="recepcioner-btn recepcioner-btn-info">
-                <i class="fa-solid fa-user-plus"></i> Dodaj pacijenta
-            </a>
+            <h3>Izvještaji i pregled</h3>
+            <p>Finansijski i operativni izvještaji klinike</p>
+            <div class="recepcioner-action-buttons">
+                <a href="/izvjestaji" class="recepcioner-btn recepcioner-btn-info recepcioner-btn-sm">
+                    <i class="fa-solid fa-chart-line"></i> Izvještaji
+                </a>
+                <a href="/izvjestaji/medicinski" class="recepcioner-btn recepcioner-btn-outline recepcioner-btn-sm">
+                    <i class="fa-solid fa-file-medical"></i> Medicinski
+                </a>
+            </div>
+        </div>
+        
+        <div class="recepcioner-action-card">
+            <h3>Upravljanje korisnicima</h3>
+            <p>Pregled korisnika i raspored terapeuta</p>
+            <div class="recepcioner-action-buttons">
+                <a href="/profil/admin" class="recepcioner-btn recepcioner-btn-warning recepcioner-btn-sm">
+                    <i class="fa-solid fa-users"></i> Korisnici
+                </a>
+                <a href="/raspored" class="recepcioner-btn recepcioner-btn-outline recepcioner-btn-sm">
+                    <i class="fa-solid fa-clock"></i> Raspored
+                </a>
+            </div>
         </div>
     </div>
 
@@ -66,7 +102,10 @@
             <div class="recepcioner-section-header">
                 <h3>Termini danas</h3>
                 <div class="recepcioner-header-actions">
-                    <a href="/termini" class="recepcioner-btn recepcioner-btn-outline recepcioner-btn-sm">Svi termini</a>
+                    <a href="/termini/novi" class="recepcioner-btn recepcioner-btn-primary recepcioner-btn-xs">
+                        <i class="fa-solid fa-plus"></i> Novi
+                    </a>
+                    <a href="/termini" class="recepcioner-btn recepcioner-btn-outline recepcioner-btn-xs">Svi termini</a>
                 </div>
             </div>
             
@@ -109,67 +148,79 @@
             </div>
         </div>
 
-        <!-- Brza pretraga -->
+        <!-- Nedavni kartoni -->
         <div class="recepcioner-content-section">
             <div class="recepcioner-section-header">
-                <h3>Brza pretraga</h3>
+                <h3>Nedavno kreirani kartoni</h3>
+                <div class="recepcioner-header-actions">
+                    <a href="/kartoni/lista" class="recepcioner-btn recepcioner-btn-outline recepcioner-btn-xs">Svi kartoni</a>
+                </div>
             </div>
             
             <div class="recepcioner-section-content">
-                <div class="recepcioner-search-form">
-                    <form action="/kartoni/pretraga" method="GET" class="recepcioner-search">
-                        <div class="recepcioner-search-input-group">
-                            <input type="text" name="q" placeholder="Pretraži po imenu, prezimenu, JMBG..." class="recepcioner-search-input">
-                            <button type="submit" class="recepcioner-search-btn">
-                                <i class="fa-solid fa-search"></i>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-                
-                <div class="recepcioner-quick-links">
-                    <h4>Brze akcije</h4>
-                    <div class="recepcioner-links-grid">
-                        <a href="/kartoni/lista" class="recepcioner-quick-link">
-                            <i class="fa-solid fa-folder-open"></i>
-                            <span>Svi kartoni</span>
-                        </a>
-                        <a href="/termini/kalendar" class="recepcioner-quick-link">
-                            <i class="fa-solid fa-calendar"></i>
-                            <span>Kalendar termina</span>
-                        </a>
-                        <a href="/cjenovnik" class="recepcioner-quick-link">
-                            <i class="fa-solid fa-money-bill"></i>
-                            <span>Cjenovnik</span>
-                        </a>
-                        <a href="/raspored" class="recepcioner-quick-link">
-                            <i class="fa-solid fa-clock"></i>
-                            <span>Raspored</span>
-                        </a>
+                <?php if (empty($dashboard_data['nedavni_kartoni'])): ?>
+                    <div class="recepcioner-empty-state">
+                        <i class="fa-solid fa-folder-open"></i>
+                        <p>Nema novih kartona</p>
                     </div>
-                </div>
+                <?php else: ?>
+                    <?php foreach ($dashboard_data['nedavni_kartoni'] as $karton): ?>
+                    <div class="recepcioner-karton-item">
+                        <div class="recepcioner-karton-content">
+                            <div class="recepcioner-karton-name">
+                                <?= htmlspecialchars($karton['pacijent_ime']) ?>
+                            </div>
+                            <div class="recepcioner-karton-details">
+                                <?= htmlspecialchars($karton['dijagnoza']) ?>
+                            </div>
+                            <div class="recepcioner-karton-extra">
+                                Otvorio: <?= htmlspecialchars($karton['otvorio_ime']) ?>
+                            </div>
+                        </div>
+                        <div class="recepcioner-karton-date">
+                            <?= date('d.m.Y', strtotime($karton['datum_otvaranja'])) ?>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </div>
         </div>
     </div>
 
-    <!-- Korisne informacije -->
-    <div class="recepcioner-info-section">
-        <div class="recepcioner-info-card">
-            <h4>Korisni linkovi</h4>
-            <ul class="recepcioner-info-list">
-                <li><a href="/profil/admin">Upravljanje korisnicima</a></li>
-                <li><a href="/izvjestaji">Izvještaji</a></li>
-                <li><a href="/backup">Backup sistema</a></li>
-            </ul>
+    <!-- Brza pretraga i navigacija -->
+    <div class="recepcioner-search-section">
+        <div class="recepcioner-search-card">
+            <h3>Brza pretraga</h3>
+            <form action="/kartoni/pretraga" method="GET" class="recepcioner-search">
+                <div class="recepcioner-search-input-group">
+                    <input type="text" name="q" placeholder="Pretraži po imenu, prezimenu, JMBG..." class="recepcioner-search-input">
+                    <button type="submit" class="recepcioner-search-btn">
+                        <i class="fa-solid fa-search"></i>
+                    </button>
+                </div>
+            </form>
         </div>
         
-        <div class="recepcioner-info-card">
-            <h4>Brze tipke</h4>
-            <ul class="recepcioner-info-list">
-                <li><kbd>Ctrl</kbd> + <kbd>N</kbd> - Novi termin</li>
-                <li><kbd>Ctrl</kbd> + <kbd>F</kbd> - Pretraga</li>
-                <li><kbd>Ctrl</kbd> + <kbd>K</kbd> - Kartoni</li>
-            </ul>
+        <div class="recepcioner-nav-card">
+            <h3>Brza navigacija</h3>
+            <div class="recepcioner-nav-grid">
+                <a href="/cjenovnik" class="recepcioner-quick-link">
+                    <i class="fa-solid fa-money-bill"></i>
+                    <span>Cjenovnik</span>
+                </a>
+                <a href="/kategorije" class="recepcioner-quick-link">
+                    <i class="fa-solid fa-tags"></i>
+                    <span>Kategorije</span>
+                </a>
+                <a href="/raspored" class="recepcioner-quick-link">
+                    <i class="fa-solid fa-clock"></i>
+                    <span>Raspored</span>
+                </a>
+                <a href="/backup" class="recepcioner-quick-link">
+                    <i class="fa-solid fa-database"></i>
+                    <span>Backup</span>
+                </a>
+            </div>
         </div>
     </div>
 </div>
