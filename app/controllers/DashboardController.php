@@ -69,11 +69,13 @@ try {
                    CONCAT(p.ime, ' ', p.prezime) as pacijent_ime,
                    CONCAT(te.ime, ' ', te.prezime) as terapeut_ime,
                    c.naziv as usluga,
-                   TIME(t.datum_vrijeme) as vrijeme
+                   TIME(t.datum_vrijeme) as vrijeme,
+                   k.id as karton_id
             FROM termini t
             JOIN users p ON t.pacijent_id = p.id
             JOIN users te ON t.terapeut_id = te.id
             JOIN cjenovnik c ON t.usluga_id = c.id
+            LEFT JOIN kartoni k ON k.pacijent_id = t.pacijent_id
             WHERE DATE(t.datum_vrijeme) = CURDATE()
             ORDER BY t.datum_vrijeme ASC
             LIMIT 10
