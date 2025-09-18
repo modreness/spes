@@ -140,6 +140,13 @@
                                 <a href="/termini/uredi/<?= $termin['id'] ?>" class="recepcioner-btn recepcioner-btn-outline recepcioner-btn-xs">
                                     <i class="fa-solid fa-edit"></i>
                                 </a>
+                                <?php if ($termin['status'] === 'obavljen' && $termin['karton_id']): ?>
+                                <button type="button" 
+                                        class="recepcioner-btn recepcioner-btn-success recepcioner-btn-xs" 
+                                        onclick="otvoriModalTretman(<?= $termin['id'] ?>, '<?= htmlspecialchars($termin['pacijent_ime']) ?>', <?= $termin['karton_id'] ?>)">
+                                    <i class="fa-solid fa-notes-medical"></i>
+                                </button>
+                                <?php endif; ?>
                             </div>
                         </div>
                         <?php endforeach; ?>
@@ -224,3 +231,67 @@
         </div>
     </div>
 </div>
+
+<!-- Modal overlay -->
+<div id="modal-overlay" class="modal-overlay" style="display: none;"></div>
+
+<!-- Modal za tretman -->
+<div id="tretman-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h3>Dodaj tretman</h3>
+        <p><strong>Karton za:</strong> <span id="modal-ime"></span></p>
+        <p><strong>Karton ID:</strong> <span id="modal-karton-id-display"></span></p>
+
+        <form method="post" action="/kartoni/dodaj-tretman">
+            <input type="hidden" name="karton_id" id="modal-karton-id">
+            <input type="hidden" name="termin_id" id="modal-termin-id">
+
+            <div class="form-group">
+                <label for="stanje_prije">Stanje prije</label>
+                <textarea name="stanje_prije" rows="3" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="terapija">Terapija</label>
+                <textarea name="terapija" rows="3" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="stanje_poslije">Stanje poslije</label>
+                <textarea name="stanje_poslije" rows="3" required></textarea>
+            </div>
+
+            <div style="text-align: center; margin-top: 15px;">
+                <button type="button" class="btn btn-secondary" onclick="zatvoriModalTretman()">Otkaži</button>
+                <button type="submit" class="btn btn-add">Snimi tretman</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function otvoriModalTretman(terminId, imePrezime, kartonId) {
+    document.getElementById('modal-karton-id').value = kartonId;
+    document.getElementById('modal-termin-id').value = terminId;
+    document.getElementById('modal-ime').textContent = imePrezime;
+    document.getElementById('modal-karton-id-display').textContent = kartonId;
+
+    document.getElementById('tretman-modal').style.display = 'block';
+    document.getElementById('modal-overlay').style.display = 'block';
+}
+
+function zatvoriModalTretman() {
+    document.getElementById('tretman-modal').style.display = 'none';
+    document.getElementById('modal-overlay').style.display = 'none';
+    
+    // Resetuj formu
+    document.querySelector('#tretman-modal form').reset();
+}
+
+// Zatvaranje na click outside
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('modal-overlay').addEventListener('click', function() {
+        zatvoriModalTretman();
+    });
+});
+</script>
