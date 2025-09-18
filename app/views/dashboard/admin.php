@@ -159,7 +159,7 @@
                                 </div>
                             </div>
                             <div class="admin-timeline-actions">
-                                <a href="/termini/uredi/id=<?= $termin['id'] ?>" class="admin-btn admin-btn-outline admin-btn-xs">
+                                <a href="/termini/uredi?id=<?= $termin['id'] ?>" class="admin-btn admin-btn-outline admin-btn-xs">
                                     <i class="fa-solid fa-edit"></i>
                                 </a>
                                 <?php if ($termin['status'] === 'obavljen' && $termin['karton_id']): ?>

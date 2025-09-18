@@ -137,7 +137,7 @@
                                 </div>
                             </div>
                             <div class="recepcioner-timeline-actions">
-                                <a href="/termini/uredi/id=<?= $termin['id'] ?>" class="recepcioner-btn recepcioner-btn-outline recepcioner-btn-xs">
+                                <a href="/termini/uredi?id=<?= $termin['id'] ?>" class="recepcioner-btn recepcioner-btn-outline recepcioner-btn-xs">
                                     <i class="fa-solid fa-edit"></i>
                                 </a>
                                 <?php if ($termin['status'] === 'obavljen' && $termin['karton_id']): ?>
