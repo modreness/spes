@@ -1104,6 +1104,7 @@ margin-bottom:20px;
 }
 
 /* ADMIN DASHBOARD STILOVI */
+/* ADMIN DASHBOARD STILOVI */
 .admin-dashboard {
     max-width: 1400px;
     margin: 0 auto;
@@ -1136,12 +1137,11 @@ margin-bottom:20px;
 
 .admin-stat-card {
     border-radius: 12px;
-    padding: 25px;
+    padding: 0;
     color: white;
     overflow: hidden;
     position: relative;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    text-align:center;
 }
 
 .admin-stat-card:hover {
@@ -1357,7 +1357,6 @@ margin-bottom:20px;
     grid-template-columns: 1fr 1fr;
     gap: 25px;
     margin-bottom: 30px;
-    margin-top:30px;
 }
 
 .admin-activity-section {
@@ -1551,34 +1550,6 @@ margin-bottom:20px;
         justify-content: center;
     }
     
-    .admin-quick-nav-grid {
-        grid-template-columns: 1fr;
-        gap: 10px;
-    }
-}
-
-
-/* Responsive design */
-@media (max-width: 768px) {
-    .stats-grid {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-    
-    .action-cards {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-    
-    .stat-card {
-        padding: 20px;
-    }
-    
-    .action-card {
-        padding: 25px 20px;
-    }
-}
-
 /* Admin header actions */
 .admin-header-actions {
     display: flex;
@@ -1677,6 +1648,7 @@ margin-bottom:20px;
     padding: 4px 8px;
     font-size: 0.8rem;
 }
+
 
 /* RECEPCIONER DASHBOARD STILOVI */
 .recepcioner-dashboard {
