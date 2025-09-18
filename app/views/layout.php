@@ -59,11 +59,11 @@ $user = current_user();
           <li><a href="/raspored"><img src="/assets/icons/clock.svg" alt=""> Raspored terapeuta</a></li>
           <li><a href="/timetable"><img src="/assets/icons/calendar.svg" alt=""> Timetable</a></li>
         </ul>
-        <div class="zakazani-link">
+        
         <div class="zakazani-link">
         <a href="/termini"><img src="/assets/icons/zakazani.svg" alt=""> ZAKAZANI TERMINI</a>
         </div>
-         </div>
+         
         <?php elseif ($user['uloga'] === 'recepcioner'): ?>
         <ul class="menu-list">
           <li><a href="/dashboard">Dashboard</a></li>
