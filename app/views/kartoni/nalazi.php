@@ -7,6 +7,8 @@
         <div class="notifikacija greska">Greška pri uploadu nalaza.</div>
     <?php elseif ($_GET['msg'] === 'tip-greska'): ?>
         <div class="notifikacija greska">Nepodržan tip fajla. Dozvoljeni: PDF, JPG, PNG, DOC, DOCX.</div>
+    <?php elseif ($_GET['msg'] === 'velicina-greska'): ?>
+        <div class="notifikacija greska">Fajl je prevelik. Maksimalna veličina je 10MB.</div>
     <?php elseif ($_GET['msg'] === 'obrisan'): ?>
         <div class="alert alert-success">Nalaz je uspješno obrisan.</div>
     <?php elseif ($_GET['msg'] === 'azuriran'): ?>

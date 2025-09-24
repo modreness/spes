@@ -76,18 +76,31 @@ function handleUpload($pdo, $karton, $user) {
         exit;
     }
     
-    // Kreiranje upload direktorija ako ne postoji
-    $upload_dir = __DIR__ . '/../../uploads/nalazi/';
+    // Validacija veličine fajla (10MB)
+    if ($file['size'] > 10 * 1024 * 1024) {
+        header("Location: /kartoni/nalazi?id={$karton['id']}&msg=velicina-greska");
+        exit;
+    }
+    
+    // Kreiranje folder strukture: pacijent_id + kratki hash
+    $patient_hash = substr(md5($karton['pacijent_id'] . $karton['jmbg']), 0, 8);
+    $folder_name = $karton['pacijent_id'] . '_' . $patient_hash;
+    
+    $upload_dir = __DIR__ . '/../../uploads/nalazi/' . $folder_name . '/';
     if (!is_dir($upload_dir)) {
         mkdir($upload_dir, 0755, true);
     }
     
-    // Generiranje jedinstvenog imena fajla
-    $new_filename = date('Ymd_His') . '_' . $karton['pacijent_id'] . '_' . uniqid() . '.' . $file_ext;
+    // Generiranje sigurnog imena fajla
+    $clean_filename = preg_replace('/[^a-zA-Z0-9_-]/', '_', $naziv);
+    $clean_filename = substr($clean_filename, 0, 30); // ograniči dužinu
+    $new_filename = date('Ymd_His') . '_' . $clean_filename . '.' . $file_ext;
     $file_path = $upload_dir . $new_filename;
     
     if (move_uploaded_file($file['tmp_name'], $file_path)) {
-        // Spašavanje u bazu
+        // Spašavanje u bazu - relativna putanja
+        $relative_path = 'uploads/nalazi/' . $folder_name . '/' . $new_filename;
+        
         $stmt = $pdo->prepare("
             INSERT INTO nalazi (pacijent_id, naziv, opis, file_path, dodao_id, datum_upload) 
             VALUES (?, ?, ?, ?, ?, NOW())
@@ -96,7 +109,7 @@ function handleUpload($pdo, $karton, $user) {
             $karton['pacijent_id'],
             $naziv,
             $opis,
-            'uploads/nalazi/' . $new_filename,
+            $relative_path,
             $user['id']
         ]);
         
