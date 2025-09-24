@@ -248,7 +248,7 @@ try {
         $dashboard_data['termini_ova_sedmica'] = $stmt->fetchColumn();
         
     } elseif ($user['uloga'] === 'pacijent') {
-        // Pacijent podaci - moji termini, moj karton
+        // Pacijent podaci - moji termini, moj karton, moji nalazi
         $stmt = $pdo->prepare("
             SELECT t.*, 
                    CONCAT(te.ime, ' ', te.prezime) as terapeut_ime,
@@ -265,13 +265,52 @@ try {
         $stmt->execute([$user['id']]);
         $dashboard_data['predstojeci_termini'] = $stmt->fetchAll();
         
-        $stmt = $pdo->prepare("SELECT * FROM kartoni WHERE pacijent_id = ? ORDER BY datum_kreiranja DESC LIMIT 1");
+        // Moj aktivan karton
+        $stmt = $pdo->prepare("SELECT * FROM kartoni WHERE pacijent_id = ? ORDER BY datum_otvaranja DESC LIMIT 1");
         $stmt->execute([$user['id']]);
         $dashboard_data['aktivan_karton'] = $stmt->fetch();
         
+        // Poslednji tretmani
+        $stmt = $pdo->prepare("
+            SELECT t.*, 
+                   CONCAT(ter.ime, ' ', ter.prezime) as terapeut_ime
+            FROM tretmani t
+            LEFT JOIN users ter ON t.terapeut_id = ter.id
+            WHERE EXISTS (
+                SELECT 1 FROM kartoni k 
+                WHERE k.id = t.karton_id AND k.pacijent_id = ?
+            )
+            ORDER BY t.datum DESC
+            LIMIT 3
+        ");
+        $stmt->execute([$user['id']]);
+        $dashboard_data['poslednji_tretmani'] = $stmt->fetchAll();
+        
+        // Moji nalazi
+        $stmt = $pdo->prepare("
+            SELECT n.*, 
+                   CONCAT(d.ime, ' ', d.prezime) as dodao_ime
+            FROM nalazi n
+            LEFT JOIN users d ON n.dodao_id = d.id
+            WHERE n.pacijent_id = ?
+            ORDER BY n.datum_upload DESC
+            LIMIT 3
+        ");
+        $stmt->execute([$user['id']]);
+        $dashboard_data['moji_nalazi'] = $stmt->fetchAll();
+        
+        // Statistike
         $stmt = $pdo->prepare("SELECT COUNT(*) FROM termini WHERE pacijent_id = ? AND status = 'obavljen'");
         $stmt->execute([$user['id']]);
         $dashboard_data['ukupno_tretmana'] = $stmt->fetchColumn();
+        
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM termini WHERE pacijent_id = ? AND datum_vrijeme >= CURDATE()");
+        $stmt->execute([$user['id']]);
+        $dashboard_data['predstojeci_termini_broj'] = $stmt->fetchColumn();
+        
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM nalazi WHERE pacijent_id = ?");
+        $stmt->execute([$user['id']]);
+        $dashboard_data['broj_nalaza'] = $stmt->fetchColumn();
     }
     
 } catch (PDOException $e) {

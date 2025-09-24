@@ -2745,3 +2745,541 @@ margin-bottom:20px;
         align-self: flex-start;
     }
 }
+
+
+
+/* PACIJENT DASHBOARD STILOVI */
+.pacijent-dashboard {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.pacijent-header {
+    margin-bottom: 30px;
+    text-align: center;
+    padding: 30px 20px;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 12px;
+}
+
+.pacijent-header h2 {
+    color: #2c3e50;
+    margin: 0 0 10px 0;
+    font-size: 2.2rem;
+    font-weight: 600;
+}
+
+.pacijent-header p {
+    color: #7f8c8d;
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+/* Pacijent statistike */
+.pacijent-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.pacijent-stat-card {
+    border-radius: 12px;
+    padding: 0;
+    color: white;
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.pacijent-stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.pacijent-stat-blue {
+    background: linear-gradient(135deg, #74b9ff, #0984e3);
+}
+
+.pacijent-stat-green {
+    background: linear-gradient(135deg, #00b894, #00cec9);
+}
+
+.pacijent-stat-purple {
+    background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+}
+
+.pacijent-stat-content {
+    padding: 25px;
+    position: relative;
+    z-index: 2;
+}
+
+.pacijent-stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    line-height: 1;
+}
+
+.pacijent-stat-label {
+    font-size: 1rem;
+    opacity: 0.9;
+    font-weight: 500;
+}
+
+.pacijent-stat-icon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 2rem;
+    opacity: 0.3;
+}
+
+/* Pacijent akcije */
+.pacijent-action-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.pacijent-action-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    text-align: center;
+    border-top: 4px solid #74b9ff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.pacijent-action-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+}
+
+.pacijent-action-card h3 {
+    margin: 0 0 10px 0;
+    color: #2c3e50;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.pacijent-action-card p {
+    color: #7f8c8d;
+    margin: 0 0 20px 0;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+/* Pacijent dugmad */
+.pacijent-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.pacijent-btn-sm {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+}
+
+.pacijent-btn-primary {
+    background: #74b9ff;
+    color: white;
+}
+
+.pacijent-btn-primary:hover {
+    background: #0984e3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(116, 185, 255, 0.3);
+}
+
+.pacijent-btn-success {
+    background: #00b894;
+    color: white;
+}
+
+.pacijent-btn-success:hover {
+    background: #00cec9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 184, 148, 0.3);
+}
+
+.pacijent-btn-info {
+    background: #fd79a8;
+    color: white;
+}
+
+.pacijent-btn-info:hover {
+    background: #e84393;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(253, 121, 168, 0.3);
+}
+
+.pacijent-btn-outline {
+    background: transparent;
+    color: #74b9ff;
+    border-color: #74b9ff;
+}
+
+.pacijent-btn-outline:hover {
+    background: #74b9ff;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.pacijent-btn-disabled {
+    background: #ddd;
+    color: #999;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: not-allowed;
+}
+
+/* Glavni sadržaj */
+.pacijent-main-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 25px;
+    margin-bottom: 30px;
+}
+
+.pacijent-content-section {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    overflow: hidden;
+}
+
+.pacijent-section-header {
+    background: #f8f9fa;
+    padding: 20px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.pacijent-section-header h3 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.pacijent-section-content {
+    padding: 20px;
+}
+
+.pacijent-empty-state {
+    text-align: center;
+    color: #7f8c8d;
+    padding: 60px 20px;
+}
+
+.pacijent-empty-state i {
+    font-size: 4em;
+    margin-bottom: 20px;
+    opacity: 0.2;
+    color: #74b9ff;
+}
+
+.pacijent-empty-state p {
+    margin: 0 0 5px 0;
+    font-size: 1.1rem;
+}
+
+/* Timeline termina */
+.pacijent-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.pacijent-timeline-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 20px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(116, 185, 255, 0.05), rgba(9, 132, 227, 0.02));
+    border: 1px solid rgba(116, 185, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.pacijent-timeline-item:hover {
+    background: linear-gradient(135deg, rgba(116, 185, 255, 0.08), rgba(9, 132, 227, 0.04));
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(116, 185, 255, 0.15);
+}
+
+.pacijent-timeline-date {
+    background: #74b9ff;
+    color: white;
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+    min-width: 60px;
+}
+
+.pacijent-date-day {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.pacijent-date-month {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    margin-top: 2px;
+}
+
+.pacijent-timeline-content {
+    flex: 1;
+}
+
+.pacijent-timeline-time {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.pacijent-timeline-service {
+    font-size: 1.1rem;
+    color: #74b9ff;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.pacijent-timeline-therapist {
+    color: #7f8c8d;
+    margin-bottom: 8px;
+}
+
+.pacijent-status-badge {
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 0.8em;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.pacijent-status-badge.pacijent-status-zakazan {
+    background: rgba(116, 185, 255, 0.2);
+    color: #0984e3;
+}
+
+/* Sidebar */
+.pacijent-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.pacijent-info-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    overflow: hidden;
+}
+
+.pacijent-info-header {
+    background: #f8f9fa;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.pacijent-info-header h4 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.pacijent-info-content {
+    padding: 15px 20px;
+}
+
+.pacijent-info-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+}
+
+.pacijent-info-item label {
+    color: #7f8c8d;
+    font-weight: 500;
+}
+
+.pacijent-info-item span {
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.pacijent-info-footer {
+    padding: 15px 20px;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+    text-align: center;
+}
+
+/* Treatment items */
+.pacijent-treatment-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.9rem;
+}
+
+.pacijent-treatment-item:last-child {
+    border-bottom: none;
+}
+
+.pacijent-treatment-date {
+    color: #74b9ff;
+    font-weight: 600;
+}
+
+.pacijent-treatment-therapist {
+    color: #7f8c8d;
+    font-size: 0.85rem;
+    margin-top: 2px;
+}
+
+/* Finding items */
+.pacijent-finding-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.pacijent-finding-item:last-child {
+    border-bottom: none;
+}
+
+.pacijent-finding-name {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 0.9rem;
+    margin-bottom: 2px;
+}
+
+.pacijent-finding-date {
+    color: #7f8c8d;
+    font-size: 0.8rem;
+    margin-bottom: 4px;
+}
+
+.pacijent-finding-link a {
+    color: #74b9ff;
+    text-decoration: none;
+    font-size: 0.8rem;
+}
+
+.pacijent-finding-link a:hover {
+    color: #0984e3;
+}
+
+/* Kontakt sekcija */
+.pacijent-contact-section {
+    background: linear-gradient(135deg, #74b9ff, #0984e3);
+    border-radius: 12px;
+    padding: 30px;
+    color: white;
+}
+
+.pacijent-contact-card h3 {
+    margin: 0 0 20px 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.pacijent-contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.pacijent-contact-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+}
+
+.pacijent-contact-item i {
+    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.8);
+    width: 30px;
+    text-align: center;
+}
+
+.pacijent-contact-item div strong {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.pacijent-contact-item div span {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .pacijent-stats-grid,
+    .pacijent-action-cards {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .pacijent-main-content {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .pacijent-header {
+        padding: 20px 15px;
+    }
+    
+    .pacijent-header h2 {
+        font-size: 1.8rem;
+    }
+    
+    .pacijent-header p {
+        font-size: 1rem;
+    }
+    
+    .pacijent-timeline-item {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .pacijent-timeline-date {
+        align-self: center;
+    }
+    
+    .pacijent-contact-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .pacijent-contact-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+}
