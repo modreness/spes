@@ -6,8 +6,7 @@ $korisnik = current_user();
 
 // Dozvola: samo admin i recepcioner mogu uređivati karton
 if (!in_array($korisnik['uloga'], ['admin', 'recepcioner'])) {
-    http_response_code(403);
-    echo "Nemate ovlasti za ovu akciju.";
+    require __DIR__ . '/../views/errors/403.php';
     exit;
 }
 
