@@ -13,34 +13,7 @@ if (!in_array($user['uloga'], ['admin', 'recepcioner', 'terapeut'])) {
 
 $pdo = db();
 
-// Definiraj funkcije koje postojeći pregled.php očekuje
-function dani() {
-    return [
-        'ponedeljak' => 'Ponedeljak',
-        'utorak' => 'Utorak', 
-        'sreda' => 'Sreda',
-        'cetvrtak' => 'Četvrtak',
-        'petak' => 'Petak',
-        'subota' => 'Subota',
-        'nedelja' => 'Nedelja'
-    ];
-}
-
-function smjene() {
-    return [
-        'jutro' => 'Jutro',
-        'popodne' => 'Popodne',
-        'vecer' => 'Veče'
-    ];
-}
-
-function smjene_sa_vremenima() {
-    return [
-        'jutro' => 'Jutro (07:00-15:00)',
-        'popodne' => 'Popodne (15:00-23:00)', 
-        'vecer' => 'Veče (23:00-07:00)'
-    ];
-}
+// Funkcije dani() i smjene() su već u utils.php kroz load.php
 
 // Filter datum - defaultno ova sedmica
 $datum_od = $_GET['filter_datum_od'] ?? date('Y-m-d', strtotime('monday this week'));
