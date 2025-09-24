@@ -9,23 +9,31 @@ if (!is_logged_in()) {
 
 $user = current_user();
 
-if (!in_array($user['uloga'], ['admin', 'recepcioner'])) {
+// Dodaj terapeuta u dozvoljene uloge
+if (!in_array($user['uloga'], ['admin', 'recepcioner', 'terapeut'])) {
     header('Location: /dashboard');
     exit;
 }
 
 // Dohvati statistike
 try {
-    $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE uloga = 'terapeut' AND aktivan = 1");
-    $stmt->execute();
-    $broj_terapeuta = $stmt->fetchColumn();
-    
-    $datum_od = date('Y-m-d', strtotime('monday this week'));
-    $datum_do = date('Y-m-d', strtotime('sunday this week'));
-    
-    $stmt = $pdo->prepare("SELECT COUNT(DISTINCT terapeut_id) FROM rasporedi_sedmicni WHERE datum_od >= ? AND datum_do <= ?");
-    $stmt->execute([$datum_od, $datum_do]);
-    $rasporedeni_terapeuti = $stmt->fetchColumn();
+    if ($user['uloga'] === 'terapeut') {
+        // Za terapeuta - samo osnovne brojke
+        $broj_terapeuta = 1; // On sam
+        $rasporedeni_terapeuti = 1;
+    } else {
+        // Za admin/recepcioner - sve kao i pre
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE uloga = 'terapeut' AND aktivan = 1");
+        $stmt->execute();
+        $broj_terapeuta = $stmt->fetchColumn();
+        
+        $datum_od = date('Y-m-d', strtotime('monday this week'));
+        $datum_do = date('Y-m-d', strtotime('sunday this week'));
+        
+        $stmt = $pdo->prepare("SELECT COUNT(DISTINCT terapeut_id) FROM rasporedi_sedmicni WHERE datum_od >= ? AND datum_do <= ?");
+        $stmt->execute([$datum_od, $datum_do]);
+        $rasporedeni_terapeuti = $stmt->fetchColumn();
+    }
     
 } catch (PDOException $e) {
     error_log("Greška pri dohvaćanju statistika: " . $e->getMessage());
