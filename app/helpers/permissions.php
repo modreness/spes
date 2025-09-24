@@ -143,7 +143,7 @@ function canAccessRoute($user, $route) {
 }
 
 /**
- * Middleware funkcija za proveru dozvola
+ * Middleware funkcija za proveru dozvola sa lepom error stranicom
  * Koristi se na vrhu kontrolera
  */
 function requirePermission($permission_name) {
@@ -155,6 +155,29 @@ function requirePermission($permission_name) {
     $user = current_user();
     if (!hasPermission($user, $permission_name)) {
         http_response_code(403);
-        die("Nemate dozvolu za pristup ovoj stranici.");
+        
+        // Proslijedi podatke za error stranicu
+        $required_permission = $permission_name;
+        
+        // Prikaži lepu error stranicu
+        require __DIR__ . '/../views/errors/403.php';
+        exit;
     }
+}
+
+/**
+ * Kratka funkcija za brzu proveru sa redirect-om
+ */
+function denyAccessWithMessage($message = null, $permission_name = null) {
+    if (!is_logged_in()) {
+        header('Location: /login');
+        exit;
+    }
+    
+    $user = current_user();
+    $required_permission = $permission_name;
+    
+    http_response_code(403);
+    require __DIR__ . '/../views/errors/403.php';
+    exit;
 }
