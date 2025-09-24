@@ -46,25 +46,12 @@ try {
     $rasporedi->execute($params);
     $data = $rasporedi->fetchAll(PDO::FETCH_ASSOC);
 
-    // Organizuj po danima i smjenama - prilagodi postojeći kod
+    // Organizuj po danima i smjenama - koristi postojeću logiku
     $raspored_po_danu = [];
-    
-    // Inicijalizuj sve dane i smene
-    foreach (array_keys(dani()) as $dan_key) {
-        foreach (array_keys(smjene()) as $smjena_key) {
-            $raspored_po_danu[$dan_key][$smjena_key] = [];
-        }
-    }
-    
-    // Popuni podatke
     foreach ($data as $r) {
-        // Pretpostavljam da u bazi imaš kolone kao 'ponedeljak', 'utorak', etc.
-        // i da označavaju da li terapeut radi taj dan
-        foreach (array_keys(dani()) as $dan_key) {
-            if (isset($r[$dan_key]) && $r[$dan_key] && $r['aktivan']) {
-                $raspored_po_danu[$dan_key][$r['smjena']][] = $r['terapeut_ime'];
-            }
-        }
+        $dan = $r['dan'];
+        $smjena = $r['smjena'];
+        $raspored_po_danu[$dan][$smjena][] = $r['terapeut_ime'];
     }
     
 } catch (PDOException $e) {
