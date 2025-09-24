@@ -186,6 +186,9 @@ elseif ($uri === '/izvjestaji/medicinski') {
 elseif ($uri === '/kartoni/nalazi') {
     require_once __DIR__ . '/../app/controllers/KartoniNalaziController.php';
 }
+elseif ($uri === '/admin/dozvole') {
+    require_once __DIR__ . '/../app/controllers/AdminPermissionsController.php';
+}
 /*
 else {
     http_response_code(404);
