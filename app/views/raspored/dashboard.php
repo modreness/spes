@@ -6,9 +6,28 @@
 </div>
 
 <?php if (isset($_GET['msg']) && $_GET['msg'] === 'dodan'): ?>
-    <div class="alert alert-success">Raspored je uspješno dodan.</div>
+    <div class="alert alert-success">
+        Raspored je uspješno dodan. 
+        <?php if (isset($_GET['dodano'])): ?>
+            Dodano: <?= (int)$_GET['dodano'] ?> rasporeda.
+        <?php endif; ?>
+    </div>
+<?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'dodano_delimicno'): ?>
+    <div class="alert alert-success">
+        <strong>Raspored je djelomično dodan.</strong><br>
+        ✅ Uspešno dodano: <?= (int)($_GET['dodano'] ?? 0) ?> rasporeda<br>
+        ⚠️ Preskočeno (već postoji): <?= (int)($_GET['preskoceno'] ?? 0) ?> rasporeda
+    </div>
+<?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'duplikat'): ?>
+    <div class="alert-warning">
+        <strong>Nijedan raspored nije dodan.</strong><br>
+        Svi odabrani rasporedi već postoje u sistemu.
+        <br><small>Preskočeno: <?= (int)($_GET['preskoceno'] ?? 0) ?> duplikata</small>
+    </div>
+<?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'nista'): ?>
+    <div class="alert-warning">Nijedan raspored nije odabran za dodavanje.</div>
 <?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'greska'): ?>
-    <div class="alert alert-warning">Greška pri dodavanju rasporeda.</div>
+    <div class="greska">Greška pri dodavanju rasporeda.</div>
 <?php endif; ?>
 
 <div class="main-content">
