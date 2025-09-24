@@ -6,6 +6,7 @@
         <div>
         <a href="/kartoni/uredi?id=<?= $karton['id'] ?>" class="btn btn-edit">Uredi podatke</a>
         <a href="/kartoni/tretmani?id=<?= $karton['id'] ?>" class="btn btn-sm btn-add">Tretmani pacijenta</a>
+        <a href="/kartoni/nalazi?id=<?= $karton['id'] ?>" class="btn btn-sm btn-add">Nalazi pacijenta</a>
         <a href="/kartoni/print-karton?id=<?= $karton['id'] ?>" class="btn btn-print" target="_blank"><i class="fa-solid fa-print"></i> Print/PDF</a>
         </div>
     </div>
