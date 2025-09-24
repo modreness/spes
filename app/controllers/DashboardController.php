@@ -97,6 +97,20 @@ try {
         $stmt->execute();
         $dashboard_data['nedavni_kartoni'] = $stmt->fetchAll();
         
+        // Poslednji uploadovani nalazi
+        $stmt = $pdo->prepare("
+            SELECT n.*, 
+                   CONCAT(p.ime, ' ', p.prezime) as pacijent_ime,
+                   CONCAT(d.ime, ' ', d.prezime) as dodao_ime
+            FROM nalazi n
+            JOIN users p ON n.pacijent_id = p.id
+            JOIN users d ON n.dodao_id = d.id
+            ORDER BY n.datum_upload DESC
+            LIMIT 5
+        ");
+        $stmt->execute();
+        $dashboard_data['poslednji_nalazi'] = $stmt->fetchAll();
+        
     } elseif ($user['uloga'] === 'recepcioner') {
         // Recepcioner podaci - pristup gotovo svim podacima kao admin
         $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE uloga = 'pacijent'");
@@ -140,33 +154,98 @@ try {
         $stmt->execute();
         $dashboard_data['nedavni_kartoni'] = $stmt->fetchAll();
         
+        // Poslednji uploadovani nalazi
+        $stmt = $pdo->prepare("
+            SELECT n.*, 
+                   CONCAT(p.ime, ' ', p.prezime) as pacijent_ime,
+                   CONCAT(d.ime, ' ', d.prezime) as dodao_ime
+            FROM nalazi n
+            JOIN users p ON n.pacijent_id = p.id
+            JOIN users d ON n.dodao_id = d.id
+            ORDER BY n.datum_upload DESC
+            LIMIT 5
+        ");
+        $stmt->execute();
+        $dashboard_data['poslednji_nalazi'] = $stmt->fetchAll();
+        
     } elseif ($user['uloga'] === 'terapeut') {
         // Terapeut podaci - moji termini, moji pacijenti
         $stmt = $pdo->prepare("
             SELECT t.*, 
                    CONCAT(p.ime, ' ', p.prezime) as pacijent_ime,
                    c.naziv as usluga,
-                   TIME(t.datum_vrijeme) as vrijeme
+                   TIME(t.datum_vrijeme) as vrijeme,
+                   DATE(t.datum_vrijeme) as datum,
+                   k.id as karton_id
             FROM termini t
             JOIN users p ON t.pacijent_id = p.id
             JOIN cjenovnik c ON t.usluga_id = c.id
+            LEFT JOIN kartoni k ON k.pacijent_id = t.pacijent_id
             WHERE t.terapeut_id = ? AND DATE(t.datum_vrijeme) = CURDATE()
             ORDER BY t.datum_vrijeme ASC
         ");
         $stmt->execute([$user['id']]);
         $dashboard_data['moji_termini_danas'] = $stmt->fetchAll();
         
+        // Termini ove sedmice
+        $stmt = $pdo->prepare("
+            SELECT t.*, 
+                   CONCAT(p.ime, ' ', p.prezime) as pacijent_ime,
+                   c.naziv as usluga,
+                   DATE(t.datum_vrijeme) as datum,
+                   TIME(t.datum_vrijeme) as vrijeme
+            FROM termini t
+            JOIN users p ON t.pacijent_id = p.id
+            JOIN cjenovnik c ON t.usluga_id = c.id
+            WHERE t.terapeut_id = ? 
+            AND YEARWEEK(t.datum_vrijeme, 1) = YEARWEEK(CURDATE(), 1)
+            AND t.status IN ('zakazan', 'obavljen')
+            ORDER BY t.datum_vrijeme ASC
+            LIMIT 10
+        ");
+        $stmt->execute([$user['id']]);
+        $dashboard_data['termini_sedmica'] = $stmt->fetchAll();
+        
+        // Moji pacijenti - oni sa kojima imam aktivne kartone
+        $stmt = $pdo->prepare("
+            SELECT DISTINCT k.*, 
+                   CONCAT(p.ime, ' ', p.prezime) as pacijent_ime,
+                   p.id as pacijent_id,
+                   COUNT(tr.id) as broj_tretmana,
+                   MAX(tr.datum) as poslednji_tretman
+            FROM kartoni k
+            JOIN users p ON k.pacijent_id = p.id
+            LEFT JOIN tretmani tr ON tr.karton_id = k.id AND tr.terapeut_id = ?
+            WHERE EXISTS (
+                SELECT 1 FROM termini t 
+                WHERE t.pacijent_id = p.id AND t.terapeut_id = ?
+            )
+            GROUP BY k.id, p.id
+            ORDER BY MAX(tr.datum) DESC, k.datum_otvaranja DESC
+            LIMIT 8
+        ");
+        $stmt->execute([$user['id'], $user['id']]);
+        $dashboard_data['moji_pacijenti'] = $stmt->fetchAll();
+        
+        // Statistike
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM termini WHERE terapeut_id = ? AND DATE(datum_vrijeme) = CURDATE()");
+        $stmt->execute([$user['id']]);
+        $dashboard_data['broj_termina_danas'] = $stmt->fetchColumn();
+        
         $stmt = $pdo->prepare("
             SELECT COUNT(DISTINCT k.pacijent_id) 
             FROM kartoni k 
-            WHERE k.terapeut_id = ?
+            WHERE EXISTS (
+                SELECT 1 FROM termini t 
+                WHERE t.pacijent_id = k.pacijent_id AND t.terapeut_id = ?
+            )
         ");
         $stmt->execute([$user['id']]);
         $dashboard_data['broj_mojih_pacijenata'] = $stmt->fetchColumn();
         
-        $stmt = $pdo->prepare("SELECT COUNT(*) FROM termini WHERE terapeut_id = ? AND DATE(datum_vrijeme) = CURDATE()");
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM termini WHERE terapeut_id = ? AND YEARWEEK(datum_vrijeme, 1) = YEARWEEK(CURDATE(), 1)");
         $stmt->execute([$user['id']]);
-        $dashboard_data['broj_termina_danas'] = $stmt->fetchColumn();
+        $dashboard_data['termini_ova_sedmica'] = $stmt->fetchColumn();
         
     } elseif ($user['uloga'] === 'pacijent') {
         // Pacijent podaci - moji termini, moj karton
