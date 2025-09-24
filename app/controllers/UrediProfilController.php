@@ -12,8 +12,7 @@ $id = $_POST['id'] ?? $_GET['id'] ?? $logovani['id'];
 
 // Ako pokušava uređivati drugog bez ovlasti
 if ($id != $logovani['id'] && !in_array($logovani['uloga'], ['admin', 'recepcioner'])) {
-    http_response_code(403);
-    echo "Nemate ovlasti za uređivanje ovog profila.";
+    require __DIR__ . '/../views/errors/403.php';
     exit;
 }
 
