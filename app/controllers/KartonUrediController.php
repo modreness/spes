@@ -6,7 +6,7 @@ $korisnik = current_user();
 
 if (!in_array($korisnik['uloga'], ['admin', 'recepcioner'])) {
     http_response_code(403);
-    echo "Nemate pristup ovoj stranici.";
+    require __DIR__ . '/../views/errors/403.php';
     exit;
 }
 
