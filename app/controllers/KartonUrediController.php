@@ -6,6 +6,7 @@ $korisnik = current_user();
 
 if (!in_array($korisnik['uloga'], ['admin', 'recepcioner'])) {
     http_response_code(403);
+    $user = $korisnik; // Dodaj ovu liniju
     require __DIR__ . '/../views/errors/403.php';
     exit;
 }
