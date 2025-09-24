@@ -25,7 +25,7 @@
     <p><strong>JMBG:</strong> <?= htmlspecialchars($karton['jmbg'] ?? '') ?></p>
   </div>
 
-  <?php if (in_array($user['uloga'], ['admin', 'recepcioner'])): ?>
+  <?php if (hasPermission($user, 'upload_nalazi')): ?>
     <button class="btn btn-sm btn-add btn-no-margin"
       onclick="otvoriModalNalaz(<?= $karton['pacijent_id'] ?>, '<?= htmlspecialchars($karton['ime'] . ' ' . $karton['prezime']) ?>', '<?= htmlspecialchars($karton['broj_upisa']) ?>')">
       <i class="fa-solid fa-upload"></i> Upload nalaz
