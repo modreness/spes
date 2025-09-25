@@ -3,6 +3,20 @@
     <a href="/raspored" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Povratak</a>
 </div>
 
+<?php
+// Prikaži poruke SAMO za greške na dodaj.php (uspješni odlaze na dashboard)
+if (isset($_GET['msg'])):
+    switch ($_GET['msg']):
+        case 'greska':
+            echo '<div class="alert alert-warning">
+                    <i class="fa-solid fa-times-circle"></i>
+                    <strong>Greška!</strong> Došlo je do greške pri dodavanju rasporeda. Pokušajte ponovo.
+                  </div>';
+            break;
+    endswitch;
+endif;
+?>
+
 <div class="main-content">
     <form action="/raspored/dodaj" method="post" class="rasporedi-table">
         <table class="table-standard">
