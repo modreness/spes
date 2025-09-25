@@ -69,9 +69,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['terapeut_id']) && iss
 
             // Ubaci u bazu - KORISTI DATUM POČETKA SEDMICE
             $stmt = $pdo->prepare("INSERT INTO rasporedi_sedmicni 
-                (terapeut_id, datum_od, datum_do, dan, smjena, pocetak, kraj, unosio_id, datum_unosa, aktivan)
+                (terapeut_id, datum_od, datum_do, dan, smjena, pocetak, kraj, unosio_id, datum_unosa)
                 VALUES 
-                (:terapeut_id, :datum_od, :datum_do, :dan, :smjena, :pocetak, :kraj, :unosio_id, :datum_unosa, 1)");
+                (:terapeut_id, :datum_od, :datum_do, :dan, :smjena, :pocetak, :kraj, :unosio_id, :datum_unosa)");
 
             $stmt->execute([
                 'terapeut_id' => $terapeut_id,
