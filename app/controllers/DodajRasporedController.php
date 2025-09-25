@@ -48,13 +48,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['terapeut_id']) && iss
             // PROVERI DA LI VEĆ POSTOJI - sprečavanje duplikata
             $check_stmt = $pdo->prepare("
                 SELECT COUNT(*) FROM rasporedi_sedmicni 
-                WHERE terapeut_id = ? AND datum_od = ? AND dan = ? AND smjena = ?
+                WHERE terapeut_id = ? AND datum_od = ?
             ");
-            $check_stmt->execute([$terapeut_id, $datum_dan, $dan_key, $smjena]);
-            
+            $check_stmt->execute([$terapeut_id, $datum_dan]);
+
             if ($check_stmt->fetchColumn() > 0) {
                 $preskoceno++;
-                $greske[] = "Terapeut već ima raspored za " . ucfirst($dan_key) . " (" . ucfirst($smjena) . ")";
+                $greske[] = "Terapeut već ima raspored za " . date('d.m.Y', strtotime($datum_dan)) . " (" . dani()[$dan_key] . ")";
                 continue; // Preskoči ako već postoji
             }
 
