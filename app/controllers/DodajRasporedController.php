@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['terapeut_id']) && iss
         // Započni transakciju
         $pdo->beginTransaction();
 
-        // Loop kroz raspored po danima
+// Loop kroz raspored po danima
         foreach ($_POST['raspored'] as $dan_key => $podatak) {
 
             $smjena = $podatak['smjena'];
@@ -41,24 +41,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['terapeut_id']) && iss
                 continue;
             }
 
-            // Izračunaj datum za dan
+            // Izračunaj datum za dan - ISPRAVKA!
             $dan_offset = array_search($dan_key, array_keys(dani()));
             $datum_dan = date('Y-m-d', strtotime("+$dan_offset days", $start_date));
 
-            // PROVERI DA LI VEĆ POSTOJI - sprečavanje duplikata
+            // NOVA LOGIKA - proveri duplikate po terapeut + datum dana
             $check_stmt = $pdo->prepare("
                 SELECT COUNT(*) FROM rasporedi_sedmicni 
-                WHERE terapeut_id = ? AND datum_od = ?
+                WHERE terapeut_id = ? 
+                AND DATE_ADD(datum_od, INTERVAL CASE dan 
+                    WHEN 'pon' THEN 0 
+                    WHEN 'uto' THEN 1 
+                    WHEN 'sri' THEN 2 
+                    WHEN 'cet' THEN 3 
+                    WHEN 'pet' THEN 4 
+                    WHEN 'sub' THEN 5 
+                    WHEN 'ned' THEN 6 
+                END DAY) = ?
             ");
             $check_stmt->execute([$terapeut_id, $datum_dan]);
-
+            
             if ($check_stmt->fetchColumn() > 0) {
                 $preskoceno++;
                 $greske[] = "Terapeut već ima raspored za " . date('d.m.Y', strtotime($datum_dan)) . " (" . dani()[$dan_key] . ")";
                 continue; // Preskoči ako već postoji
             }
 
-            // Ubaci u bazu samo ako ne postoji
+            // Ubaci u bazu - KORISTI DATUM POČETKA SEDMICE
             $stmt = $pdo->prepare("INSERT INTO rasporedi_sedmicni 
                 (terapeut_id, datum_od, datum_do, dan, smjena, pocetak, kraj, unosio_id, datum_unosa, aktivan)
                 VALUES 
@@ -66,8 +75,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['terapeut_id']) && iss
 
             $stmt->execute([
                 'terapeut_id' => $terapeut_id,
-                'datum_od'    => $datum_dan,
-                'datum_do'    => $datum_dan,
+                'datum_od'    => $datum_od,  // DATUM POČETKA SEDMICE!
+                'datum_do'    => date('Y-m-d', strtotime('sunday', $start_date)),
                 'dan'         => $dan_key,
                 'smjena'      => $smjena,
                 'pocetak'     => null,
