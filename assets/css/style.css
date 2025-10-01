@@ -239,3 +239,96 @@ form {
     transition: background 0.3s ease;
     font-family:Montserrat;
 }
+
+
+
+/* TABLET */
+@media (max-width: 768px) {
+    .login-container {
+        max-width: 90%;
+        padding: 15px;
+    }
+    
+    .logo {
+        width: 100px;
+    }
+    
+    .not-found h1 {
+        font-size: 48px;
+    }
+}
+
+/* MOBILE */
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+    
+    .login-container {
+        max-width: 100%;
+        padding: 10px;
+    }
+    
+    .logo {
+        width: 80px;
+        margin-bottom: 15px;
+    }
+    
+    .subtitle {
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+    
+    .form-group input,
+    .icon-input input {
+        padding: 10px;
+        font-size: 13px;
+    }
+
+    /* dodatak za ikonicu */
+    .icon-input input {
+        padding-left: 42px;
+    }
+    
+    .login-button {
+        padding: 10px 30px;
+        font-size: 14px;
+        margin-top: 15px;
+    }
+    
+    .form-links {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .lost-password h2 {
+        font-size: 20px;
+    }
+    
+    .lost-password p {
+        font-size: 14px;
+        padding: 12px;
+    }
+    
+    .not-found {
+        min-height: 400px;
+        padding: 20px;
+    }
+    
+    .not-found h1 {
+        font-size: 36px;
+    }
+    
+    .not-found p {
+        font-size: 16px;
+    }
+}
+
+/* GLOBAL DODACI ZA OPTIMIZACIJU */
+img, video, canvas, iframe {
+    max-width: 100%;
+    height: auto;
+}
+
+
+
