@@ -3284,4 +3284,229 @@ margin-bottom:20px;
     }
 }
 
-/*responsive css tst */
+
+/*RESPONSIVE CSS TST */
+
+/* tablet */
+@media (max-width: 768px) {
+
+  /* gl layout */
+  .dashboard { flex-direction: column; }
+
+  .sidebar {
+    width: 100%;
+    min-height: auto;
+    border-right: none;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 15px;
+  }
+
+  .main { padding: 20px 15px; }
+
+  /* topbar */
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 15px;
+  }
+
+  .topbar input[type="text"] { width: 100%; }
+
+  .topbar-nav{
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  /* cards */
+  .cards{
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+
+  /* layout */
+  .layout-grid{
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  /* main content */
+  .main-content{
+    width: 100%;
+    flex-direction: column;
+    padding: 20px 15px;
+  }
+
+  .left-content, .right-content {
+    width: 100%;
+    padding: 0 0 20px 0;
+  }
+
+  .main-content-fw{
+    width: 100%;
+    padding: 20px 15px;
+  }
+
+  /* rasporedi */
+  .rasporedi{ grid-template-columns: 1fr; }
+
+  /* tabele */
+  .table-standard{
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .table-standard table{ min-width: 600px; }
+
+  .rasporedi-table{
+    display: block;
+    overflow-x: auto;
+  }
+  .rasporedi-table table { min-width: 600px; }
+
+  /* card-blocks */
+  .card-block{
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 10px;
+  }
+  .card-block label,
+  .card-block p { width: 100%; }
+
+  .card-info,
+  .card-info-fw{ min-width: 100%; }
+
+  .card-block input,
+  .card-block textarea,
+  .card-block select { min-width: 100%; }
+
+  /* forme */
+  .main-content .form-group select { width: 100%; }
+
+  .password-wrapper{
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .lozinka-wrap,
+  .generator { width: 100%; }
+
+  /* buttons */
+  .bottom-foot{
+    flex-direction: column;
+    gap: 10px;
+  }
+  .submit-button,
+  .submit-button-grey { width: 100%; }
+
+  /* modal */
+  .modal{
+    max-width: 90%;
+    padding: 20px;
+  }
+}
+
+/* mobile - 480px */
+@media (max-width: 480px) {
+
+  /* sidebar */
+  .logo img { max-width: 60%; }
+
+  .menu-title{
+    font-size: 14px;
+    padding: 8px 0;
+  }
+
+  .sidebar-nav ul li a { font-size: 14px; }
+
+  /* topbar */
+  .topbar { padding: 12px; }
+  .topbar input[type="text"] {
+    padding: 8px;
+    font-size: 13px;
+  }
+
+  /* cards */
+  .cards{
+    grid-template-columns: 1fr;
+  }
+  .card {
+    padding: 15px;
+    font-size: 14px;
+  }
+
+  /* main */
+  .main { padding: 15px 10px; }
+
+  .main-content,
+  .main-content-fw {
+    padding: 15px 10px;
+  }
+
+  /* help box */
+  .help-box{
+    flex-direction: column;
+    padding: 15px;
+    gap: 15px;
+  }
+  .info-text h3 { font-size: 18px; }
+  .info-text p { font-size: 13px; }
+
+  /* forme */
+  .main-content .form-group label{ font-size: 13px; }
+  .main-content .form-group input,
+  .main-content .form-group textarea,
+  .main-content .form-group select {
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  /* card wrapper */
+  .card-wrapper { row-gap: 15px; }
+  .card-head{
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .card-head h3{ font-size: 16px; }
+
+  /* buttons */
+  .btn { padding: 8px 12px; font-size: 13px; }
+  .submit-button,
+  .submit-button-grey,
+  .btn-novo {
+    width: 100%;
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  /* main podaci */
+  .main-podaci{
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  /* modal */
+  .modal {
+    max-width: 95%;
+    padding: 15px;
+  }
+
+  /* tabele */
+  .table-standard th,
+  .table-standard td {
+    padding: 8px;
+    font-size: 13px;
+  }
+
+  /* notifikacije */
+  .notifikacija{
+    bottom: 10px;
+    right: 10px;
+    left: 10px;
+    font-size: 13px;
+  }
+}
+
