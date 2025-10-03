@@ -156,3 +156,21 @@
         </div>
     <?php endif; ?>
 </div>
+
+<!-- Potvrda modali -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Dodatno osiguraj potvrde
+    const deleteButtons = document.querySelectorAll('button[name="action"][value="obrisi"]');
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            const form = this.closest('form');
+            const confirmed = confirm('PAŽNJA: Ova akcija će trajno obrisati raspored!\\n\\nDa li ste apsolutno sigurni?');
+            if (!confirmed) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    });
+});
+</script>
