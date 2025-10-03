@@ -122,25 +122,20 @@
                             <td style="text-align: center;">
                                 <!-- Uredi -->
                                 <a href="/raspored/uredi-pojedinacni?id=<?= $r['id'] ?>" 
-                                   class="btn btn-primary btn-no-margin" 
+                                   class="btn btn-sm btn-edit" 
                                    style="padding: 6px 12px; font-size: 0.85em; margin-right: 5px;"
                                    title="Uredi raspored">
                                     <i class="fa-solid fa-edit"></i>
                                 </a>
                                 
                                 <!-- Obriši -->
-                                <form method="post" style="display: inline;" class="delete-form">
-                                    <input type="hidden" name="action" value="obrisi">
-                                    <input type="hidden" name="raspored_id" value="<?= $r['id'] ?>">
-                                    <input type="hidden" name="terapeut_ime" value="<?= htmlspecialchars($podaci['info']['ime']) ?>">
-                                    <input type="hidden" name="dan" value="<?= dani()[$r['dan']] ?>">
-                                    <input type="hidden" name="smjena" value="<?= ucfirst($r['smjena']) ?>">
-                                    <button type="submit" class="btn btn-danger btn-no-margin" 
-                                            style="padding: 6px 12px; font-size: 0.85em;"
-                                            title="Obriši raspored">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>
-                                </form>
+                                <button type="button" 
+                                        class="btn btn-danger btn-no-margin" 
+                                        style="padding: 6px 12px; font-size: 0.85em;"
+                                        title="Obriši raspored"
+                                        onclick="otvoriModalBrisanja(<?= $r['id'] ?>, '<?= htmlspecialchars($podaci['info']['ime'], ENT_QUOTES) ?>', '<?= dani()[$r['dan']] ?>', '<?= ucfirst($r['smjena']) ?>')">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
                             </td>
                         </tr>
                         <?php endforeach; ?>
@@ -159,29 +154,56 @@
     <?php endif; ?>
 </div>
 
-<!-- JavaScript za potvrdu brisanja -->
+<!-- Modal za potvrdu brisanja -->
+<div id="modal-overlay" class="modal-overlay"></div>
+<div id="brisanje-modal" class="modal">
+  <div class="modal-content">
+    <h3 style="margin-top: 0; color: #e74c3c;">
+        <i class="fa-solid fa-exclamation-triangle"></i> Potvrda brisanja
+    </h3>
+    <p id="modal-poruka">Jeste li sigurni da želite obrisati ovaj raspored?</p>
+    <div id="modal-detalji" style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin: 15px 0; text-align: left;">
+        <!-- Detalji će biti ubačeni JavaScript-om -->
+    </div>
+    <form method="post" action="" id="forma-brisanja">
+      <input type="hidden" name="action" value="obrisi">
+      <input type="hidden" name="raspored_id" id="id-brisanja">
+      <div style="text-align: center; margin-top: 20px;">
+        <button type="button" class="btn btn-secondary" onclick="zatvoriModal()">Otkaži</button>
+        <button type="submit" class="btn btn-danger">
+            <i class="fa-solid fa-trash"></i> Da, obriši
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- JavaScript -->
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Potvrda za brisanje
-    const deleteForms = document.querySelectorAll('.delete-form');
-    deleteForms.forEach(form => {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const terapeut = this.querySelector('input[name="terapeut_ime"]').value;
-            const dan = this.querySelector('input[name="dan"]').value;
-            const smjena = this.querySelector('input[name="smjena"]').value;
-            
-            const confirmMsg = `Da li ste sigurni da želite obrisati ovaj raspored?\n\n` +
-                             `Terapeut: ${terapeut}\n` +
-                             `Dan: ${dan}\n` +
-                             `Smjena: ${smjena}\n\n` +
-                             `Ova akcija se ne može poništiti!`;
-            
-            if (confirm(confirmMsg)) {
-                this.submit();
-            }
-        });
-    });
-});
+function otvoriModalBrisanja(rasporedId, terapeutIme, dan, smjena) {
+    // Postavi ID za brisanje
+    document.getElementById('id-brisanja').value = rasporedId;
+    
+    // Postavi detalje
+    const detalji = `
+        <div style="display: grid; grid-template-columns: 120px 1fr; gap: 10px; font-size: 0.95rem;">
+            <strong>Terapeut:</strong> <span>${terapeutIme}</span>
+            <strong>Dan:</strong> <span>${dan}</span>
+            <strong>Smjena:</strong> <span>${smjena}</span>
+        </div>
+    `;
+    document.getElementById('modal-detalji').innerHTML = detalji;
+    
+    // Prikaži modal
+    document.getElementById('modal-overlay').style.display = 'block';
+    document.getElementById('brisanje-modal').style.display = 'block';
+}
+
+function zatvoriModal() {
+    document.getElementById('modal-overlay').style.display = 'none';
+    document.getElementById('brisanje-modal').style.display = 'none';
+}
+
+// Zatvori modal kada se klikne na overlay
+document.getElementById('modal-overlay').addEventListener('click', zatvoriModal);
 </script>
