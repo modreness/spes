@@ -57,8 +57,8 @@ $user = current_user();
             </li>
 
           <li><a href="/kartoni/lista" class="<?= strpos($current_path, '/kartoni') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-folder-open"></i> Kartoni</a></li>
-          <li><a href="/pretraga" class="<?= $current_path === '/pretraga' ? 'active' : '' ?>"><i class="fa-solid fa-magnifying-glass"></i> Pretraga</a></li>
-          <li><a href="/izvjestaji" class="<?= $current_path === '/izvjestaji' ? 'active' : '' ?>"><i class="fa-solid fa-chart-line"></i> Izvještaji</a></li>
+          <li><a href="/pretraga" class="<?= strpos($current_path, '/pretraga') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-magnifying-glass"></i> Pretraga</a></li>
+          <li><a href="/izvjestaji" class="<?= strpos($current_path, '/izvjestaji') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-chart-line"></i> Izvještaji</a></li>
           <li><a href="/kategorije" class="<?= strpos($current_path, '/kategorije') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-tags"></i> Kategorije</a></li>
           <li><a href="/cjenovnik" class="<?= strpos($current_path, '/cjenovnik') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-dollar-sign"></i> Cjenovnik</a></li>
           <li><a href="/paketi" class="<?= strpos($current_path, '/paketi') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-box"></i> Paketi</a></li>
