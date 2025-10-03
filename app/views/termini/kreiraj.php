@@ -20,7 +20,7 @@
                 <select id="pacijent_id" name="pacijent_id" class="select2" required onchange="provjeriPakete()">
                     <option value="">Odaberite pacijenta</option>
                     <?php foreach ($pacijenti as $p): ?>
-                        <option value="<?= $p['id'] ?>" <?= ($_POST['pacijent_id'] ?? '') == $p['id'] ? 'selected' : '' ?>>
+                        <option value="<?= $p['id'] ?>" <?= ($odabrani_pacijent_id == $p['id']) ? 'selected' : '' ?>>
                             <?= htmlspecialchars($p['ime'] . ' ' . $p['prezime']) ?>
                         </option>
                     <?php endforeach; ?>
@@ -32,7 +32,7 @@
                 <select id="terapeut_id" name="terapeut_id" class="select2" required>
                     <option value="">Odaberite terapeuta</option>
                     <?php foreach ($terapeuti as $t): ?>
-                        <option value="<?= $t['id'] ?>" <?= ($_POST['terapeut_id'] ?? '') == $t['id'] ? 'selected' : '' ?>>
+                        <option value="<?= $t['id'] ?>" <?= ($odabrani_terapeut_id == $t['id']) ? 'selected' : '' ?>>
                             <?= htmlspecialchars($t['ime'] . ' ' . $t['prezime']) ?>
                         </option>
                     <?php endforeach; ?>
@@ -55,6 +55,7 @@
                             <input type="radio" 
                                    name="koristi_paket" 
                                    value="<?= $paket['id'] ?>" 
+                                   onchange="toggleUslugaPolje()"
                                    style="width: 20px; height: 20px;">
                             <div style="flex: 1;">
                                 <strong style="font-size: 1.1em;"><?= htmlspecialchars($paket['paket_naziv']) ?></strong>
@@ -74,6 +75,7 @@
                                name="koristi_paket" 
                                value="ne" 
                                checked 
+                               onchange="toggleUslugaPolje()"
                                style="width: 20px; height: 20px;">
                         <div style="flex: 1;">
                             <strong style="font-size: 1.1em;">Plati pojedinačno</strong>
@@ -89,9 +91,9 @@
             <input type="hidden" name="koristi_paket" value="ne">
         <?php endif; ?>
 
-        <div class="form-group">
+        <div class="form-group" id="usluga-polje">
             <label for="usluga_id">Usluga *</label>
-            <select id="usluga_id" name="usluga_id" class="select2" required>
+            <select id="usluga_id" name="usluga_id" class="select2">
                 <option value="">Odaberite uslugu</option>
                 <?php 
                 $trenutna_kategorija = '';
@@ -146,9 +148,43 @@
 // Proveri pakete kada se odabere pacijent
 function provjeriPakete() {
     const pacijentId = document.getElementById('pacijent_id').value;
+    const terapeutId = document.getElementById('terapeut_id').value;
+    
     if (pacijentId) {
-        // Reload stranicu sa pacijent_id u URL-u
-        window.location.href = '/termini/kreiraj?pacijent_id=' + pacijentId;
+        // Reload stranicu sa pacijent_id i terapeut_id u URL-u
+        let url = '/termini/kreiraj?pacijent_id=' + pacijentId;
+        if (terapeutId) {
+            url += '&terapeut_id=' + terapeutId;
+        }
+        window.location.href = url;
     }
 }
+
+// Prikaži/sakrij usluga polje
+function toggleUslugaPolje() {
+    const paketRadios = document.querySelectorAll('input[name="koristi_paket"]');
+    const uslugaPolje = document.getElementById('usluga-polje');
+    const uslugaSelect = document.getElementById('usluga_id');
+    
+    let koristiPaket = false;
+    paketRadios.forEach(radio => {
+        if (radio.checked && radio.value !== 'ne') {
+            koristiPaket = true;
+        }
+    });
+    
+    if (koristiPaket) {
+        uslugaPolje.style.display = 'none';
+        uslugaSelect.removeAttribute('required');
+        uslugaSelect.value = '';
+    } else {
+        uslugaPolje.style.display = 'block';
+        uslugaSelect.setAttribute('required', 'required');
+    }
+}
+
+// Pozovi na load
+document.addEventListener('DOMContentLoaded', function() {
+    toggleUslugaPolje();
+});
 </script>

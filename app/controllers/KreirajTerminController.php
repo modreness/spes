@@ -48,9 +48,10 @@ try {
 
 // Proveri da li pacijent ima aktivan paket
 $aktivni_paketi = [];
-if (isset($_POST['pacijent_id']) || isset($_GET['pacijent_id'])) {
-    $pacijent_id = $_POST['pacijent_id'] ?? $_GET['pacijent_id'];
-    
+$odabrani_pacijent_id = $_POST['pacijent_id'] ?? $_GET['pacijent_id'] ?? '';
+$odabrani_terapeut_id = $_POST['terapeut_id'] ?? $_GET['terapeut_id'] ?? '';
+
+if (!empty($odabrani_pacijent_id)) {
     try {
         $stmt = $pdo->prepare("
             SELECT 
@@ -64,7 +65,7 @@ if (isset($_POST['pacijent_id']) || isset($_GET['pacijent_id'])) {
             AND kp.iskoristeno_termina < kp.ukupno_termina
             ORDER BY kp.datum_kupovine DESC
         ");
-        $stmt->execute([$pacijent_id]);
+        $stmt->execute([$odabrani_pacijent_id]);
         $aktivni_paketi = $stmt->fetchAll();
     } catch (PDOException $e) {
         error_log("Greška pri dohvaćanju paketa: " . $e->getMessage());
@@ -89,8 +90,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Terapeut je obavezan.';
     }
     
-    if (empty($usluga_id)) {
-        $errors[] = 'Usluga je obavezna.';
+    // Usluga je obavezna samo ako se NE koristi paket
+    if (empty($koristi_paket) || $koristi_paket === 'ne') {
+        if (empty($usluga_id)) {
+            $errors[] = 'Usluga je obavezna.';
+        }
     }
     
     if (empty($datum)) {
