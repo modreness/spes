@@ -19,21 +19,21 @@ $errors = [];
 // Dohvati podatke za dropdowne
 try {
     // Pacijenti
-    $stmt = $pdo->prepare("SELECT id, ime, prezime FROM users WHERE uloga = 'pacijent' ORDER BY ime, prezime");
+    $stmt = $pdo->prepare("SELECT id, ime, prezime FROM users WHERE uloga = 'pacijent' AND aktivan = 1 ORDER BY ime, prezime");
     $stmt->execute();
     $pacijenti = $stmt->fetchAll();
     
     // Terapeuti
-    $stmt = $pdo->prepare("SELECT id, ime, prezime FROM users WHERE uloga = 'terapeut' ORDER BY ime, prezime");
+    $stmt = $pdo->prepare("SELECT id, ime, prezime FROM users WHERE uloga = 'terapeut' AND aktivan = 1 ORDER BY ime, prezime");
     $stmt->execute();
     $terapeuti = $stmt->fetchAll();
     
-    // Usluge sa kategorijama
+    // Usluge sa kategorijama - SAMO POJEDINAČNE za sada (pakete ne prikazuj u dropdown)
     $stmt = $pdo->prepare("
         SELECT c.*, k.naziv as kategorija_naziv 
         FROM cjenovnik c 
         LEFT JOIN kategorije_usluga k ON c.kategorija_id = k.id 
-        WHERE c.aktivan = 1 
+        WHERE c.aktivan = 1 AND c.tip_usluge = 'pojedinacna'
         ORDER BY k.naziv, c.naziv
     ");
     $stmt->execute();
@@ -46,6 +46,31 @@ try {
     $usluge = [];
 }
 
+// Proveri da li pacijent ima aktivan paket
+$aktivni_paketi = [];
+if (isset($_POST['pacijent_id']) || isset($_GET['pacijent_id'])) {
+    $pacijent_id = $_POST['pacijent_id'] ?? $_GET['pacijent_id'];
+    
+    try {
+        $stmt = $pdo->prepare("
+            SELECT 
+                kp.*,
+                c.naziv as paket_naziv,
+                c.cijena as paket_cijena
+            FROM kupljeni_paketi kp
+            JOIN cjenovnik c ON kp.usluga_id = c.id
+            WHERE kp.pacijent_id = ? 
+            AND kp.status = 'aktivan'
+            AND kp.iskoristeno_termina < kp.ukupno_termina
+            ORDER BY kp.datum_kupovine DESC
+        ");
+        $stmt->execute([$pacijent_id]);
+        $aktivni_paketi = $stmt->fetchAll();
+    } catch (PDOException $e) {
+        error_log("Greška pri dohvaćanju paketa: " . $e->getMessage());
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pacijent_id = $_POST['pacijent_id'] ?? '';
     $terapeut_id = $_POST['terapeut_id'] ?? '';
@@ -53,6 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $datum = $_POST['datum'] ?? '';
     $vrijeme = $_POST['vrijeme'] ?? '';
     $napomena = trim($_POST['napomena'] ?? '');
+    $koristi_paket = $_POST['koristi_paket'] ?? '';  // ID paketa ili 'ne'
     
     // Validacija
     if (empty($pacijent_id)) {
@@ -100,18 +126,64 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
     
+    // Ako koristi paket - proveri validnost
+    $paket_id = null;
+    if (!empty($koristi_paket) && $koristi_paket !== 'ne') {
+        $paket_id = (int)$koristi_paket;
+        
+        // Proveri da li paket postoji i ima slobodne termine
+        try {
+            $stmt = $pdo->prepare("
+                SELECT * FROM kupljeni_paketi 
+                WHERE id = ? 
+                AND pacijent_id = ? 
+                AND status = 'aktivan'
+                AND iskoristeno_termina < ukupno_termina
+            ");
+            $stmt->execute([$paket_id, $pacijent_id]);
+            $paket = $stmt->fetch();
+            
+            if (!$paket) {
+                $errors[] = 'Odabrani paket nije validan ili nema slobodnih termina.';
+                $paket_id = null;
+            }
+        } catch (PDOException $e) {
+            error_log("Greška: " . $e->getMessage());
+            $errors[] = 'Greška pri provjeri paketa.';
+        }
+    }
+    
     // Spremi termin
     if (empty($errors)) {
         try {
+            $pdo->beginTransaction();
+            
+            // 1. Kreiraj termin
             $stmt = $pdo->prepare("
                 INSERT INTO termini (pacijent_id, terapeut_id, usluga_id, datum_vrijeme, status, tip_zakazivanja, napomena) 
                 VALUES (?, ?, ?, ?, 'zakazan', 'recepcioner', ?)
             ");
             $stmt->execute([$pacijent_id, $terapeut_id, $usluga_id, $datum_vrijeme, $napomena]);
+            $termin_id = $pdo->lastInsertId();
+            
+            // 2. Ako se koristi paket - poveži termin sa paketom
+            if ($paket_id) {
+                $stmt = $pdo->prepare("
+                    INSERT INTO termini_iz_paketa (termin_id, paket_id) 
+                    VALUES (?, ?)
+                ");
+                $stmt->execute([$termin_id, $paket_id]);
+                
+                // Trigger će automatski povećati iskoristeno_termina
+            }
+            
+            $pdo->commit();
             
             header('Location: /termini?msg=kreiran');
             exit;
+            
         } catch (PDOException $e) {
+            $pdo->rollBack();
             error_log("Greška pri kreiranju termina: " . $e->getMessage());
             $errors[] = 'Greška pri spremanju termina.';
         }

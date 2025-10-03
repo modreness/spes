@@ -4,20 +4,20 @@
 </div>
 
 <?php if (!empty($errors)): ?>
-    <div class="alert alert-danger">
+    <div class="greska">
         <?php foreach ($errors as $error): ?>
-            <p><?= htmlspecialchars($error) ?></p>
+            <p><i class="fa-solid fa-times-circle"></i> <?= htmlspecialchars($error) ?></p>
         <?php endforeach; ?>
     </div>
 <?php endif; ?>
 
 <div class="main-content">
-    <form method="post" action="/termini/kreiraj">
+    <form method="post" action="/termini/kreiraj" id="termin-forma">
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
             
             <div class="form-group">
                 <label for="pacijent_id">Pacijent *</label>
-                <select id="pacijent_id" name="pacijent_id" class="select2" required>
+                <select id="pacijent_id" name="pacijent_id" class="select2" required onchange="provjeriPakete()">
                     <option value="">Odaberite pacijenta</option>
                     <?php foreach ($pacijenti as $p): ?>
                         <option value="<?= $p['id'] ?>" <?= ($_POST['pacijent_id'] ?? '') == $p['id'] ? 'selected' : '' ?>>
@@ -40,6 +40,54 @@
             </div>
 
         </div>
+
+        <!-- Prikaz aktivnih paketa pacijenta -->
+        <?php if (!empty($aktivni_paketi)): ?>
+        <div style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+            <h4 style="margin: 0 0 15px 0;">
+                <i class="fa-solid fa-box"></i> Pacijent ima aktivne pakete
+            </h4>
+            <div class="form-group">
+                <label for="koristi_paket" style="color: white; font-weight: 600;">Način plaćanja:</label>
+                <div style="display: grid; gap: 10px; margin-top: 10px;">
+                    <?php foreach ($aktivni_paketi as $paket): ?>
+                        <label style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 15px;">
+                            <input type="radio" 
+                                   name="koristi_paket" 
+                                   value="<?= $paket['id'] ?>" 
+                                   style="width: 20px; height: 20px;">
+                            <div style="flex: 1;">
+                                <strong style="font-size: 1.1em;"><?= htmlspecialchars($paket['paket_naziv']) ?></strong>
+                                <div style="opacity: 0.9; font-size: 0.9em; margin-top: 5px;">
+                                    Preostalo: <strong><?= $paket['ukupno_termina'] - $paket['iskoristeno_termina'] ?></strong> termina
+                                    | Iskorišteno: <?= $paket['iskoristeno_termina'] ?>/<?= $paket['ukupno_termina'] ?>
+                                </div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 20px; font-weight: 600;">
+                                BESPLATNO
+                            </div>
+                        </label>
+                    <?php endforeach; ?>
+                    
+                    <label style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 15px;">
+                        <input type="radio" 
+                               name="koristi_paket" 
+                               value="ne" 
+                               checked 
+                               style="width: 20px; height: 20px;">
+                        <div style="flex: 1;">
+                            <strong style="font-size: 1.1em;">Plati pojedinačno</strong>
+                            <div style="opacity: 0.9; font-size: 0.9em; margin-top: 5px;">
+                                Ne koristi paket - naplati punu cijenu
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <?php else: ?>
+            <input type="hidden" name="koristi_paket" value="ne">
+        <?php endif; ?>
 
         <div class="form-group">
             <label for="usluga_id">Usluga *</label>
@@ -93,3 +141,14 @@
         </div>
     </form>
 </div>
+
+<script>
+// Proveri pakete kada se odabere pacijent
+function provjeriPakete() {
+    const pacijentId = document.getElementById('pacijent_id').value;
+    if (pacijentId) {
+        // Reload stranicu sa pacijent_id u URL-u
+        window.location.href = '/termini/kreiraj?pacijent_id=' + pacijentId;
+    }
+}
+</script>
