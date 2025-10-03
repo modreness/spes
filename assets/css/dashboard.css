@@ -71,16 +71,18 @@
 
     /* Aktivna stavka u sidebar-u */
 .sidebar-nav a.active {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
-    border-left: 4px solid #ffd700;
+    color:#255AA5;
+    border-left: 2px solid #255AA5;
     font-weight: 600;
+    padding-left: 5px;
+    border-bottom: 2px solid #255AA5;
+    column-gap:5px;
 }
 .sidebar-nav a.active:hover {
-    color:#fff;
+    color:#000;
 }
 .sidebar-nav a.active i {
-    color: white;
+    color: #255AA5;
 }
 
 /* Ikone u meniju */
