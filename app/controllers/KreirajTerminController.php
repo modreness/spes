@@ -130,7 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
     
-    // Ako koristi paket - proveri validnost
+    // Ako se koristi paket - proveri validnost
     $paket_id = null;
     if (!empty($koristi_paket) && $koristi_paket !== 'ne') {
         $paket_id = (int)$koristi_paket;
@@ -150,11 +150,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!$paket) {
                 $errors[] = 'Odabrani paket nije validan ili nema slobodnih termina.';
                 $paket_id = null;
+            } else {
+                // Ako se koristi paket, postavi usluga_id iz paketa
+                $usluga_id = $paket['usluga_id'];
             }
         } catch (PDOException $e) {
             error_log("Greška: " . $e->getMessage());
             $errors[] = 'Greška pri provjeri paketa.';
         }
+    }
+    
+    // Ako se ne koristi paket, usluga_id mora biti postavljen
+    if (empty($paket_id) && empty($usluga_id)) {
+        $errors[] = 'Usluga je obavezna kada se ne koristi paket.';
     }
     
     // Spremi termin
