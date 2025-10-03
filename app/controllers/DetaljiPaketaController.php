@@ -26,7 +26,6 @@ try {
             kp.*,
             CONCAT(u.ime, ' ', u.prezime) as pacijent_ime,
             u.email as pacijent_email,
-            u.telefon as pacijent_telefon,
             c.naziv as paket_naziv,
             c.cijena as paket_cijena,
             c.broj_termina as paket_termina,
