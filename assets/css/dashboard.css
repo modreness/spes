@@ -71,13 +71,12 @@
 
     /* Aktivna stavka u sidebar-u */
 .sidebar-nav a.active {
+    background:#f7f7f7;
     color:#255AA5;
-    border-left: 2px solid #255AA5;
     font-weight: 600;
     padding-left: 5px;
-    border-bottom: 2px solid #255AA5;
     column-gap:5px;
-    border-radius:0px 0px 0px 10px;
+    border-radius:10px;
 }
 .sidebar-nav a.active:hover {
     color:#000;
