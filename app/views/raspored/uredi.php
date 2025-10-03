@@ -13,6 +13,8 @@
 <?php if (isset($_GET['msg'])): ?>
     <?php if ($_GET['msg'] === 'obrisan'): ?>
         <div class="uspjeh"><i class="fa-solid fa-check-circle"></i> Raspored je uspešno obrisan.</div>
+    <?php elseif ($_GET['msg'] === 'azuriran'): ?>
+        <div class="uspjeh"><i class="fa-solid fa-check-circle"></i> Raspored je uspešno ažuriran.</div>
     <?php elseif ($_GET['msg'] === 'greska'): ?>
         <div class="greska"><i class="fa-solid fa-times-circle"></i> Greška pri obradi zahteva.</div>
     <?php endif; ?>
@@ -87,7 +89,7 @@
                             <th>Smjena</th>
                             <th>Datum</th>
                             <th>Kreiran</th>
-                            <th style="text-align: center; width: 100px;">Akcije</th>
+                            <th style="text-align: center; width: 120px;">Akcije</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -157,18 +159,27 @@
     <?php endif; ?>
 </div>
 
-<!-- Potvrda modali -->
+<!-- JavaScript za potvrdu brisanja -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Dodatno osiguraj potvrde
-    const deleteButtons = document.querySelectorAll('button[name="action"][value="obrisi"]');
-    deleteButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            const form = this.closest('form');
-            const confirmed = confirm('PAŽNJA: Ova akcija će trajno obrisati raspored!\\n\\nDa li ste apsolutno sigurni?');
-            if (!confirmed) {
-                e.preventDefault();
-                return false;
+    // Potvrda za brisanje
+    const deleteForms = document.querySelectorAll('.delete-form');
+    deleteForms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const terapeut = this.querySelector('input[name="terapeut_ime"]').value;
+            const dan = this.querySelector('input[name="dan"]').value;
+            const smjena = this.querySelector('input[name="smjena"]').value;
+            
+            const confirmMsg = `Da li ste sigurni da želite obrisati ovaj raspored?\n\n` +
+                             `Terapeut: ${terapeut}\n` +
+                             `Dan: ${dan}\n` +
+                             `Smjena: ${smjena}\n\n` +
+                             `Ova akcija se ne može poništiti!`;
+            
+            if (confirm(confirmMsg)) {
+                this.submit();
             }
         });
     });
