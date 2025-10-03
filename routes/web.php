@@ -190,6 +190,18 @@ elseif ($uri === '/izvjestaji/operativni') {
 elseif ($uri === '/izvjestaji/medicinski') {
     require_once __DIR__ . '/../app/controllers/MedicinskiIzvjestajController.php';
 }
+//PAKETI
+elseif ($uri === '/paketi') {
+    require_once __DIR__ . '/../app/controllers/PaketiController.php';
+}
+elseif ($uri === '/paketi/prodaj') {
+    require_once __DIR__ . '/../app/controllers/ProdajPaketController.php';
+}
+elseif ($uri === '/paketi/detalji') {
+    require_once __DIR__ . '/../app/controllers/DetaljiPaketaController.php';
+}
+//END PAKETI
+
 elseif ($uri === '/kartoni/nalazi') {
     require_once __DIR__ . '/../app/controllers/KartoniNalaziController.php';
 }
