@@ -53,6 +53,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $opis = trim($_POST['opis'] ?? '');
     $cijena = $_POST['cijena'] ?? '';
     $kategorija_id = $_POST['kategorija_id'] ?? '';
+    $tip_usluge = $_POST['tip_usluge'] ?? 'pojedinacna';
+    $broj_termina = !empty($_POST['broj_termina']) ? (int)$_POST['broj_termina'] : null;
+    $period = !empty($_POST['period']) ? $_POST['period'] : null;
     
     // Validacija
     if (empty($naziv)) {
@@ -67,6 +70,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Kategorija je obavezna.';
     }
     
+    // Dodatna validacija za pakete
+    if ($tip_usluge === 'paket' && (empty($broj_termina) || $broj_termina < 1)) {
+        $errors[] = 'Za paket morate unijeti broj termina (minimalno 1).';
+    }
+    
     // Provjera da li već postoji usluga sa istim nazivom (osim trenutne)
     if (empty($errors)) {
         $stmt = $pdo->prepare("SELECT COUNT(*) FROM cjenovnik WHERE naziv = ? AND id != ? AND aktivan = 1");
@@ -79,8 +87,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Ažuriraj bazu
     if (empty($errors)) {
         try {
-            $stmt = $pdo->prepare("UPDATE cjenovnik SET naziv = ?, opis = ?, cijena = ?, kategorija_id = ? WHERE id = ?");
-            $stmt->execute([$naziv, $opis, $cijena, $kategorija_id, $usluga_id]);
+            $stmt = $pdo->prepare("
+                UPDATE cjenovnik 
+                SET naziv = ?, opis = ?, cijena = ?, kategorija_id = ?, 
+                    tip_usluge = ?, broj_termina = ?, period = ?
+                WHERE id = ?
+            ");
+            $stmt->execute([
+                $naziv, 
+                $opis, 
+                $cijena, 
+                $kategorija_id,
+                $tip_usluge,
+                $broj_termina,
+                $period,
+                $usluga_id
+            ]);
             
             header('Location: /cjenovnik?msg=azurirana');
             exit;

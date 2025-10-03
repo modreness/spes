@@ -42,6 +42,43 @@
         </div>
 
         <div class="form-group">
+            <label for="tip_usluge">Tip usluge *</label>
+            <select id="tip_usluge" name="tip_usluge" required onchange="togglePaketPolja()">
+                <option value="pojedinacna" <?= ($_POST['tip_usluge'] ?? $usluga['tip_usluge']) === 'pojedinacna' ? 'selected' : '' ?>>
+                    Pojedinačna usluga
+                </option>
+                <option value="paket" <?= ($_POST['tip_usluge'] ?? $usluga['tip_usluge']) === 'paket' ? 'selected' : '' ?>>
+                    Paket termina
+                </option>
+            </select>
+        </div>
+
+        <!-- Polja specifična za pakete -->
+        <div id="paket-polja" style="display: <?= ($_POST['tip_usluge'] ?? $usluga['tip_usluge']) === 'paket' ? 'block' : 'none' ?>;">
+            <div class="form-group">
+                <label for="broj_termina">Broj termina u paketu *</label>
+                <input type="number" 
+                       id="broj_termina" 
+                       name="broj_termina" 
+                       min="1" 
+                       value="<?= htmlspecialchars($_POST['broj_termina'] ?? $usluga['broj_termina'] ?? '') ?>"
+                       placeholder="Npr. 12">
+                <small style="color: #7f8c8d; display: block; margin-top: 5px;">Ukupan broj termina koje paket sadrži</small>
+            </div>
+
+            <div class="form-group">
+                <label for="period">Period</label>
+                <select id="period" name="period">
+                    <option value="">Nije definisan</option>
+                    <option value="tjedno" <?= ($_POST['period'] ?? $usluga['period'] ?? '') === 'tjedno' ? 'selected' : '' ?>>Tjedno</option>
+                    <option value="mjesečno" <?= ($_POST['period'] ?? $usluga['period'] ?? '') === 'mjesečno' ? 'selected' : '' ?>>Mjesečno</option>
+                    <option value="kvartalno" <?= ($_POST['period'] ?? $usluga['period'] ?? '') === 'kvartalno' ? 'selected' : '' ?>>Kvartalno</option>
+                </select>
+                <small style="color: #7f8c8d; display: block; margin-top: 5px;">Npr. "mjesečno" za mjesečnu rehabilitaciju</small>
+            </div>
+        </div>
+
+        <div class="form-group">
             <label for="opis">Opis usluge</label>
             <textarea id="opis" name="opis" rows="4" 
                       placeholder="Kratki opis usluge..."><?= htmlspecialchars($_POST['opis'] ?? $usluga['opis']) ?></textarea>
@@ -55,3 +92,30 @@
         </div>
     </form>
 </div>
+
+<script>
+// Prikaži/sakrij polja za pakete
+function togglePaketPolja() {
+    const tipUsluge = document.getElementById('tip_usluge').value;
+    const paketPolja = document.getElementById('paket-polja');
+    const brojTermina = document.getElementById('broj_termina');
+    
+    if (tipUsluge === 'paket') {
+        paketPolja.style.display = 'block';
+        brojTermina.required = true;
+    } else {
+        paketPolja.style.display = 'none';
+        brojTermina.required = false;
+    }
+}
+</script>
+
+<style>
+#paket-polja {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 15px;
+    border-left: 4px solid #3498db;
+}
+</style>
