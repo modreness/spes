@@ -122,7 +122,7 @@
                             <td style="text-align: center;">
                                 <!-- Uredi -->
                                 <a href="/raspored/uredi-pojedinacni?id=<?= $r['id'] ?>" 
-                                   class="btn btn-sm btn-edit" 
+                                   class="btn btn-primary btn-no-margin" 
                                    style="padding: 6px 12px; font-size: 0.85em; margin-right: 5px;"
                                    title="Uredi raspored">
                                     <i class="fa-solid fa-edit"></i>
@@ -155,8 +155,8 @@
 </div>
 
 <!-- Modal za potvrdu brisanja -->
-<div id="modal-overlay" class="modal-overlay"></div>
-<div id="brisanje-modal" class="modal">
+<div id="modal-overlay" class="modal-overlay" style="display: none;"></div>
+<div id="brisanje-modal" class="modal" style="display: none;">
   <div class="modal-content">
     <h3 style="margin-top: 0; color: #e74c3c;">
         <i class="fa-solid fa-exclamation-triangle"></i> Potvrda brisanja
