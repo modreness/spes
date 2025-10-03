@@ -4,15 +4,15 @@
 </div>
 
 <?php if (isset($_GET['msg']) && $_GET['msg'] === 'kreirana'): ?>
-    <div class="alert alert-success">Usluga je uspješno kreirana.</div>
+    <div class="uspjeh">Usluga je uspješno kreirana.</div>
 <?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'azurirana'): ?>
-    <div class="alert alert-success">Usluga je uspješno ažurirana.</div>
+    <div class="uspjeh">Usluga je uspješno ažurirana.</div>
 <?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'obrisana'): ?>
-    <div class="alert alert-success">Usluga je uspješno obrisana.</div>
+    <div class="uspjeh">Usluga je uspješno obrisana.</div>
 <?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'greska'): ?>
-    <div class="alert alert-warning">Greška pri operaciji.</div>
+    <div class="greska">Greška pri operaciji.</div>
 <?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'deaktivirana'): ?>
-    <div class="alert alert-warning">Usluga je deaktivirana jer je korištena u terminima.</div>
+    <div class="upozorenje">Usluga je deaktivirana jer je korištena u terminima.</div>
 <?php endif; ?>
 
 <div class="main-content-fw">
@@ -22,6 +22,7 @@
         <th>ID</th>
         <th>Kategorija</th>
         <th>Naziv usluge</th>
+        <th>Tip</th>
         <th>Opis</th>
         <th>Cijena (KM)</th>
         <th>Status</th>
@@ -35,7 +36,28 @@
         <td>
           <span class="badge badge-category"><?= htmlspecialchars($u['kategorija_naziv'] ?? 'Bez kategorije') ?></span>
         </td>
-        <td><?= htmlspecialchars($u['naziv']) ?></td>
+        <td>
+          <?= htmlspecialchars($u['naziv']) ?>
+          <?php if ($u['tip_usluge'] === 'paket' && !empty($u['period'])): ?>
+            <br><small style="color: #7f8c8d; font-size: 0.85em;">
+              <i class="fa-solid fa-calendar"></i> <?= ucfirst($u['period']) ?>
+            </small>
+          <?php endif; ?>
+        </td>
+        <td>
+          <?php if ($u['tip_usluge'] === 'paket'): ?>
+            <span class="badge" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.85em; font-weight: 600;">
+              <i class="fa-solid fa-box"></i> Paket
+            </span>
+            <br><small style="color: #667eea; font-weight: 600; margin-top: 5px; display: inline-block;">
+              <?= $u['broj_termina'] ?> termina
+            </small>
+          <?php else: ?>
+            <span class="badge" style="background: #95a5a6; color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.85em;">
+              <i class="fa-solid fa-file"></i> Pojedinačna
+            </span>
+          <?php endif; ?>
+        </td>
         <td><?= htmlspecialchars($u['opis']) ?></td>
         <td class="price"><?= number_format($u['cijena'], 2, ',', '.') ?> KM</td>
         <td>
@@ -85,3 +107,10 @@ function zatvoriModal() {
 
 document.getElementById('modal-overlay').addEventListener('click', zatvoriModal);
 </script>
+
+<style>
+/* Dodaj malo boje za pakete */
+tr:has(.badge:contains("Paket")) {
+    background: linear-gradient(to right, #ffffff, #f8f9ff);
+}
+</style>
