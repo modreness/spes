@@ -61,30 +61,7 @@
         </div>
     </div>
 
-    <!-- Osnovne statistike 
-    <div class="stats-grid" style="margin-bottom: 30px;">
-        <div class="stat-card" style="background: linear-gradient(135deg, #27ae60, #2ecc71);">
-            <h3>Ukupni prihod</h3>
-            <div class="stat-number"><?= number_format($ukupni_prihodi['ukupno'], 2) ?> KM</div>
-        </div>
-        <div class="stat-card" style="background: linear-gradient(135deg, #3498db, #5dade2);">
-            <h3>Broj termina</h3>
-            <div class="stat-number"><?= $ukupni_prihodi['broj_termina'] ?></div>
-        </div>
-        <div class="stat-card" style="background: linear-gradient(135deg, #f39c12, #f4d03f);">
-            <h3>Prosečan prihod</h3>
-            <div class="stat-number">
-                <?= $ukupni_prihodi['broj_termina'] > 0 ? number_format($ukupni_prihodi['ukupno'] / $ukupni_prihodi['broj_termina'], 2) : '0.00' ?> KM
-            </div>
-        </div>
-        <div class="stat-card" style="background: linear-gradient(135deg, #9b59b6, #bb6bd9);">
-            <h3>Period</h3>
-            <div class="stat-number" style="font-size: 16px;">
-                <?= date('d.m.Y', strtotime($datum_od)) ?><br>
-                <?= date('d.m.Y', strtotime($datum_do)) ?>
-            </div>
-        </div>
-    </div>-->
+  
 
     <!-- Graf prihoda po danima -->
     <?php if (!empty($prihodi_po_danima)): ?>
