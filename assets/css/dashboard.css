@@ -94,9 +94,12 @@
 
 /* Zakazani termini link aktivna stavka */
 .zakazani-link a.active {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
-    border-left: 4px solid #ffd700;
+    background:#f7f7f7;
+    color:#255AA5;
+    font-weight: 600;
+    padding-left: 5px;
+    column-gap:5px;
+    border-radius:10px;
 }
 
     .zakazani-link {
