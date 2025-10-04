@@ -27,26 +27,59 @@ try {
         $stmt->execute();
         $dashboard_data['novi_kartoni_danas'] = $stmt->fetchColumn();
         
-        // Finansijski podaci
+        /// Finansijski podaci - AŽURIRANO za pakete
+        // Prihod od pojedinačnih termina danas
         $stmt = $pdo->prepare("
-            SELECT SUM(c.cijena) 
+            SELECT COALESCE(SUM(t.stvarna_cijena), 0) as prihod
             FROM termini t 
-            JOIN cjenovnik c ON t.usluga_id = c.id 
-            WHERE DATE(t.datum_vrijeme) = CURDATE() AND t.status = 'obavljen'
+            WHERE DATE(t.datum_vrijeme) = CURDATE() 
+            AND t.status = 'obavljen'
+            AND t.placeno_iz_paketa = 0
         ");
         $stmt->execute();
-        $dashboard_data['prihod_danas'] = $stmt->fetchColumn() ?: 0;
+        $prihod_termini_danas = $stmt->fetchColumn();
         
+        // Prihod od paketa danas
         $stmt = $pdo->prepare("
-            SELECT SUM(c.cijena) 
+            SELECT COALESCE(SUM(c.cijena), 0) as prihod
+            FROM kupljeni_paketi kp
+            JOIN cjenovnik c ON kp.usluga_id = c.id
+            WHERE DATE(kp.datum_kupovine) = CURDATE()
+        ");
+        $stmt->execute();
+        $prihod_paketi_danas = $stmt->fetchColumn();
+        
+        $dashboard_data['prihod_danas'] = $prihod_termini_danas + $prihod_paketi_danas;
+        $dashboard_data['prihod_termini_danas'] = $prihod_termini_danas;
+        $dashboard_data['prihod_paketi_danas'] = $prihod_paketi_danas;
+        
+        // Prihod mesec - AŽURIRANO
+        // Prihod od pojedinačnih termina ovaj mesec
+        $stmt = $pdo->prepare("
+            SELECT COALESCE(SUM(t.stvarna_cijena), 0) as prihod
             FROM termini t 
-            JOIN cjenovnik c ON t.usluga_id = c.id 
             WHERE MONTH(t.datum_vrijeme) = MONTH(CURDATE()) 
             AND YEAR(t.datum_vrijeme) = YEAR(CURDATE()) 
             AND t.status = 'obavljen'
+            AND t.placeno_iz_paketa = 0
         ");
         $stmt->execute();
-        $dashboard_data['prihod_mesec'] = $stmt->fetchColumn() ?: 0;
+        $prihod_termini_mesec = $stmt->fetchColumn();
+        
+        // Prihod od paketa ovaj mesec
+        $stmt = $pdo->prepare("
+            SELECT COALESCE(SUM(c.cijena), 0) as prihod
+            FROM kupljeni_paketi kp
+            JOIN cjenovnik c ON kp.usluga_id = c.id
+            WHERE MONTH(kp.datum_kupovine) = MONTH(CURDATE())
+            AND YEAR(kp.datum_kupovine) = YEAR(CURDATE())
+        ");
+        $stmt->execute();
+        $prihod_paketi_mesec = $stmt->fetchColumn();
+        
+        $dashboard_data['prihod_mesec'] = $prihod_termini_mesec + $prihod_paketi_mesec;
+        $dashboard_data['prihod_termini_mesec'] = $prihod_termini_mesec;
+        $dashboard_data['prihod_paketi_mesec'] = $prihod_paketi_mesec;
         
         // Najaktivniji terapeut ovaj mesec
         $stmt = $pdo->prepare("
