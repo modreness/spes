@@ -884,7 +884,16 @@ display: inline-block;
   background-color: #ccc;
   color: #333;
 }
-
+.btn-blue {
+    background: linear-gradient(90deg, #255AA5, #289CC6);
+    color: #fff;
+    text-decoration: none;
+}
+.btn-yellow {
+    background-color: #efc023;
+    color: #fff;
+    text-decoration: none;
+}
 .btn-secondary:hover {
   background-color: #bbb;
 }
