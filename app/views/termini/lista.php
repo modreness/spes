@@ -101,7 +101,6 @@
                         <?php endif; ?>
                     </td>
                     <td>
-                    <td>
                         <span style="background: <?= $status_colors[$t['status']] ?? '#95a5a6' ?>; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500;">
                             <?= ucfirst($t['status']) ?>
                         </span>
