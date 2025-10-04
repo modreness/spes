@@ -22,7 +22,7 @@ $datum_do = $_GET['datum_do'] ?? date('Y-m-d', strtotime('+30 days'));
 
 try {
     // Dohvati terapeute za filter
-    $stmt = $pdo->prepare("SELECT id, ime, prezime FROM users WHERE uloga = 'terapeut' ORDER BY ime, prezime");
+    $stmt = $pdo->prepare("SELECT id, ime, prezime FROM users WHERE uloga = 'terapeut' AND aktivan = 1 ORDER BY ime, prezime");
     $stmt->execute();
     $terapeuti = $stmt->fetchAll();
     
@@ -42,13 +42,15 @@ try {
     
     $where_clause = implode(' AND ', $where_conditions);
     
-    // Dohvati termine
+    // Dohvati termine - DODATO: placeno_iz_paketa i stvarna_cijena
     $stmt = $pdo->prepare("
         SELECT t.*, 
                CONCAT(u_pacijent.ime, ' ', u_pacijent.prezime) as pacijent_ime,
                CONCAT(u_terapeut.ime, ' ', u_terapeut.prezime) as terapeut_ime,
                c.naziv as usluga_naziv,
-               c.cijena as usluga_cijena
+               c.cijena as usluga_cijena,
+               t.placeno_iz_paketa,
+               t.stvarna_cijena
         FROM termini t
         LEFT JOIN users u_pacijent ON t.pacijent_id = u_pacijent.id
         LEFT JOIN users u_terapeut ON t.terapeut_id = u_terapeut.id

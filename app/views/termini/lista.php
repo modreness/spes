@@ -91,7 +91,16 @@
                     <td><?= htmlspecialchars($t['pacijent_ime']) ?></td>
                     <td><?= htmlspecialchars($t['terapeut_ime']) ?></td>
                     <td><?= htmlspecialchars($t['usluga_naziv']) ?></td>
-                    <td><?= number_format($t['usluga_cijena'], 2) ?> KM</td>
+                    <td>
+                        <?php if ($t['placeno_iz_paketa']): ?>
+                            <span style="display: inline-block; background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.85em; font-weight: 600;">
+                                <i class="fa-solid fa-box"></i> Paket
+                            </span>
+                        <?php else: ?>
+                            <span style="font-weight: 600;"><?= number_format($t['stvarna_cijena'] ?? $t['usluga_cijena'], 2, ',', '.') ?> KM</span>
+                        <?php endif; ?>
+                    </td>
+                    <td>
                     <td>
                         <span style="background: <?= $status_colors[$t['status']] ?? '#95a5a6' ?>; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500;">
                             <?= ucfirst($t['status']) ?>
