@@ -52,14 +52,12 @@
             <small style="opacity: 0.9;"><?= $ukupni_prihodi['broj_termina'] ?> pojedinačnih</small>
         </div>
         <div class="stat-card" style="background: linear-gradient(135deg, #9b59b6, #bb6bd9);">
-            <h3>Prosečan prihod</h3>
+            <h3>Broj termina</h3>
             <div class="stat-number">
-                <?php 
-                $ukupan_broj = $ukupni_prihodi['broj_termina'] + $ukupni_prihodi['broj_paketa'];
-                echo $ukupan_broj > 0 ? number_format($ukupni_prihodi['ukupno'] / $ukupan_broj, 2) : '0.00';
-                ?> KM
+                <div class="stat-number"><?= $ukupni_prihodi['broj_termina'] ?></div>
             </div>
-            <small style="opacity: 0.9;">po transakciji</small>
+            <small style="opacity: 0.9;"><?= date('d.m.Y', strtotime($datum_od)) ?> do 
+                <?= date('d.m.Y', strtotime($datum_do)) ?></small>
         </div>
     </div>
 
