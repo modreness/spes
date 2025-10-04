@@ -170,12 +170,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $pdo->beginTransaction();
             
+            // Odredi cijenu
+            $iz_paketa = !empty($paket_id) ? 1 : 0;
+            $cijena = 0;
+            
+            if (!$iz_paketa) {
+                // Dohvati cijenu usluge
+                $stmt = $pdo->prepare("SELECT cijena FROM cjenovnik WHERE id = ?");
+                $stmt->execute([$usluga_id]);
+                $cijena = $stmt->fetchColumn();
+            }
+            
             // 1. Kreiraj termin
             $stmt = $pdo->prepare("
-                INSERT INTO termini (pacijent_id, terapeut_id, usluga_id, datum_vrijeme, status, tip_zakazivanja, napomena) 
-                VALUES (?, ?, ?, ?, 'zakazan', 'recepcioner', ?)
+                INSERT INTO termini 
+                (pacijent_id, terapeut_id, usluga_id, datum_vrijeme, status, tip_zakazivanja, napomena, placeno_iz_paketa, stvarna_cijena) 
+                VALUES (?, ?, ?, ?, 'zakazan', 'recepcioner', ?, ?, ?)
             ");
-            $stmt->execute([$pacijent_id, $terapeut_id, $usluga_id, $datum_vrijeme, $napomena]);
+            $stmt->execute([
+                $pacijent_id, 
+                $terapeut_id, 
+                $usluga_id, 
+                $datum_vrijeme, 
+                $napomena,
+                $iz_paketa,
+                $iz_paketa ? null : $cijena
+            ]);
             $termin_id = $pdo->lastInsertId();
             
             // 2. Ako se koristi paket - poveži termin sa paketom
