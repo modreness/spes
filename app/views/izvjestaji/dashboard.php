@@ -11,11 +11,17 @@
         </div>
         <div class="stat-card" style="background: linear-gradient(135deg, #3498db, #5dade2);">
             <h3>Prihod ovaj mesec</h3>
-            <div class="stat-number"><?= number_format($prihod_mesec, 2) ?> KM</div>
+            <div class="stat-number"><?= number_format($ukupan_prihod_mesec, 2) ?> KM</div>
+            <div style="font-size: 12px; opacity: 0.9; margin-top: 5px;">
+                Termini: <?= number_format($prihod_mesec, 2) ?> KM | Paketi: <?= number_format($prihod_paketi_mesec, 2) ?> KM
+            </div>
         </div>
         <div class="stat-card" style="background: linear-gradient(135deg, #f39c12, #f4d03f);">
             <h3>Termini ovaj mesec</h3>
             <div class="stat-number"><?= $termini_mesec ?></div>
+            <div style="font-size: 12px; opacity: 0.9; margin-top: 5px;">
+                <?= $termini_iz_paketa_mesec ?> iz paketa
+            </div>
         </div>
         <div class="stat-card" style="background: linear-gradient(135deg, #e74c3c, #ec7063);">
             <h3>Top terapeut</h3>
@@ -25,6 +31,34 @@
             <?php if ($top_terapeut): ?>
                 <div style="font-size: 14px; opacity: 0.9; margin-top: 5px;">
                     <?= $top_terapeut['broj_termina'] ?> termina
+                </div>
+            <?php endif; ?>
+        </div>
+        
+        <!-- Paketi statistike -->
+        <div class="stat-card" style="background: linear-gradient(135deg, #9b59b6, #be7fd3);">
+            <h3>Aktivni paketi</h3>
+            <div class="stat-number"><?= $aktivni_paketi ?></div>
+            <div style="font-size: 12px; opacity: 0.9; margin-top: 5px;">
+                Trenutno u upotrebi
+            </div>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #1abc9c, #48c9b0);">
+            <h3>Prodato paketa (mesec)</h3>
+            <div class="stat-number"><?= $paketi_prodati_mesec ?></div>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #16a085, #1abc9c);">
+            <h3>Prihod od paketa (mesec)</h3>
+            <div class="stat-number"><?= number_format($prihod_paketi_mesec, 2) ?> KM</div>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #8e44ad, #a569bd);">
+            <h3>Najkorišteniji paket</h3>
+            <div class="stat-number" style="font-size: 16px;">
+                <?= $top_paket ? htmlspecialchars($top_paket['naziv']) : 'N/A' ?>
+            </div>
+            <?php if ($top_paket): ?>
+                <div style="font-size: 14px; opacity: 0.9; margin-top: 5px;">
+                    <?= $top_paket['broj_prodaja'] ?> prodaja
                 </div>
             <?php endif; ?>
         </div>
