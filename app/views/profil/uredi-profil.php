@@ -190,4 +190,14 @@ function prikaziNotifikaciju(poruka) {
     notifikacija.style.display = 'none';
   }, 3000);
 }
+const sifra = document.getElementById('nova_lozinka');
+const sifraponovo = document.getElementById('ponovi_lozinku');
+
+sifra.addEventListener('input', function() {
+  if (ime.value.trim() !== '') {
+    sifraponovo.required = true;  // postaje obavezno
+  } else {
+    sifraponovo.required = false; // više nije obavezno
+  }
+});
 </script>
