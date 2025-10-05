@@ -99,7 +99,7 @@
 
     <div class="form-group">
       <label for="jmbg">JMBG</label>
-      <input type="text" name="jmbg" id="jmbg">
+      <input type="text" name="jmbg" id="jmbg" maxlength="13">
       <span id="jmbg-status" style="font-size: 13px; display: none;"></span>
     </div>
 
@@ -235,7 +235,15 @@ if (window.jQuery) {
         });
     }
   });
-
+  jmbgInput.addEventListener('input', function () {
+      // Ukloni sve što nije broj
+      this.value = this.value.replace(/\D/g, '');
+      
+      // Skrati na maksimalno 13 znakova
+      if (this.value.length > 13) {
+        this.value = this.value.slice(0, 13);
+      }
+    });
  
 });
 function provjeriPostojeciKarton(pacijentId) {
