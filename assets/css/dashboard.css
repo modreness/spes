@@ -1563,7 +1563,7 @@ margin-bottom:20px;
 
 
 /*BASIC RESPONSIVE DESIGN*/
-@media (max-width: 768px) { 
+@media (max-width: 1400px) { 
     .help-box {
         display:flex;
         flex-direction:column;
