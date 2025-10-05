@@ -1561,6 +1561,19 @@ margin-bottom:20px;
     font-size: 0.95rem;
 }
 
+
+/*BASIC RESPONSIVE DESIGN*/
+@media (max-width: 768px) { 
+    .help-box {
+        display:flex;
+        flex-direction:column;
+        row-gap:10px;
+    }
+    .info-image {
+        width:50px;
+        height:auto;
+    }
+}
 /* Responsive design */
 @media (max-width: 768px) {
     .admin-stats-grid {
