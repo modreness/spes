@@ -1,6 +1,6 @@
 <div class="naslov-dugme">
 <h2><?= htmlspecialchars($title) ?></h2>
-<a href="/kartoni" class="btn btn-secondary">
+<a href="/kartoni/lista" class="btn btn-secondary">
         <i class="fa-solid fa-arrow-left"></i> Povratak
     </a>
 </div>
