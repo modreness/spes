@@ -34,6 +34,7 @@
         <th>Stanje prije</th>
         <th>Terapija</th>
         <th>Stanje poslije</th>
+        <th>Terapeut</th>
         <th>Akcije</th>
       </tr>
     </thead>
@@ -45,6 +46,7 @@
             <td><?= mb_strimwidth(strip_tags($t['stanje_prije']), 0, 50, '...') ?></td>
             <td><?= mb_strimwidth(strip_tags($t['terapija']), 0, 50, '...') ?></td>
             <td><?= mb_strimwidth(strip_tags($t['stanje_poslije']), 0, 50, '...') ?></td>
+            <td><?= $t['terapeut_ime'] . ' ' . $t['terapeut_prezime'] ?></td>
             <td>
                 <button class="btn btn-sm btn-view"
   onclick='prikaziTretmanDetalji(
