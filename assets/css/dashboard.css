@@ -988,6 +988,15 @@ display: inline-block;
 .btn-novo:hover {
     background: linear-gradient(90deg, #1e4781, #207a99);
 }
+
+.btn-search {
+    background:#efefef;
+    border:1px solid #efefef;
+    color:#255AA5;
+}
+.btn-search:hover {
+    background:#289CC6;
+}
 .bottom-foot {
     display:flex;
     justify-content:start;
