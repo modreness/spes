@@ -46,12 +46,12 @@
         </td>
         <td>
           <?php if ($u['tip_usluge'] === 'paket'): ?>
-            <span class="badge" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.85em; font-weight: 600;">
-              <i class="fa-solid fa-box"></i> Paket
-            </span>
-            <br><small style="color: #667eea; font-weight: 600; margin-top: 5px; display: inline-block;">
+            <span class="badge" style="background: linear-gradient(90deg, #255AA5, #289CC6); color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.85em; font-weight: 600;">
+              <i class="fa-solid fa-box"></i> Paket <small style="color: #fff; font-weight: 500; margin-top: 5px; display: inline-block;">
               <?= $u['broj_termina'] ?> termina
             </small>
+            </span>
+            
           <?php else: ?>
             <span class="badge" style="background: #95a5a6; color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.85em;">
               <i class="fa-solid fa-file"></i> Pojedinačna
