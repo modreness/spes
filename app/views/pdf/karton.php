@@ -4,7 +4,15 @@
   <meta charset="UTF-8">
   <style>
     body { font-family: DejaVu Sans, sans-serif; font-size: 12px; }
-    .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-bottom: 20px; }
+    .header {
+            display: block;
+            width:100%;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            clear:both;
+            min-height:140px;
+         }
     .logo { width: 120px; }
     .ustanova { text-align: right; font-size: 11px; }
     .section { margin-bottom: 15px; }
@@ -14,15 +22,19 @@
 <body>
 
 <div class="header">
-  <img class="logo" src="https://app.spes.ba/assets/images/spes-logo-slogan.png" alt="SPES logo">
-  <div class="ustanova">
-    <strong>SPES Privatna praksa</strong><br>
-    Šenoina 5, Sarajevo<br>
-    Bosna i Hercegovina 71000<br>
-    +387 (0) 63 116 833<br>
-    privatna.praksa.spes@gmail.com<br>
-    www.spes.ba
-  </div>
+    <div class="header-left">
+    <img class="logo" src="https://app.spes.ba/assets/images/spes-logo-slogan.png" alt="SPES logo">
+    </div>
+    <div class="header-right">
+    <div class="ustanova">
+        <strong>SPES Privatna praksa</strong><br>
+        Šenoina 5, Sarajevo<br>
+        Bosna i Hercegovina 71000<br>
+        +387 (0) 63 116 833<br>
+        privatna.praksa.spes@gmail.com<br>
+        www.spes.ba
+    </div>
+    </div>
 </div>
 
 <h2>Karton pacijenta</h2>
