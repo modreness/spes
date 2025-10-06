@@ -43,7 +43,7 @@
     <form action="/login" method="post">
         <div class="form-group icon-input">
             <span class="icon"><i class="fa-solid fa-user"></i></span>
-            <input type="email" name="email" id="email" placeholder="Email" required autofocus>
+            <input type="text" name="username" id="email" placeholder="Korisničko ime" required autofocus>
         </div>
         
         <div class="form-group icon-input">
