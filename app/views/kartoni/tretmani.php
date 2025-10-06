@@ -115,7 +115,7 @@
     <form method="post" action="/kartoni/dodaj-tretman">
         <div class="form-group">
   <label for="terapeut_id">Terapeut</label>
-  <select name="terapeut_id" required>
+  <select name="terapeut_id" class="select2" required>
     <option value="">-- Odaberi terapeuta --</option>
     <?php foreach ($terapeuti as $terapeut): ?>
       <option value="<?= $terapeut['id'] ?>"><?= htmlspecialchars($terapeut['ime'] . ' ' . $terapeut['prezime']) ?></option>
