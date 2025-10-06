@@ -1,4 +1,3 @@
-<?php ob_start(); ?>
 <section class="section-box">
   <h2><?= htmlspecialchars($title) ?></h2>
   
@@ -174,4 +173,3 @@ $(document).ready(function() {
     }
 });
 </script>
-<?php $content = ob_get_clean(); require_once __DIR__ . '/../layout.php'; ?>
