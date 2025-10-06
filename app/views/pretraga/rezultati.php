@@ -23,7 +23,7 @@
                     </select>
                 </div>
                 
-                <button type="submit" class="btn btn-primary" style="padding: 12px 25px;">
+                <button type="submit" class="btn btn-search" style="padding: 12px 25px;">
                     <i class="fa-solid fa-search"></i> Pretraži
                 </button>
             </div>
