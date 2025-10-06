@@ -47,7 +47,7 @@ ob_start();
   <div class="form-group icon-input">
     <label>Trenutna lozinka</label>
     
-    <input type="password" name="trenutna" id="stara_lozinka" placeholder="Unesite trenutnu lozinku">
+    <input type="password" name="trenutna" id="stara_lozinka" placeholder="Unesite trenutnu lozinku" style="flex:1;">
     <button type="button" class="toggle-password" onclick="toggleStareLozinke()" aria-label="Prikaži/Sakrij lozinke">
       <i id="eye-icon-old" class="fa-solid fa-eye"></i>
     </button>
@@ -56,7 +56,7 @@ ob_start();
   <div class="form-group icon-input">
     <label>Nova lozinka</label>
     
-    <input type="password" name="nova" id="nova_lozinka" placeholder="Nova lozinka">
+    <input type="password" name="nova" id="nova_lozinka" placeholder="Nova lozinka" style="flex:1;">
     <button type="button" class="toggle-password" onclick="toggleLozinke()" aria-label="Prikaži/Sakrij lozinke">
       <i id="eye-icon" class="fa-solid fa-eye"></i>
     </button>
