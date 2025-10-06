@@ -182,7 +182,7 @@
 
       <div style="text-align: center; margin-top: 20px;">
         <button type="button" class="btn btn-secondary" onclick="zatvoriUrediNalaz()">Otkaži</button>
-        <button type="submit" class="btn btn-add">Sačuvaj izmene</button>
+        <button type="submit" class="btn btn-add">Spremi izmjene</button>
       </div>
     </form>
   </div>
