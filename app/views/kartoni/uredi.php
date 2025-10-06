@@ -52,9 +52,52 @@
         <textarea name="anamneza" rows="3"><?= htmlspecialchars($karton['anamneza']) ?></textarea>
       </div>
 
+      <!-- ZAMIJENITE STARI textarea za dijagnozu sa ovim: -->
+      
       <div class="card-block cb-top">
-        <label>Dijagnoza</label>
-        <textarea name="dijagnoza" rows="3"><?= htmlspecialchars($karton['dijagnoza']) ?></textarea>
+        <label>Dijagnoze</label>
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; max-height: 300px; overflow-y: auto; border: 1px solid #dee2e6;">
+          <?php
+          // Dohvati sve dijagnoze
+          $stmt_dijagnoze = $pdo->query("SELECT id, naziv, opis FROM dijagnoze ORDER BY naziv ASC");
+          $sve_dijagnoze = $stmt_dijagnoze->fetchAll(PDO::FETCH_ASSOC);
+          
+          // Dohvati dijagnoze koje su već povezane sa ovim kartonom
+          $stmt_odabrane = $pdo->prepare("SELECT dijagnoza_id FROM karton_dijagnoze WHERE karton_id = ?");
+          $stmt_odabrane->execute([$karton['id']]);
+          $odabrane_dijagnoze = $stmt_odabrane->fetchAll(PDO::FETCH_COLUMN);
+          
+          if (empty($sve_dijagnoze)):
+          ?>
+            <p style="color: #7f8c8d; text-align: center; padding: 20px;">
+              <i class="fa-solid fa-info-circle"></i> Nema dostupnih dijagnoza. 
+              <a href="/dijagnoze?action=create" target="_blank">Dodajte dijagnoze</a>
+            </p>
+          <?php else: ?>
+            <?php foreach ($sve_dijagnoze as $d): ?>
+              <div style="padding: 8px; margin-bottom: 5px; border-radius: 4px; background: white;">
+                <label style="display: flex; align-items: start; cursor: pointer; margin: 0;">
+                  <input 
+                    type="checkbox" 
+                    name="dijagnoze[]" 
+                    value="<?= $d['id'] ?>"
+                    <?= in_array($d['id'], $odabrane_dijagnoze) ? 'checked' : '' ?>
+                    style="margin-right: 10px; margin-top: 3px;"
+                  >
+                  <div style="flex: 1;">
+                    <strong style="color: #2c3e50;"><?= htmlspecialchars($d['naziv']) ?></strong>
+                    <?php if ($d['opis']): ?>
+                      <br><span style="color: #7f8c8d; font-size: 13px;"><?= htmlspecialchars($d['opis']) ?></span>
+                    <?php endif; ?>
+                  </div>
+                </label>
+              </div>
+            <?php endforeach; ?>
+          <?php endif; ?>
+        </div>
+        <small style="color: #7f8c8d; font-size: 12px;">
+          <i class="fa-solid fa-info-circle"></i> Možete odabrati više dijagnoza
+        </small>
       </div>
 
       <div class="card-block cb-top">

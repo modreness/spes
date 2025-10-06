@@ -61,14 +61,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $telefon = $_POST['telefon'] ?? null;
     $broj_upisa = $_POST['broj_upisa'] ?? null;
     $anamneza = $_POST['anamneza'] ?? null;
-    $dijagnoza = $_POST['dijagnoza'] ?? null;
     $rehabilitacija = $_POST['rehabilitacija'] ?? null;
     $pocetna_procjena = $_POST['pocetna_procjena'] ?? null;
     $biljeske = $_POST['biljeske'] ?? null;
     $napomena = $_POST['napomena'] ?? null;
+    
+    // Dijagnoze iz checkboxova
+    $odabrane_dijagnoze = $_POST['dijagnoze'] ?? [];
 
-    $stmt = $pdo->prepare("INSERT INTO kartoni (pacijent_id, datum_otvaranja, datum_rodjenja, adresa, telefon, jmbg, spol, email, broj_upisa, anamneza, dijagnoza, rehabilitacija, pocetna_procjena, biljeske, napomena, otvorio_id)
-                           VALUES (?, CURDATE(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    // UKLONILI SMO dijagnoza iz INSERT-a jer je sad u posebnoj tabeli
+    $stmt = $pdo->prepare("INSERT INTO kartoni (pacijent_id, datum_otvaranja, datum_rodjenja, adresa, telefon, jmbg, spol, email, broj_upisa, anamneza, rehabilitacija, pocetna_procjena, biljeske, napomena, otvorio_id)
+                           VALUES (?, CURDATE(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->execute([
         $pacijent_id,
         $datum_rodjenja,
@@ -79,13 +82,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $email,
         $broj_upisa,
         $anamneza,
-        $dijagnoza,
         $rehabilitacija,
         $pocetna_procjena,
         $biljeske,
         $napomena,
         $logovani['id']
     ]);
+    
+    $karton_id = $pdo->lastInsertId();
+    
+    // Sačuvaj dijagnoze u karton_dijagnoze tabelu
+    if (!empty($odabrane_dijagnoze)) {
+        $stmt_dijagnoza = $pdo->prepare("INSERT INTO karton_dijagnoze (karton_id, dijagnoza_id, datum_dijagnoze) VALUES (?, ?, CURDATE())");
+        foreach ($odabrane_dijagnoze as $dijagnoza_id) {
+            $stmt_dijagnoza->execute([$karton_id, $dijagnoza_id]);
+        }
+    }
 
     header('Location: /kartoni/kreiraj?msg=kreiran');
     exit;

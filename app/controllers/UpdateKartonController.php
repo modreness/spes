@@ -31,26 +31,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $jmbg = trim($_POST['jmbg'] ?? '');
     $broj_upisa = trim($_POST['broj_upisa'] ?? '');
     $anamneza = trim($_POST['anamneza'] ?? '');
-    $dijagnoza = trim($_POST['dijagnoza'] ?? '');
     $rehabilitacija = trim($_POST['rehabilitacija'] ?? '');
     $pocetna_procjena = trim($_POST['pocetna_procjena'] ?? '');
     $biljeske = trim($_POST['biljeske'] ?? '');
     $napomena = trim($_POST['napomena'] ?? '');
+    
+    // Dijagnoze iz checkboxova
+    $odabrane_dijagnoze = $_POST['dijagnoze'] ?? [];
 
-    // Ažuriraj karton
+    // Ažuriraj karton (UKLONILI SMO dijagnoza iz UPDATE-a)
     $stmt = $pdo->prepare("UPDATE kartoni SET
         ime = ?, prezime = ?, datum_rodjenja = ?, spol = ?, adresa = ?, telefon = ?, email = ?, jmbg = ?, broj_upisa = ?,
-        anamneza = ?, dijagnoza = ?, rehabilitacija = ?, pocetna_procjena = ?, biljeske = ?, napomena = ?
+        anamneza = ?, rehabilitacija = ?, pocetna_procjena = ?, biljeske = ?, napomena = ?
         WHERE id = ?
     ");
 
     $success = $stmt->execute([
         $ime, $prezime, $datum_rodjenja, $spol, $adresa, $telefon, $email, $jmbg, $broj_upisa,
-        $anamneza, $dijagnoza, $rehabilitacija, $pocetna_procjena, $biljeske, $napomena,
+        $anamneza, $rehabilitacija, $pocetna_procjena, $biljeske, $napomena,
         $karton_id
     ]);
 
     if ($success) {
+        // Ažuriraj dijagnoze - obriši stare i dodaj nove
+        $pdo->prepare("DELETE FROM karton_dijagnoze WHERE karton_id = ?")->execute([$karton_id]);
+        
+        if (!empty($odabrane_dijagnoze)) {
+            $stmt_dijagnoza = $pdo->prepare("INSERT INTO karton_dijagnoze (karton_id, dijagnoza_id, datum_dijagnoze) VALUES (?, ?, CURDATE())");
+            foreach ($odabrane_dijagnoze as $dijagnoza_id) {
+                $stmt_dijagnoza->execute([$karton_id, $dijagnoza_id]);
+            }
+        }
+        
         header("Location: /kartoni/pregled?id={$karton_id}&msg=ureden");
     } else {
         header("Location: /kartoni/pregled?id={$karton_id}&msg=gagal");
