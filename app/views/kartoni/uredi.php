@@ -138,18 +138,34 @@
 </section>
 
 <script>
+console.log('Script loaded');
+console.log('jQuery available:', typeof jQuery !== 'undefined');
+console.log('Select2 available:', typeof $.fn.select2 !== 'undefined');
+
 $(document).ready(function() {
-    // Inicijalizuj SVE Select2 elemente
-    $('.select2').select2();
+    console.log('DOM ready');
     
-    // Inicijalizuj Select2 za dijagnoze sa custom opcijama
-    $('#dijagnoze_select').select2({
-        placeholder: 'Odaberite dijagnoze...',
-        allowClear: true,
-        closeOnSelect: false,
-        templateResult: formatDijagnoza,
-        templateSelection: formatDijagnozaSelection
-    });
+    // Provjeri da li element postoji
+    var element = $('#dijagnoze_select');
+    console.log('Element found:', element.length > 0);
+    
+    // Inicijalizuj SVE Select2 elemente prvo
+    if (typeof $.fn.select2 !== 'undefined') {
+        $('.select2').select2();
+        console.log('Initialized .select2 elements');
+        
+        // Inicijalizuj Select2 za dijagnoze sa custom opcijama
+        $('#dijagnoze_select').select2({
+            placeholder: 'Odaberite dijagnoze...',
+            allowClear: true,
+            closeOnSelect: false,
+            templateResult: formatDijagnoza,
+            templateSelection: formatDijagnozaSelection
+        });
+        console.log('Initialized #dijagnoze_select');
+    } else {
+        console.error('Select2 is not loaded!');
+    }
     
     // Custom template za prikaz dijagnoza u dropdown-u
     function formatDijagnoza(dijagnoza) {
