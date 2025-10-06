@@ -19,10 +19,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header("Location: /kartoni/lista?msg=neispravan_id");
         exit;
     }
+    
+    // Dohvati postojeći karton
+    $stmt = $pdo->prepare("SELECT * FROM kartoni WHERE id = ?");
+    $stmt->execute([$karton_id]);
+    $postojeci_karton = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if (!$postojeci_karton) {
+        header("Location: /kartoni/lista?msg=nije_pronadjen");
+        exit;
+    }
 
     // Prikupi i sanitizuj podatke
-    $ime = trim($_POST['ime'] ?? '');
-    $prezime = trim($_POST['prezime'] ?? '');
     $datum_rodjenja = $_POST['datum_rodjenja'] ?? null;
     $spol = $_POST['spol'] ?? '';
     $adresa = trim($_POST['adresa'] ?? '');
@@ -38,16 +46,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     // Dijagnoze iz checkboxova
     $odabrane_dijagnoze = $_POST['dijagnoze'] ?? [];
+    
+    // Validacija JMBG - provjeri da li JMBG postoji kod DRUGOG kartona
+    if ($jmbg !== $postojeci_karton['jmbg']) {
+        $stmt = $pdo->prepare("SELECT id FROM kartoni WHERE jmbg = ? AND id != ?");
+        $stmt->execute([$jmbg, $karton_id]);
+        if ($stmt->fetch()) {
+            $_SESSION['error'] = "JMBG već postoji u sistemu!";
+            header("Location: /kartoni/uredi?id={$karton_id}&msg=jmbg_postoji");
+            exit;
+        }
+    }
 
-    // Ažuriraj karton (UKLONILI SMO dijagnoza iz UPDATE-a)
+    // Ažuriraj karton (UKLONILI SMO ime, prezime i dijagnoza)
     $stmt = $pdo->prepare("UPDATE kartoni SET
-        ime = ?, prezime = ?, datum_rodjenja = ?, spol = ?, adresa = ?, telefon = ?, email = ?, jmbg = ?, broj_upisa = ?,
+        datum_rodjenja = ?, spol = ?, adresa = ?, telefon = ?, email = ?, jmbg = ?, broj_upisa = ?,
         anamneza = ?, rehabilitacija = ?, pocetna_procjena = ?, biljeske = ?, napomena = ?
         WHERE id = ?
     ");
 
     $success = $stmt->execute([
-        $ime, $prezime, $datum_rodjenja, $spol, $adresa, $telefon, $email, $jmbg, $broj_upisa,
+        $datum_rodjenja, $spol, $adresa, $telefon, $email, $jmbg, $broj_upisa,
         $anamneza, $rehabilitacija, $pocetna_procjena, $biljeske, $napomena,
         $karton_id
     ]);
@@ -65,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         header("Location: /kartoni/pregled?id={$karton_id}&msg=ureden");
     } else {
-        header("Location: /kartoni/pregled?id={$karton_id}&msg=gagal");
+        header("Location: /kartoni/uredi?id={$karton_id}&msg=greska");
     }
 
     exit;

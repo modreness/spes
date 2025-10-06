@@ -3,8 +3,10 @@
   
   <?php if (isset($_GET['msg']) && $_GET['msg'] === 'ureden'): ?>
     <div class="alert alert-success">✅ Karton je uspješno ažuriran.</div>
-  <?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'gagal'): ?>
+  <?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'greska'): ?>
     <div class="alert alert-danger">❌ Greška pri ažuriranju kartona.</div>
+  <?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'jmbg_postoji'): ?>
+    <div class="alert alert-warning">⚠️ JMBG već postoji u sistemu!</div>
   <?php endif; ?>
 
   <div class="main-content">
@@ -55,6 +57,7 @@
         <div class="form-group">
           <label for="jmbg">JMBG</label>
           <input type="text" id="jmbg" name="jmbg" value="<?= htmlspecialchars($karton['jmbg']) ?>" maxlength="13" required>
+          <span id="jmbg-status" style="font-size: 13px; display: none;"></span>
         </div>
 
         <div class="form-group">
@@ -166,6 +169,35 @@ function initSelect2() {
             templateSelection: formatDijagnozaSelection
         });
         console.log('Initialized #dijagnoze_select');
+        
+        // JMBG validacija
+        const jmbgInput = $('#jmbg');
+        const jmbgStatus = $('#jmbg-status');
+        const originalJmbg = '<?= htmlspecialchars($karton['jmbg']) ?>';
+        const kartonId = '<?= $karton['id'] ?>';
+        
+        jmbgInput.on('input', function() {
+            // Ukloni sve što nije broj
+            this.value = this.value.replace(/\D/g, '');
+            
+            // Skrati na maksimalno 13 znakova
+            if (this.value.length > 13) {
+                this.value = this.value.slice(0, 13);
+            }
+            
+            // Provjeri samo ako je promjenjen
+            if (this.value !== originalJmbg && this.value.length >= 8) {
+                fetch('/provjeri-username?jmbg=' + encodeURIComponent(this.value) + '&exclude_karton=' + kartonId)
+                    .then(res => res.json())
+                    .then(data => {
+                        jmbgStatus.show();
+                        jmbgStatus.text(data.postoji ? '❌ Ovaj JMBG već postoji!' : '✅ JMBG je slobodan');
+                        jmbgStatus.css('color', data.postoji ? 'red' : 'green');
+                    });
+            } else if (this.value === originalJmbg) {
+                jmbgStatus.hide();
+            }
+        });
         
         // Custom template za prikaz dijagnoza u dropdown-u
         function formatDijagnoza(dijagnoza) {
