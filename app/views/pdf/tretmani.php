@@ -84,7 +84,7 @@ body {
             <td><?= date('d.m.Y. H:i', strtotime($t['datum'])) ?></td>
             <td><?= htmlspecialchars($t['stanje_prije']) ?></td>
             <td><?= htmlspecialchars($t['terapija']) ?></td>
-            <td><?= htmlspecialchars($t['terapeut_ime'] . '' . $t['terapeut_prezime']) ?></td>
+            <td><?= htmlspecialchars($t['terapeut_ime'] . ' ' . $t['terapeut_prezime']) ?></td>
             <td><?= htmlspecialchars($t['unio_ime'] . ' ' . $t['unio_prezime']) ?></td>
         </tr>
         <?php endforeach; ?>
