@@ -57,7 +57,7 @@
             <?= htmlspecialchars($karton['jmbg'] ?? '') ?>
         </div>
         <p>Broj upisa:</p>
-        <div class="card-info bg-yellow">
+        <div class="card-info bg-grey">
             <?= htmlspecialchars($karton['broj_upisa'] ?? '') ?>
         </div>
     </div>
