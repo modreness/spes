@@ -47,21 +47,51 @@ ob_start();
   <div class="form-group icon-input">
     <label>Trenutna lozinka</label>
     
-    <input type="password" name="trenutna" placeholder="Unesite trenutnu lozinku">
+    <input type="password" name="trenutna" id="stara_lozinka" placeholder="Unesite trenutnu lozinku">
+    <button type="button" class="toggle-password" onclick="toggleStareLozinke()" aria-label="Prikaži/Sakrij lozinke">
+      <i id="eye-icon-old" class="fa-solid fa-eye"></i>
+    </button>
   </div>
 
   <div class="form-group icon-input">
     <label>Nova lozinka</label>
     
-    <input type="password" name="nova" placeholder="Nova lozinka">
+    <input type="password" name="nova" id="nova_lozinka" placeholder="Nova lozinka">
+    <button type="button" class="toggle-password" onclick="toggleLozinke()" aria-label="Prikaži/Sakrij lozinke">
+      <i id="eye-icon" class="fa-solid fa-eye"></i>
+    </button>
   </div>
 
   <div class="form-group icon-input">
     <label>Ponovi novu lozinku</label>
-    <input type="password" name="ponovi" placeholder="Ponovi lozinku">
+    <input type="password" name="ponovi" id="ponovi_lozinku" placeholder="Ponovi lozinku">
   </div>
 
   <button type="submit" class="submit-button">Promijeni lozinku</button>
+  <script>
+    function toggleLozinke() {
+      const inputs = [document.getElementById('nova_lozinka'), document.getElementById('ponovi_lozinku')];
+      const icon = document.getElementById('eye-icon');
+      const currentlyPassword = inputs[0].type === 'password';
+
+      inputs.forEach(input => input.type = currentlyPassword ? 'text' : 'password');
+
+      icon.classList.toggle('fa-eye');
+      icon.classList.toggle('fa-eye-slash');
+    }
+
+    function toggleStareLozinke() {
+      const inputs = document.getElementById('stara_lozinka');
+      const icon = document.getElementById('eye-icon-old');
+      const currentlyPassword = inputs[0].type === 'password';
+
+      inputs.forEach(input => input.type = currentlyPassword ? 'text' : 'password');
+
+      icon.classList.toggle('fa-eye');
+      icon.classList.toggle('fa-eye-slash');
+
+    }
+  </script>
 </form>
 </div>
 <div class="left-content">
