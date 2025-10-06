@@ -30,7 +30,7 @@
     </div>
 <?php endif; ?>
 
-<div class="main-content">
+<div class="main-content-fw">
     <?php if ($user['uloga'] !== 'terapeut'): ?>
     <!-- Statistike samo za admin/recepcioner -->
     <div class="stats-grid">
