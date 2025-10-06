@@ -1,5 +1,9 @@
-<h2><?= $title ?></h2>
-
+<div class="naslov-dugme">
+<h2><?= htmlspecialchars($title) ?></h2>
+<a href="/kartoni/pregled?id=<?= $karton['id'] ?>" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i> Povratak
+    </a>
+</div>
 <?php if (isset($_GET['msg']) && $_GET['msg'] === 'greska'): ?>
   <div class="alert alert-warning">Ovaj tretman nije moguće obrisati.</div>
 <?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'obrisan'): ?>
