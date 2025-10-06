@@ -135,7 +135,7 @@
                             <span style="background: <?= $status_colors[$t['status']] ?? '#95a5a6' ?>; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
                                 <?= ucfirst($t['status']) ?>
                             </span>
-                            <a href="/termini/uredi?id=<?= $t['id'] ?>" class="btn btn-sm btn-primary">Uredi</a>
+                            <a href="/termini/uredi?id=<?= $t['id'] ?>" class="btn-sm btn-primary">Uredi</a>
                         </div>
                     </div>
                     <?php endforeach; ?>
