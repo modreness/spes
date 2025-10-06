@@ -924,7 +924,7 @@ display: inline-block;
     background:#289CC6;
 }
 .btn-add {
-  background-color: #255AA5;
+  background-color: linear-gradient(90deg, #255AA5, #289CC6);
   color: #fff;
   text-decoration:none;
 }
@@ -1060,7 +1060,7 @@ margin-bottom:20px;
 }
 
 .stat-card {
-    background: linear-gradient(90deg, #255AA5, #289CC6);
+    background: linear-gradient(90deg, #255AA5, #255AA5);
     color: white;
     padding: 25px;
     border-radius: 12px;
