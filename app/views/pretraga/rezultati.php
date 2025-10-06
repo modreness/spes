@@ -68,7 +68,7 @@
                             <span style="background: <?= $p['aktivan'] ? '#27ae60' : '#e74c3c' ?>; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; margin-right: 10px;">
                                 <?= $p['aktivan'] ? 'Aktivan' : 'Neaktivan' ?>
                             </span>
-                            <a href="/profil/uredi?id=<?= $p['id'] ?>" class="btn-small btn-primary">Uredi</a>
+                            <a href="/profil/uredi?id=<?= $p['id'] ?>" class="btn-small btn-edit">Uredi</a>
                         </div>
                     </div>
                     <?php endforeach; ?>
