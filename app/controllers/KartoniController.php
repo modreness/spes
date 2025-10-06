@@ -20,6 +20,8 @@ $stmt = $pdo->query("
 ");
 $kartoni = $stmt->fetchAll();
 
+// Dohvati sve terapeute
+$terapeuti = $pdo->query("SELECT id, ime, prezime FROM users WHERE uloga = 'terapeut' ORDER BY ime ASC")->fetchAll(PDO::FETCH_ASSOC);
 
 ob_start();
 require __DIR__ . '/../views/kartoni/lista.php';
