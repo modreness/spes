@@ -202,6 +202,12 @@ elseif ($uri === '/paketi/detalji') {
 }
 //END PAKETI
 
+//DIJAGNOZE
+elseif ($uri === '/dijagnoze') {
+    require_once __DIR__ . '/../app/controllers/DijagnozeController.php';
+}
+//END DIJAGNOZE
+
 elseif ($uri === '/kartoni/nalazi') {
     require_once __DIR__ . '/../app/controllers/KartoniNalaziController.php';
 }

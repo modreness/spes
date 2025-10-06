@@ -62,6 +62,7 @@ $user = current_user();
           <li><a href="/kategorije" class="<?= strpos($current_path, '/kategorije') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-tags"></i> Kategorije</a></li>
           <li><a href="/cjenovnik" class="<?= strpos($current_path, '/cjenovnik') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-dollar-sign"></i> Cjenovnik</a></li>
           <li><a href="/paketi" class="<?= strpos($current_path, '/paketi') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-box"></i> Paketi</a></li>
+          <li> <a href="/dijagnoze" class="<?= strpos($current_page, '/dijagnoze') !== false ? 'active' : '' ?>"><i class="fa-solid fa-notes-medical"></i> Dijagnoze</a></li>
           <li><a href="/timetable" class="<?= strpos($current_path, '/timetable') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-clock"></i> Timetable</a></li>
           <li><a href="/raspored" class="<?= strpos($current_path, '/raspored') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-calendar-days"></i> Raspored terapeuta</a></li>
           
