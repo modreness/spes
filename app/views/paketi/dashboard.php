@@ -118,7 +118,7 @@
                                 <strong><?= $p['iskoristeno_termina'] ?> / <?= $p['ukupno_termina'] ?></strong> termina
                             </div>
                             <div style="background: #ecf0f1; border-radius: 10px; height: 8px; overflow: hidden;">
-                                <div style="background: <?= $procenat >= 100 ? '#e74c3c' : '#3498db' ?>; height: 100%; width: <?= $procenat ?>%; transition: width 0.3s;"></div>
+                                <div style="background: <?= $procenat >= 100 ? '#e74c3c' : '#289CC6' ?>; height: 100%; width: <?= $procenat ?>%; transition: width 0.3s;"></div>
                             </div>
                             <small style="color: #7f8c8d;"><?= $procenat ?>%</small>
                         </td>
