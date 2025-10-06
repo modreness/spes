@@ -1,5 +1,11 @@
 <h2><?= htmlspecialchars($title) ?></h2>
-
+<?php if (isset($_GET['msg']) && $_GET['msg'] === 'ureden'): ?>
+    <div class="alert alert-success">✅ Karton je uspješno ažuriran.</div>
+  <?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'greska'): ?>
+    <div class="alert alert-danger">❌ Greška pri ažuriranju kartona.</div>
+  <?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'jmbg_postoji'): ?>
+    <div class="alert alert-warning">⚠️ JMBG već postoji u sistemu!</div>
+  <?php endif; ?>
 <div class="main-content-fw">
   <div class="card-wrapper">
     <div class="card-head"><h3><i class="fa fa-user"></i> Pacijent: <?= htmlspecialchars($karton['ime'] ?? '') ?> <?= htmlspecialchars($karton['prezime'] ?? '') ?></h3>
