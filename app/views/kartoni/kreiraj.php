@@ -114,8 +114,29 @@
     </div>
 
     <div class="form-group">
-      <label for="dijagnoza">Dijagnoza</label>
-      <textarea name="dijagnoza" id="dijagnoza" rows="3"></textarea>
+      <label for="dijagnoze_select">Dijagnoze</label>
+      <select 
+        id="dijagnoze_select" 
+        name="dijagnoze[]" 
+        multiple 
+        class="select2-dijagnoze" 
+        style="width: 100%;"
+        data-placeholder="Odaberite dijagnoze...">
+        <?php
+        // Dohvati sve dijagnoze iz baze
+        $stmt_dijagnoze = $pdo->query("SELECT id, naziv, opis FROM dijagnoze ORDER BY naziv ASC");
+        $sve_dijagnoze = $stmt_dijagnoze->fetchAll(PDO::FETCH_ASSOC);
+        
+        foreach ($sve_dijagnoze as $d):
+        ?>
+          <option value="<?= $d['id'] ?>" data-opis="<?= htmlspecialchars($d['opis']) ?>">
+            <?= htmlspecialchars($d['naziv']) ?>
+          </option>
+        <?php endforeach; ?>
+      </select>
+      <small style="color: #7f8c8d; font-size: 12px; display: block; margin-top: 5px;">
+        <i class="fa-solid fa-info-circle"></i> Možete odabrati više dijagnoza. Kucajte za pretragu.
+      </small>
     </div>
 
     <div class="form-group">
@@ -161,11 +182,21 @@ document.addEventListener('DOMContentLoaded', function () {
   const prezimeInput = document.getElementById('prezime');
   const usernameInput = document.getElementById('username');
   const usernameStatus = document.getElementById('username-status');
+  
 if (window.jQuery) {
     $('.select2').select2().on('change', function () {
       const selectedId = $(this).val();
       hiddenInput.value = selectedId;
       provjeriPostojeciKarton(selectedId);
+    });
+    
+    // Inicijalizuj Select2 za dijagnoze
+    $('#dijagnoze_select').select2({
+        placeholder: 'Odaberite dijagnoze...',
+        allowClear: true,
+        closeOnSelect: false,
+        templateResult: formatDijagnoza,
+        templateSelection: formatDijagnozaSelection
     });
   } else {
     pacijentSelect.addEventListener('change', function () {
@@ -174,6 +205,28 @@ if (window.jQuery) {
       provjeriPostojeciKarton(selectedId);
     });
   }
+  
+  // Custom template za prikaz dijagnoza u dropdown-u
+  function formatDijagnoza(dijagnoza) {
+      if (!dijagnoza.id) {
+          return dijagnoza.text;
+      }
+      
+      var opis = $(dijagnoza.element).data('opis');
+      var $dijagnoza = $(
+          '<div style="line-height: 1.4;">' +
+              '<strong>' + dijagnoza.text + '</strong>' +
+              (opis ? '<br><small style="color: #7f8c8d;">' + opis + '</small>' : '') +
+          '</div>'
+      );
+      return $dijagnoza;
+  }
+  
+  // Template za selektovane dijagnoze
+  function formatDijagnozaSelection(dijagnoza) {
+      return dijagnoza.text;
+  }
+  
   function slugify(text) {
     const map = { 'č': 'c', 'ć': 'c', 'š': 's', 'đ': 'dj', 'ž': 'z', 'Č': 'C', 'Ć': 'C', 'Š': 'S', 'Đ': 'Dj', 'Ž': 'Z' };
     return text.split('').map(char => map[char] || char).join('')
