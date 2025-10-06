@@ -924,7 +924,7 @@ display: inline-block;
     background:#289CC6;
 }
 .btn-add {
-  background-color: linear-gradient(90deg, #255AA5, #289CC6);
+  background: linear-gradient(90deg, #255AA5, #289CC6);
   color: #fff;
   text-decoration:none;
 }
