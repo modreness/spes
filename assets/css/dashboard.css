@@ -246,7 +246,7 @@ display: inline-block;
     }
 
     .logout-btn {
-      background-color: #ff4d4d;
+      background-color: #b71c1c;
       color: white;
       padding: 8px 12px;
       text-align: center;
@@ -254,6 +254,9 @@ display: inline-block;
       border-radius: 6px;
       text-decoration: none;
       font-weight: bold;
+    }
+    .logout-btn:hover {
+        background-color:#d32f2f;
     }
 
     .main {
