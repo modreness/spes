@@ -108,6 +108,11 @@
     <div><?= nl2br(htmlspecialchars($tretman['stanje_poslije'])) ?></div>
 </div>
 
+<div class="section">
+    <div class="label">Terapeut:</div>
+    <div><?= htmlspecialchars($tretman['terapeut_ime']) . ' ' . htmlspecialchars($tretman['terapeut_prezime']) ?></div>
+</div>
+
 <div class="potpis">
     ____________________________<br>
     <em>Pečat i potpis</em>
