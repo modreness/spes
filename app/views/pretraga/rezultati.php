@@ -7,11 +7,10 @@
     <div style="background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 25px;">
         <form method="get" action="/pretraga">
             <div style="display: flex; gap: 15px; align-items: end; flex-wrap: wrap;">
-                <div class="form-group" style="flex: 1; min-width: 300px;">
+                <div class="form-group pretraga-label" style="flex: 1; min-width: 300px;">
                     <label for="q">Pretražite pacijente, kartone, termine...</label>
                     <input type="text" id="q" name="q" value="<?= htmlspecialchars($query) ?>" 
-                           placeholder="Unesite ime, prezime, JMBG, broj kartona..." 
-                           style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px;">
+                           placeholder="Unesite ime, prezime, JMBG, broj kartona..." class="pretraga-polje">
                 </div>
                 
                 <div class="form-group">
