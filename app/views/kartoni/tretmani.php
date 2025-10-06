@@ -343,11 +343,20 @@ function zatvoriViewTretman() {
   document.getElementById('modal-overlay').style.display = 'none';
 }
 
-// Zatvori modal klikom na overlay
+
 document.getElementById('modal-overlay').addEventListener('click', function() {
-    zatvoriModal();
-    zatvoriModalTretman();
-    zatvoriUrediTretman();
-    zatvoriViewTretman();
+    // Zatvori koji god je otvoren
+    if (document.getElementById('brisanje-modal').style.display === 'block') {
+        zatvoriModal();
+    }
+    if (document.getElementById('tretman-modal').style.display === 'block') {
+        zatvoriModalTretman();
+    }
+    if (document.getElementById('tretman-modal-uredi').style.display === 'block') {
+        zatvoriUrediTretman();
+    }
+    if (document.getElementById('tretman-modal-view').style.display === 'block') {
+        zatvoriViewTretman();
+    }
 });
 </script>
