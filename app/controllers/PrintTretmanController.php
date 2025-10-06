@@ -19,11 +19,12 @@ if (!$tretman_id) {
 
 // Dohvati tretman + ime korisnika
 $stmt = $pdo->prepare("
-    SELECT t.*, u.ime AS unio_ime, u.prezime AS unio_prezime, k.broj_upisa, k.jmbg AS jmbg, p.ime AS pacijent_ime, p.prezime AS pacijent_prezime
+    SELECT t.*, u.ime AS unio_ime, u.prezime AS unio_prezime, k.broj_upisa, k.jmbg AS jmbg, p.ime AS pacijent_ime, p.prezime AS pacijent_prezime, ter.prezime AS terapeut_prezime
     FROM tretmani t
     LEFT JOIN users u ON t.unio_id = u.id
     LEFT JOIN kartoni k ON t.karton_id = k.id
     LEFT JOIN users p ON k.pacijent_id = p.id
+    LEFT JOIN users ter ON t.terapeut_id = ter.id
     WHERE t.id = ?
 ");
 $stmt->execute([$tretman_id]);
