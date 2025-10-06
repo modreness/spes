@@ -46,11 +46,12 @@ ob_start();
 <form method="post">
   <div class="form-group icon-input">
     <label>Trenutna lozinka</label>
-    
-    <input type="password" name="trenutna" id="stara_lozinka" placeholder="Unesite trenutnu lozinku" style="flex:1;">
-    <button type="button" class="toggle-password" onclick="toggleStareLozinke()" aria-label="Prikaži/Sakrij lozinke">
-      <i id="eye-icon-old" class="fa-solid fa-eye"></i>
-    </button>
+    <div class="lozinka-wrap">
+      <input type="password" name="trenutna" id="stara_lozinka" placeholder="Unesite trenutnu lozinku" style="flex:1;">
+      <button type="button" class="toggle-password" onclick="toggleStareLozinke()" aria-label="Prikaži/Sakrij lozinke">
+        <i id="eye-icon-old" class="fa-solid fa-eye"></i>
+      </button>
+    </div>
   </div>
 
   <div class="form-group icon-input">
