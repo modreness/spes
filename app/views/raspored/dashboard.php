@@ -60,7 +60,7 @@
         <div class="action-card">
             <h3>Uredi postojeće rasporede</h3>
             <p>Upravljaj postojećim rasporedima terapeuta</p>
-            <a href="/raspored/uredi" class="btn btn-primary">
+            <a href="/raspored/uredi" class="btn btn-edit">
                 <i class="fa-solid fa-edit"></i> Uredi rasporede
             </a>
         </div>
@@ -69,7 +69,7 @@
         <div class="action-card">
             <h3><?= $user['uloga'] === 'terapeut' ? 'Moj raspored' : 'Pregled rasporeda' ?></h3>
             <p><?= $user['uloga'] === 'terapeut' ? 'Pogledaj svoj radni raspored' : 'Pogledaj postojeće rasporede terapeuta' ?></p>
-            <a href="/raspored/pregled" class="btn btn-success">
+            <a href="/raspored/pregled" class="btn btn-edit">
                 <i class="fa-solid fa-calendar"></i> <?= $user['uloga'] === 'terapeut' ? 'Moj raspored' : 'Pregled rasporeda' ?>
             </a>
         </div>
