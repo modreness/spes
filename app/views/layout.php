@@ -258,9 +258,11 @@ document.addEventListener("DOMContentLoaded", () => {
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     const select = document.querySelector('.select2');
+     selects.forEach(select => {
+      const placeholder = select.getAttribute('placeholder') || 'Odaberite...';
     if (select) {
       $(select).select2({
-        placeholder: "Odaberite...",
+        placeholder: placeholder,
         allowClear: true,
         width: '100%',
         language: {
