@@ -996,6 +996,7 @@ display: inline-block;
 }
 .btn-search:hover {
     background:#289CC6;
+    color:#fff;
 }
 .bottom-foot {
     display:flex;
