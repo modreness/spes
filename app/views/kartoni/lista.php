@@ -83,7 +83,16 @@
 
     <form method="post" action="/kartoni/dodaj-tretman">
       <input type="hidden" name="karton_id" id="modal-karton-id">
-
+      <div class="form-group">
+        <label for="terapeut_id">Terapeut</label>
+        <select name="terapeut_id" class="select2" required>
+          <option value="">-- Odaberi terapeuta --</option>
+          <?php foreach ($terapeuti as $terapeut): ?>
+            <option value="<?= $terapeut['id'] ?>"><?= htmlspecialchars($terapeut['ime'] . ' ' . $terapeut['prezime']) ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+      <hr>
       <div class="form-group">
         <label for="stanje_prije">Stanje prije</label>
         <textarea name="stanje_prije" rows="3" required></textarea>
