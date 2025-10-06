@@ -164,9 +164,10 @@
         <label for="stanje_poslije">Stanje poslije</label>
         <textarea name="stanje_poslije" rows="3" required></textarea>
       </div>
+      <hr>
       <div class="form-group">
       <label for="terapeut_id">Terapeut</label>
-      <select name="terapeut_id" id="modal-terapeut-id-uredi" required>
+      <select name="terapeut_id" id="modal-terapeut-id-uredi" class="select2" required>
         <option value="">-- Odaberi terapeuta --</option>
         <?php foreach ($terapeuti as $terapeut): ?>
           <option value="<?= $terapeut['id'] ?>"><?= htmlspecialchars($terapeut['ime'] . ' ' . $terapeut['prezime']) ?></option>
