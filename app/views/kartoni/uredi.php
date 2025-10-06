@@ -116,6 +116,7 @@
 
 <script>
 $(document).ready(function() {
+  $('.select2').select2();
     // Inicijalizuj Select2 za dijagnoze
     $('#dijagnoze_select').select2({
         placeholder: 'Odaberite dijagnoze...',
