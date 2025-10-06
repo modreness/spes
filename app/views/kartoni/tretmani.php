@@ -221,6 +221,21 @@
 
 <!-- JS -->
 <script>
+$(document).ready(function() {
+    // Inicijalizuj sve Select2 elemente
+    $('.select2').select2({
+        dropdownParent: $('#tretman-modal'),
+        width: '100%'
+    });
+    
+    // Posebna inicijalizacija za modal uređivanja
+    $('#modal-terapeut-id-uredi').select2({
+        dropdownParent: $('#tretman-modal-uredi'),
+        width: '100%'
+    });
+});
+
+
 function potvrdiBrisanje(id) {
   document.getElementById('id-brisanja').value = id;
   document.getElementById('brisanje-modal').style.display = 'block';
@@ -251,7 +266,7 @@ function otvoriUrediTretman(id, stanje_prije, terapija, stanje_poslije, karton_i
   document.querySelector('#tretman-modal-uredi [name="stanje_prije"]').value = stanje_prije;
   document.querySelector('#tretman-modal-uredi [name="terapija"]').value = terapija;
   document.querySelector('#tretman-modal-uredi [name="stanje_poslije"]').value = stanje_poslije;
-   document.getElementById('modal-terapeut-id-uredi').value = terapeut_id;
+    $('#modal-terapeut-id-uredi').val(terapeut_id).trigger('change');
   document.getElementById('tretman-modal-uredi').style.display = 'block';
   document.getElementById('modal-overlay').style.display = 'block';
 }
