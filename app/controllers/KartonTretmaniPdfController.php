@@ -30,9 +30,10 @@ if (!$karton) {
 
 // Dohvati sve tretmane
 $stmt = $pdo->prepare("
-    SELECT t.*, u.ime AS unio_ime, u.prezime AS unio_prezime 
+    SELECT t.*, u.ime AS unio_ime, u.prezime AS unio_prezime, ter.ime AS terapeut_ime, ter.prezime  AS terapeut_prezime,
     FROM tretmani t
     LEFT JOIN users u ON t.unio_id = u.id
+    LEFT JOIN users AS ter  ON t.terapeut_id = ter.id
     WHERE t.karton_id = ?
     ORDER BY t.datum DESC
 ");
