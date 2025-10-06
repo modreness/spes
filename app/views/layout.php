@@ -260,7 +260,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const select = document.querySelector('.select2');
     if (select) {
       $(select).select2({
-        placeholder: "Odaberite pacijenta",
+        placeholder: "Odaberite...",
         allowClear: true,
         width: '100%',
         language: {
