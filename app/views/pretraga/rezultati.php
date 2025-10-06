@@ -48,7 +48,7 @@
             <!-- Pacijenti -->
             <?php if (!empty($pacijenti)): ?>
             <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 25px; overflow: hidden;">
-                <div style="background: #3498db; color: white; padding: 15px;">
+                <div style="background: #1e4781; color: white; padding: 15px;">
                     <h3 style="margin: 0; display: flex; align-items: center;">
                         <i class="fa-solid fa-users" style="margin-right: 10px;"></i>
                         Pacijenti (<?= count($pacijenti) ?>)
@@ -58,7 +58,7 @@
                     <?php foreach ($pacijenti as $p): ?>
                     <div style="padding: 15px 20px; border-bottom: 1px solid #f8f9fa; display: flex; justify-content: space-between; align-items: center;">
                         <div>
-                            <strong style="color: #2c3e50;"><?= htmlspecialchars($p['ime'] . ' ' . $p['prezime']) ?></strong>
+                            <strong style="color: #1e4781;"><?= htmlspecialchars($p['ime'] . ' ' . $p['prezime']) ?></strong>
                             <div style="color: #7f8c8d; font-size: 14px; margin-top: 2px;">
                                 <?= htmlspecialchars($p['email']) ?> • 
                                 Kreiran: <?= date('d.m.Y', strtotime($p['datum_kreiranja'])) ?>
@@ -79,7 +79,7 @@
             <!-- Kartoni -->
             <?php if (!empty($kartoni)): ?>
             <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 25px; overflow: hidden;">
-                <div style="background: #27ae60; color: white; padding: 15px;">
+                <div style="background: #289CC6; color: white; padding: 15px;">
                     <h3 style="margin: 0; display: flex; align-items: center;">
                         <i class="fa-solid fa-folder-open" style="margin-right: 10px;"></i>
                         Kartoni (<?= count($kartoni) ?>)
@@ -89,7 +89,7 @@
                     <?php foreach ($kartoni as $k): ?>
                     <div style="padding: 15px 20px; border-bottom: 1px solid #f8f9fa; display: flex; justify-content: space-between; align-items: center;">
                         <div>
-                            <strong style="color: #2c3e50;">Karton #<?= htmlspecialchars($k['broj_upisa']) ?></strong>
+                            <strong style="color: #289CC6;">Karton #<?= htmlspecialchars($k['broj_upisa']) ?></strong>
                             <div style="color: #7f8c8d; font-size: 14px; margin-top: 2px;">
                                 Pacijent: <?= htmlspecialchars($k['pacijent_ime']) ?> • 
                                 JMBG: <?= htmlspecialchars($k['jmbg']) ?> •
@@ -106,7 +106,7 @@
             <!-- Termini -->
             <?php if (!empty($termini)): ?>
             <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 25px; overflow: hidden;">
-                <div style="background: #f39c12; color: white; padding: 15px;">
+                <div style="background: #666666; color: white; padding: 15px;">
                     <h3 style="margin: 0; display: flex; align-items: center;">
                         <i class="fa-solid fa-calendar-check" style="margin-right: 10px;"></i>
                         Termini (<?= count($termini) ?>)
@@ -124,7 +124,7 @@
                         ?>
                     <div style="padding: 15px 20px; border-bottom: 1px solid #f8f9fa; display: flex; justify-content: space-between; align-items: center;">
                         <div>
-                            <strong style="color: #2c3e50;"><?= htmlspecialchars($t['pacijent_ime']) ?></strong>
+                            <strong style="color: #666666;"><?= htmlspecialchars($t['pacijent_ime']) ?></strong>
                             <div style="color: #7f8c8d; font-size: 14px; margin-top: 2px;">
                                 <?= date('d.m.Y H:i', strtotime($t['datum_vrijeme'])) ?> • 
                                 Terapeut: <?= htmlspecialchars($t['terapeut_ime']) ?> •
