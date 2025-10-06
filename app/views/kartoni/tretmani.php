@@ -343,5 +343,15 @@ function zatvoriViewTretman() {
   document.getElementById('modal-overlay').style.display = 'none';
 }
 
-
+// Zatvori modal klikom na overlay
+// Zatvori modal klikom na overlay - jednostavnije rješenje
+$(document).ready(function() {
+    $('#modal-overlay').on('click', function() {
+        console.log('Overlay clicked');
+        // Sakrij overlay
+        $(this).hide();
+        // Sakrij sve modale
+        $('.modal').hide();
+    });
+});
 </script>
