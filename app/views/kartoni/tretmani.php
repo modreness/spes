@@ -121,7 +121,7 @@
       <option value="<?= $terapeut['id'] ?>"><?= htmlspecialchars($terapeut['ime'] . ' ' . $terapeut['prezime']) ?></option>
     <?php endforeach; ?>
   </select>
-</div>
+</div><hr>
       <input type="hidden" name="karton_id" id="modal-karton-id-dodaj">
       <div class="form-group">
         <label for="stanje_prije">Stanje prije</label>
