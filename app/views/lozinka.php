@@ -56,16 +56,19 @@ ob_start();
 
   <div class="form-group icon-input">
     <label>Nova lozinka</label>
-    
-    <input type="password" name="nova" id="nova_lozinka" placeholder="Nova lozinka" style="flex:1;">
-    <button type="button" class="toggle-password" onclick="toggleLozinke()" aria-label="Prikaži/Sakrij lozinke">
-      <i id="eye-icon" class="fa-solid fa-eye"></i>
-    </button>
+    <div class="lozinka-wrap">
+      <input type="password" name="nova" id="nova_lozinka" placeholder="Nova lozinka" style="flex:1;">
+      <button type="button" class="toggle-password" onclick="toggleLozinke()" aria-label="Prikaži/Sakrij lozinke">
+        <i id="eye-icon" class="fa-solid fa-eye"></i>
+      </button>
+  </div>
   </div>
 
   <div class="form-group icon-input">
     <label>Ponovi novu lozinku</label>
-    <input type="password" name="ponovi" id="ponovi_lozinku" placeholder="Ponovi lozinku">
+    <div class="lozinka-wrap">
+      <input type="password" name="ponovi" id="ponovi_lozinku" placeholder="Ponovi lozinku">
+    </div>
   </div>
 
   <button type="submit" class="submit-button">Promijeni lozinku</button>
