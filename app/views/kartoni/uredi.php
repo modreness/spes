@@ -138,19 +138,22 @@
 </section>
 
 <script>
-console.log('Script loaded');
-console.log('jQuery available:', typeof jQuery !== 'undefined');
-console.log('Select2 available:', typeof $.fn.select2 !== 'undefined');
+// Čekaj da se jQuery učita
+(function checkJQuery() {
+    if (typeof jQuery !== 'undefined') {
+        console.log('jQuery loaded!');
+        initSelect2();
+    } else {
+        console.log('Waiting for jQuery...');
+        setTimeout(checkJQuery, 50);
+    }
+})();
 
-$(document).ready(function() {
-    console.log('DOM ready');
-    
-    // Provjeri da li element postoji
-    var element = $('#dijagnoze_select');
-    console.log('Element found:', element.length > 0);
-    
-    // Inicijalizuj SVE Select2 elemente prvo
-    if (typeof $.fn.select2 !== 'undefined') {
+function initSelect2() {
+    jQuery(document).ready(function($) {
+        console.log('DOM ready, initializing Select2');
+        
+        // Inicijalizuj SVE Select2 elemente
         $('.select2').select2();
         console.log('Initialized .select2 elements');
         
@@ -163,29 +166,27 @@ $(document).ready(function() {
             templateSelection: formatDijagnozaSelection
         });
         console.log('Initialized #dijagnoze_select');
-    } else {
-        console.error('Select2 is not loaded!');
-    }
-    
-    // Custom template za prikaz dijagnoza u dropdown-u
-    function formatDijagnoza(dijagnoza) {
-        if (!dijagnoza.id) {
-            return dijagnoza.text;
+        
+        // Custom template za prikaz dijagnoza u dropdown-u
+        function formatDijagnoza(dijagnoza) {
+            if (!dijagnoza.id) {
+                return dijagnoza.text;
+            }
+            
+            var opis = $(dijagnoza.element).data('opis');
+            var $dijagnoza = $(
+                '<div style="line-height: 1.4;">' +
+                    '<strong>' + dijagnoza.text + '</strong>' +
+                    (opis ? '<br><small style="color: #7f8c8d;">' + opis + '</small>' : '') +
+                '</div>'
+            );
+            return $dijagnoza;
         }
         
-        var opis = $(dijagnoza.element).data('opis');
-        var $dijagnoza = $(
-            '<div style="line-height: 1.4;">' +
-                '<strong>' + dijagnoza.text + '</strong>' +
-                (opis ? '<br><small style="color: #7f8c8d;">' + opis + '</small>' : '') +
-            '</div>'
-        );
-        return $dijagnoza;
-    }
-    
-    // Template za selektovane dijagnoze
-    function formatDijagnozaSelection(dijagnoza) {
-        return dijagnoza.text;
-    }
-});
+        // Template za selektovane dijagnoze
+        function formatDijagnozaSelection(dijagnoza) {
+            return dijagnoza.text;
+        }
+    });
+}
 </script>
