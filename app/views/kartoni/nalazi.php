@@ -6,9 +6,9 @@
     <?php elseif ($_GET['msg'] === 'upload-greska'): ?>
         <div class="notifikacija greska">Greška pri uploadu nalaza.</div>
     <?php elseif ($_GET['msg'] === 'tip-greska'): ?>
-        <div class="notifikacija greska">Nepodržan tip fajla. Dozvoljeni: PDF, JPG, PNG, DOC, DOCX.</div>
+        <div class="notifikacija greska">Nepodržan tip datoteke. Dozvoljeni: PDF, JPG, PNG, DOC, DOCX.</div>
     <?php elseif ($_GET['msg'] === 'velicina-greska'): ?>
-        <div class="notifikacija greska">Fajl je prevelik. Maksimalna veličina je 10MB.</div>
+        <div class="notifikacija greska">Datoteka je prevelika. Maksimalna veličina je 10MB.</div>
     <?php elseif ($_GET['msg'] === 'obrisan'): ?>
         <div class="alert alert-success">Nalaz je uspješno obrisan.</div>
     <?php elseif ($_GET['msg'] === 'azuriran'): ?>
@@ -113,7 +113,7 @@
 <!-- Modal za potvrdu brisanja -->
 <div id="brisanje-modal" class="modal" style="display:none;">
   <div class="modal-content">
-    <p>Jeste li sigurni da želite obrisati ovaj nalaz? Fajl će biti trajno uklonjen.</p>
+    <p>Jeste li sigurni da želite obrisati ovaj nalaz? Datoteka će biti trajno uklonjena.</p>
     <form method="post" action="/kartoni/nalazi?id=<?= $karton['id'] ?>">
       <input type="hidden" name="action" value="delete">
       <input type="hidden" name="nalaz_id" id="id-brisanja">
@@ -207,10 +207,10 @@
       </div>
       
       <div class="form-group">
-        <label>Fajl</label>
+        <label>Datoteka</label>
         <div class="readonly-box">
           <a href="#" id="view-fajl-link" target="_blank" style="color: #255AA5; text-decoration: none;">
-            <i class="fa-solid fa-download"></i> <span id="view-fajl-naziv">Preuzmi fajl</span>
+            <i class="fa-solid fa-download"></i> <span id="view-fajl-naziv">Preuzmi datoteku</span>
           </a>
         </div>
       </div>
