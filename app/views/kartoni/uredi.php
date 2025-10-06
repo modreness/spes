@@ -34,8 +34,10 @@
         <div class="form-group">
           <label for="spol">Spol</label>
           <select id="spol" name="spol" required>
-            <option value="Muško" <?= $karton['spol'] === 'Muško' ? 'selected' : '' ?>>Muško</option>
-            <option value="Žensko" <?= $karton['spol'] === 'Žensko' ? 'selected' : '' ?>>Žensko</option>
+            <option value="">Odaberi</option>
+            <option value="muški" <?= $karton['spol'] === 'muški' ? 'selected' : '' ?>>Muški</option>
+            <option value="ženski" <?= $karton['spol'] === 'ženski' ? 'selected' : '' ?>>Ženski</option>
+            <option value="drugo" <?= $karton['spol'] === 'drugo' ? 'selected' : '' ?>>Drugo</option>
           </select>
         </div>
 
