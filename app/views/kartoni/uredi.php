@@ -52,40 +52,9 @@
         <textarea name="anamneza" rows="3"><?= htmlspecialchars($karton['anamneza']) ?></textarea>
       </div>
 
-      <!-- ZAMIJENITE STARI textarea za dijagnozu sa ovim: -->
-      
       <div class="card-block cb-top">
-        <label for="dijagnoze_select">Dijagnoze</label>
-        <select 
-          id="dijagnoze_select" 
-          name="dijagnoze[]" 
-          multiple 
-          class="select2-dijagnoze" 
-          style="width: 100%;"
-          data-placeholder="Odaberite dijagnoze...">
-          <?php
-          // Dohvati sve dijagnoze
-          $stmt_dijagnoze = $pdo->query("SELECT id, naziv, opis FROM dijagnoze ORDER BY naziv ASC");
-          $sve_dijagnoze = $stmt_dijagnoze->fetchAll(PDO::FETCH_ASSOC);
-          
-          // Dohvati dijagnoze koje su već povezane sa ovim kartonom
-          $stmt_odabrane = $pdo->prepare("SELECT dijagnoza_id FROM karton_dijagnoze WHERE karton_id = ?");
-          $stmt_odabrane->execute([$karton['id']]);
-          $odabrane_dijagnoze = $stmt_odabrane->fetchAll(PDO::FETCH_COLUMN);
-          
-          foreach ($sve_dijagnoze as $d):
-          ?>
-            <option 
-              value="<?= $d['id'] ?>" 
-              data-opis="<?= htmlspecialchars($d['opis']) ?>"
-              <?= in_array($d['id'], $odabrane_dijagnoze) ? 'selected' : '' ?>>
-              <?= htmlspecialchars($d['naziv']) ?>
-            </option>
-          <?php endforeach; ?>
-        </select>
-        <small style="color: #7f8c8d; font-size: 12px; display: block; margin-top: 5px;">
-          <i class="fa-solid fa-info-circle"></i> Možete odabrati više dijagnoza. Kucajte za pretragu.
-        </small>
+        <label>Dijagnoza</label>
+        <textarea name="dijagnoza" rows="3"><?= htmlspecialchars($karton['dijagnoza']) ?></textarea>
       </div>
 
       <div class="card-block cb-top">
@@ -115,37 +84,3 @@
     </div>
   </div>
 </form>
- <script>
-      // Dodaj na kraj fajla
-      $(document).ready(function() {
-          // Inicijalizuj Select2 za dijagnoze
-          $('#dijagnoze_select').select2({
-              placeholder: 'Odaberite dijagnoze...',
-              allowClear: true,
-              closeOnSelect: false,
-              templateResult: formatDijagnoza,
-              templateSelection: formatDijagnozaSelection
-          });
-          
-          // Custom template za prikaz dijagnoza u dropdown-u
-          function formatDijagnoza(dijagnoza) {
-              if (!dijagnoza.id) {
-                  return dijagnoza.text;
-              }
-              
-              var opis = $(dijagnoza.element).data('opis');
-              var $dijagnoza = $(
-                  '<div style="line-height: 1.4;">' +
-                      '<strong>' + dijagnoza.text + '</strong>' +
-                      (opis ? '<br><small style="color: #7f8c8d;">' + opis + '</small>' : '') +
-                  '</div>'
-              );
-              return $dijagnoza;
-          }
-          
-          // Template za selektovane dijagnoze
-          function formatDijagnozaSelection(dijagnoza) {
-              return dijagnoza.text;
-          }
-      });
-      </script>
