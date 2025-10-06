@@ -38,7 +38,7 @@
         <th>Datum</th>
         <th>Naziv</th>
         <th>Opis</th>
-        <th>Fajl</th>
+        <th>Format</th>
         <th>Dodao</th>
         <th>Akcije</th>
       </tr>
