@@ -90,7 +90,7 @@
 </div>
 
 <!-- Overlay -->
-<div id="modal-overlay" class="modal-overlay" style="display: none;"></div>
+<div id="modal-overlay" class="modal-overlay" style="display: none;" onclick="zatvoriSveModale()"></div>
 
 <!-- Modal za potvrdu brisanja -->
 <div id="brisanje-modal" class="modal" style="display:none;">
@@ -344,5 +344,12 @@ function zatvoriViewTretman() {
 }
 
 // Zatvori modal klikom na overlay
-
+function zatvoriSveModale() {
+  console.log('Closing all modals');
+  document.getElementById('modal-overlay').style.display = 'none';
+  document.getElementById('brisanje-modal').style.display = 'none';
+  document.getElementById('tretman-modal').style.display = 'none';
+  document.getElementById('tretman-modal-uredi').style.display = 'none';
+  document.getElementById('tretman-modal-view').style.display = 'none';
+}
 </script>
