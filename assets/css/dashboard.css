@@ -898,12 +898,12 @@ display: inline-block;
   background-color: #bbb;
 }
 .btn-print {
-    background: linear-gradient(90deg, #255AA5, #289CC6);
-    color:#fff;
+    background: linear-gradient(90deg, #eee, #ddd);
+    color:#255AA5;
     text-decoration:none;
 }
 .btn-print:hover {
-    background: linear-gradient(90deg, #1e4781, #207a99);
+    background: linear-gradient(90deg, #ddd, #ddd);
 }
 .btn-danger {
   background-color: #d32f2f;
@@ -918,6 +918,14 @@ display: inline-block;
   /*background-color: #efc023;*/
   color: #fff;
   text-decoration:none;
+}
+.btn-edit-yellow {
+  background-color: #efc023;
+  color: #fff;
+  text-decoration:none;
+}
+.btn-edit-yellow:hover {
+    background:#dbae19;
 }
 .btn-edit:hover {
     /*background:#dbae19;*/

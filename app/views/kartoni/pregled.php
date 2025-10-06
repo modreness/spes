@@ -1,4 +1,7 @@
 <h2><?= htmlspecialchars($title) ?></h2>
+<a href="/kartoni" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i> Povratak
+    </a>
 <?php if (isset($_GET['msg']) && $_GET['msg'] === 'ureden'): ?>
     <div class="alert alert-success">✅ Karton je uspješno ažuriran.</div>
   <?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'greska'): ?>
@@ -10,7 +13,7 @@
   <div class="card-wrapper">
     <div class="card-head"><h3><i class="fa fa-user"></i> Pacijent: <?= htmlspecialchars($karton['ime'] ?? '') ?> <?= htmlspecialchars($karton['prezime'] ?? '') ?></h3>
         <div>
-        <a href="/kartoni/uredi?id=<?= $karton['id'] ?>" class="btn btn-edit">Uredi podatke</a>
+        <a href="/kartoni/uredi?id=<?= $karton['id'] ?>" class="btn btn-edit-yellow">Uredi podatke</a>
         <a href="/kartoni/tretmani?id=<?= $karton['id'] ?>" class="btn btn-sm btn-add">Tretmani pacijenta</a>
         <a href="/kartoni/nalazi?id=<?= $karton['id'] ?>" class="btn btn-sm btn-add">Nalazi pacijenta</a>
         <a href="/kartoni/print-karton?id=<?= $karton['id'] ?>" class="btn btn-print" target="_blank"><i class="fa-solid fa-print"></i> Print/PDF</a>
