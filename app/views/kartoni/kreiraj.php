@@ -349,4 +349,40 @@ function prikaziNotifikaciju(poruka) {
 }
 
 </script>
+
+<!-- DIJAGNOZE SELECT-->
+<script>
+    
+    $(document).ready(function() {
+        // Inicijalizuj Select2 za dijagnoze
+        $('#dijagnoze_select').select2({
+            placeholder: 'Odaberite dijagnoze...',
+            allowClear: true,
+            closeOnSelect: false,
+            templateResult: formatDijagnoza,
+            templateSelection: formatDijagnozaSelection
+        });
+        
+        // Custom template za prikaz dijagnoza u dropdown-u
+        function formatDijagnoza(dijagnoza) {
+            if (!dijagnoza.id) {
+                return dijagnoza.text;
+            }
+            
+            var opis = $(dijagnoza.element).data('opis');
+            var $dijagnoza = $(
+                '<div style="line-height: 1.4;">' +
+                    '<strong>' + dijagnoza.text + '</strong>' +
+                    (opis ? '<br><small style="color: #7f8c8d;">' + opis + '</small>' : '') +
+                '</div>'
+            );
+            return $dijagnoza;
+        }
+        
+        // Template za selektovane dijagnoze
+        function formatDijagnozaSelection(dijagnoza) {
+            return dijagnoza.text;
+        }
+    });
+    </script>
 <?php $content = ob_get_clean(); require_once __DIR__ . '/../layout.php'; ?>
