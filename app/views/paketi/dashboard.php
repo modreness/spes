@@ -96,7 +96,7 @@
                     $procenat = $p['ukupno_termina'] > 0 ? round(($p['iskoristeno_termina'] / $p['ukupno_termina']) * 100) : 0;
                     $status_boja = [
                         'aktivan' => '#27ae60',
-                        'zavrsen' => '#95a5a6',
+                        'završen' => '#95a5a6',
                         'istekao' => '#e74c3c',
                         'otkazan' => '#e67e22'
                     ];
