@@ -96,7 +96,7 @@
                                 Otvoren: <?= date('d.m.Y', strtotime($k['datum_otvaranja'])) ?>
                             </div>
                         </div>
-                        <a href="/kartoni/pregled?id=<?= $k['id'] ?>" class="btn btn-sm btn-primary">Otvori</a>
+                        <a href="/kartoni/pregled?id=<?= $k['id'] ?>" class="btn-small btn-edit">Otvori</a>
                     </div>
                     <?php endforeach; ?>
                 </div>
@@ -135,7 +135,7 @@
                             <span style="background: <?= $status_colors[$t['status']] ?? '#95a5a6' ?>; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
                                 <?= ucfirst($t['status']) ?>
                             </span>
-                            <a href="/termini/uredi?id=<?= $t['id'] ?>" class="btn-sm btn-edit">Uredi</a>
+                            <a href="/termini/uredi?id=<?= $t['id'] ?>" class="btn-small btn-edit">Uredi</a>
                         </div>
                     </div>
                     <?php endforeach; ?>
