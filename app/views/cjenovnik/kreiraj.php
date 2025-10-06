@@ -15,7 +15,7 @@
     <form method="post" action="/cjenovnik/kreiraj">
         <div class="form-group">
             <label for="kategorija_id">Kategorija *</label>
-            <select id="kategorija_id" name="kategorija_id" class="select2" required>
+            <select id="kategorija_id" name="kategorija_id" class="select2" placeholder="Odaberite kategoriju" required>
                 <option value="">Odaberite kategoriju</option>
                 <?php foreach ($kategorije as $kat): ?>
                     <option value="<?= $kat['id'] ?>" <?= ($_POST['kategorija_id'] ?? '') == $kat['id'] ? 'selected' : '' ?>>
