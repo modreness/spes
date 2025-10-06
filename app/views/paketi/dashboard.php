@@ -20,7 +20,7 @@
         </div>
         <div class="stat-card">
             <h3>Aktivni paketi</h3>
-            <div class="stat-number" style="color: #27ae60;"><?= $aktivnih_paketa ?></div>
+            <div class="stat-number" style="color: #ffffff;"><?= $aktivnih_paketa ?></div>
         </div>
         <div class="stat-card">
             <h3>Prosječna iskorištenost</h3>
