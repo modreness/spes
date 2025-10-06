@@ -28,12 +28,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['user_uloga'] = $user['uloga'];
             $_SESSION['user_ime'] = $user['ime'];
             $_SESSION['user_prezime'] = $user['prezime'];
-            $_SESSION['user_email'] = $user['email'];
+            
 
             header('Location: /dashboard');
             exit;
         } else {
-            $error = 'Pogrešan email ili lozinka.';
+            $error = 'Pogrešno korisničko ime ili lozinka.';
         }
     }
 }
