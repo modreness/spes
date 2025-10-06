@@ -79,7 +79,7 @@
         <div class="action-card">
             <h3>Moji termini</h3>
             <p>Pregled mojih termina i kalendar</p>
-            <a href="/termini" class="btn btn-success">
+            <a href="/termini" class="btn btn-add">
                 <i class="fa-solid fa-calendar-days"></i> Termini
             </a>
         </div>
