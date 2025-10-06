@@ -1,7 +1,9 @@
+<div class="naslov-dugme">
 <h2><?= htmlspecialchars($title) ?></h2>
 <a href="/kartoni" class="btn btn-secondary">
         <i class="fa-solid fa-arrow-left"></i> Povratak
     </a>
+</div>
 <?php if (isset($_GET['msg']) && $_GET['msg'] === 'ureden'): ?>
     <div class="alert alert-success">✅ Karton je uspješno ažuriran.</div>
   <?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'greska'): ?>
