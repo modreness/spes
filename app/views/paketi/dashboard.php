@@ -129,7 +129,7 @@
                             </span>
                         </td>
                         <td>
-                            <a href="/paketi/detalji?id=<?= $p['id'] ?>" class="btn btn-sm btn-primary" title="Detalji">
+                            <a href="/paketi/detalji?id=<?= $p['id'] ?>" class="btn btn-edit" title="Detalji">
                                 <i class="fa-solid fa-eye"></i>
                             </a>
                         </td>
