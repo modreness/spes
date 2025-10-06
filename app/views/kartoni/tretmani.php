@@ -55,7 +55,7 @@
     <?= json_encode($t["terapija"]) ?>,
     <?= json_encode($t["stanje_poslije"]) ?>,
     <?= json_encode($t["datum"]) ?>,
-    <?= json_encode($t["tretman_ime"] . ' ' . $t["tretman_prezime"]) ?>,
+    <?= json_encode($t["terapeut_ime"] . ' ' . $t["terapeut_prezime"]) ?>,
     <?= json_encode($t["unio_ime"] . ' ' . $t["unio_prezime"]) ?>  
   )'>
   <i class="fa-solid fa-eye"></i>
