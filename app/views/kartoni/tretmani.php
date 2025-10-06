@@ -221,20 +221,35 @@
 
 <!-- JS -->
 <script>
+// Inicijalizacija kada se DOM učita
 $(document).ready(function() {
-    // Inicijalizuj sve Select2 elemente
-    $('.select2').select2({
-        dropdownParent: $('#tretman-modal'),
-        width: '100%'
-    });
-    
-    // Posebna inicijalizacija za modal uređivanja
-    $('#modal-terapeut-id-uredi').select2({
-        dropdownParent: $('#tretman-modal-uredi'),
-        width: '100%'
-    });
+    console.log('DOM ready - initializing Select2');
+    initializeSelect2();
 });
 
+function initializeSelect2() {
+    // Uništi postojeće Select2 instance ako postoje
+    if ($('.select2').hasClass('select2-hidden-accessible')) {
+        $('.select2').select2('destroy');
+    }
+    
+    // Inicijalizuj sve Select2 elemente
+    $('.select2').each(function() {
+        var parentModal = $(this).closest('.modal');
+        var config = {
+            width: '100%',
+            placeholder: '-- Odaberi terapeuta --'
+        };
+        
+        if (parentModal.length > 0) {
+            config.dropdownParent = parentModal;
+        }
+        
+        $(this).select2(config);
+    });
+    
+    console.log('Select2 initialized');
+}
 
 function potvrdiBrisanje(id) {
   document.getElementById('id-brisanja').value = id;
@@ -251,6 +266,18 @@ function otvoriModalTretman(kartonId, imePrezime, brojKartona) {
   document.getElementById('modal-karton-id-dodaj').value = kartonId;
   document.getElementById('modal-ime').textContent = imePrezime;
   document.getElementById('modal-broj').textContent = brojKartona;
+  
+  // Re-inicijalizuj Select2 za modal dodavanja
+  var selectElement = $('#tretman-modal select.select2');
+  if (selectElement.hasClass('select2-hidden-accessible')) {
+      selectElement.select2('destroy');
+  }
+  selectElement.select2({
+      dropdownParent: $('#tretman-modal'),
+      width: '100%',
+      placeholder: '-- Odaberi terapeuta --'
+  });
+  
   document.getElementById('tretman-modal').style.display = 'block';
   document.getElementById('modal-overlay').style.display = 'block';
 }
@@ -261,12 +288,33 @@ function zatvoriModalTretman() {
 }
 
 function otvoriUrediTretman(id, stanje_prije, terapija, stanje_poslije, karton_id, terapeut_id) {
+  console.log('Opening edit modal, terapeut_id:', terapeut_id);
+  
   document.getElementById('modal-tretman-id').value = id;
   document.getElementById('modal-karton-id-uredi').value = karton_id;
   document.querySelector('#tretman-modal-uredi [name="stanje_prije"]').value = stanje_prije;
   document.querySelector('#tretman-modal-uredi [name="terapija"]').value = terapija;
   document.querySelector('#tretman-modal-uredi [name="stanje_poslije"]').value = stanje_poslije;
-    $('#modal-terapeut-id-uredi').val(terapeut_id).trigger('change');
+  
+  // Uništi postojeću Select2 instancu
+  var selectElement = $('#modal-terapeut-id-uredi');
+  if (selectElement.hasClass('select2-hidden-accessible')) {
+      selectElement.select2('destroy');
+      console.log('Destroyed existing Select2');
+  }
+  
+  // Re-inicijalizuj Select2
+  selectElement.select2({
+      dropdownParent: $('#tretman-modal-uredi'),
+      width: '100%',
+      placeholder: '-- Odaberi terapeuta --'
+  });
+  console.log('Re-initialized Select2');
+  
+  // Postavi vrijednost
+  selectElement.val(terapeut_id).trigger('change');
+  console.log('Set value to:', terapeut_id);
+  
   document.getElementById('tretman-modal-uredi').style.display = 'block';
   document.getElementById('modal-overlay').style.display = 'block';
 }
@@ -284,7 +332,7 @@ function prikaziTretmanDetalji(id, stanje_prije, terapija, stanje_poslije, datum
   document.getElementById('view-terapija').textContent = terapija;
   document.getElementById('view-stanje-poslije').textContent = stanje_poslije;
   document.getElementById('view-terapeut').textContent = terapeut_ime_prezime;
-document.getElementById('btn-tretman-pdf').href = '/kartoni/print-tretman?id=' + id;
+  document.getElementById('btn-tretman-pdf').href = '/kartoni/print-tretman?id=' + id;
 
   document.getElementById('tretman-modal-view').style.display = 'block';
   document.getElementById('modal-overlay').style.display = 'block';
@@ -295,4 +343,11 @@ function zatvoriViewTretman() {
   document.getElementById('modal-overlay').style.display = 'none';
 }
 
+// Zatvori modal klikom na overlay
+document.getElementById('modal-overlay').addEventListener('click', function() {
+    zatvoriModal();
+    zatvoriModalTretman();
+    zatvoriUrediTretman();
+    zatvoriViewTretman();
+});
 </script>
