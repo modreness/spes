@@ -55,6 +55,7 @@
     <?= json_encode($t["terapija"]) ?>,
     <?= json_encode($t["stanje_poslije"]) ?>,
     <?= json_encode($t["datum"]) ?>,
+    <?= json_encode($t["tretman_ime"] . ' ' . $t["tretman_prezime"]) ?>,
     <?= json_encode($t["unio_ime"] . ' ' . $t["unio_prezime"]) ?>  
   )'>
   <i class="fa-solid fa-eye"></i>
@@ -204,6 +205,10 @@
       <label>Stanje poslije</label>
       <div class="readonly-box" id="view-stanje-poslije"></div>
     </div>
+    <div class="form-group">
+      <label>Terapeut</label>
+      <div class="readonly-box" id="view-terapeut"></div>
+    </div>
     </div>
     <div style="text-align: center; margin-top: 15px;">
       <button type="button" class="btn btn-secondary" onclick="zatvoriViewTretman()">Zatvori</button>
@@ -256,13 +261,14 @@ function zatvoriUrediTretman() {
   document.getElementById('modal-overlay').style.display = 'none';
 }
 
-function prikaziTretmanDetalji(id, stanje_prije, terapija, stanje_poslije, datum, unio) {
+function prikaziTretmanDetalji(id, stanje_prije, terapija, stanje_poslije, datum, terapeut_ime_prezime, unio) {
   document.getElementById('view-datum').textContent = new Date(datum).toLocaleString('hr-HR');
   document.getElementById('view-unio').textContent = unio;
 
   document.getElementById('view-stanje-prije').textContent = stanje_prije;
   document.getElementById('view-terapija').textContent = terapija;
   document.getElementById('view-stanje-poslije').textContent = stanje_poslije;
+  document.getElementById('view-terapeut').textContent = terapeut_ime_prezime;
 document.getElementById('btn-tretman-pdf').href = '/kartoni/print-tretman?id=' + id;
 
   document.getElementById('tretman-modal-view').style.display = 'block';
