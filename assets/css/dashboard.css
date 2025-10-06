@@ -599,6 +599,10 @@ display: inline-block;
 }
 
 /*PRETRAGA*/
+.pretraga-label {
+    display:flex;
+    flex-direction:column;
+}
 .pretraga-label label {
     margin-bottom:10px;
     font-weight:500;
