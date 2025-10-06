@@ -1011,6 +1011,15 @@ display: inline-block;
     font-size: 12px;
     font-family: Montserrat;
 }
+.btn-view {
+    background:#efefef;
+    text-decoration: none;
+    color: #666;;
+}
+.btn-view:hover {
+    background:#207a99;
+    color:#fff;
+}
 .bottom-foot {
     display:flex;
     justify-content:start;
