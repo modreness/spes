@@ -914,12 +914,14 @@ display: inline-block;
   background-color: #b71c1c;
 }
 .btn-edit {
-  background-color: #efc023;
+  background:linear-gradient(90deg, #255AA5, #289CC6);
+  /*background-color: #efc023;*/
   color: #fff;
   text-decoration:none;
 }
 .btn-edit:hover {
-    background:#dbae19;
+    /*background:#dbae19;*/
+    background:#289CC6;
 }
 .btn-add {
   background-color: #255AA5;
