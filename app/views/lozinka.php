@@ -48,7 +48,7 @@ ob_start();
     <label>Trenutna lozinka</label>
     <div class="lozinka-wrap">
       <input type="password" name="trenutna" id="stara_lozinka" placeholder="Unesite trenutnu lozinku" style="flex:1;">
-      <button type="button" class="toggle-password" onclick="toggleStareLozinke()" aria-label="Prikaži/Sakrij lozinke">
+      <button type="button" class="toggle-password" onclick="toggleStareLozinke()" aria-label="Prikaži/Sakrij staru lozinku">
         <i id="eye-icon-old" class="fa-solid fa-eye"></i>
       </button>
     </div>
@@ -58,7 +58,7 @@ ob_start();
     <label>Nova lozinka</label>
     <div class="lozinka-wrap">
       <input type="password" name="nova" id="nova_lozinka" placeholder="Nova lozinka" style="flex:1;">
-      <button type="button" class="toggle-password" onclick="toggleLozinke()" aria-label="Prikaži/Sakrij lozinke">
+      <button type="button" class="toggle-password" onclick="toggleLozinke()" aria-label="Prikaži/Sakrij novu lozinku">
         <i id="eye-icon" class="fa-solid fa-eye"></i>
       </button>
   </div>
@@ -85,16 +85,15 @@ ob_start();
     }
 
     function toggleStareLozinke() {
-      const inputs = document.getElementById('stara_lozinka');
-      const icon = document.getElementById('eye-icon-old');
-      const currentlyPassword = inputs[0].type === 'password';
+    const input = document.getElementById('stara_lozinka'); // jedan element
+    const icon  = document.getElementById('eye-icon-old');
+    const currentlyPassword = input.type === 'password';
 
-      inputs.forEach(input => input.type = currentlyPassword ? 'text' : 'password');
+    input.type = currentlyPassword ? 'text' : 'password';
 
-      icon.classList.toggle('fa-eye');
-      icon.classList.toggle('fa-eye-slash');
-
-    }
+    icon.classList.toggle('fa-eye');
+    icon.classList.toggle('fa-eye-slash');
+  }
   </script>
 </form>
 </div>
