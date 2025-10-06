@@ -13,8 +13,18 @@
             clear:both;
             min-height:140px;
          }
-    .logo { width: 120px; }
-    .ustanova { text-align: right; font-size: 11px; }
+    .logo {
+            width: 120px;
+            float:left;
+            clear:both;
+        }
+
+        .ustanova {
+            float:right;
+            text-align: right;
+            font-size: 11px;
+            clear:both;
+        }
     .section { margin-bottom: 15px; }
     .label { font-weight: bold; }
   </style>
