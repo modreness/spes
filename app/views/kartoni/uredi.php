@@ -131,7 +131,7 @@
 
         <div style="display: flex; gap: 10px; margin-top: 20px;">
           <button type="submit" class="submit-button">Spremi promjene</button>
-          <a href="/kartoni/pregled?id=<?= $karton['id'] ?>" class="btn btn-secondary">Otkaži</a>
+          <a href="/kartoni/pregled?id=<?= $karton['id'] ?>" class="submit-button-grey">Otkaži</a>
         </div>
       </form>
     </div>
