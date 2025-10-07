@@ -1669,7 +1669,7 @@ margin-bottom:20px;
         color: white !important;
         margin-right: 5px !important;
     }
-    .select2-dijagnoze + .select2-selection__choice__display {
+    .select2-dijagnoze + .select2-container--default .select2-selection--multiple .select2-selection__choice__display {
     padding-left: 10px !important;
     }
     .select2-dijagnoze + .select2-selection__choice__remove {
