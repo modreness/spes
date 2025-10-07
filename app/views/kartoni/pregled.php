@@ -70,7 +70,23 @@
     <div class="card-block cb-top">
         <label>Dijagonoza:</label>
         <div class="card-info-fw">
-            <?= htmlspecialchars($karton['dijagnoza'] ?? '') ?>
+            <?php
+            // Dohvati dijagnoze povezane s ovim kartonom
+            $stmt_dijagnoze = $pdo->prepare("
+                SELECT d.naziv 
+                FROM karton_dijagnoze kd
+                LEFT JOIN dijagnoze d ON kd.dijagnoza_id = d.id
+                WHERE kd.karton_id = ?
+            ");
+            $stmt_dijagnoze->execute([$karton['id']]);
+            $dijagnoze = $stmt_dijagnoze->fetchAll(PDO::FETCH_COLUMN);
+
+            if (!empty($dijagnoze)) {
+                echo htmlspecialchars(implode(', ', $dijagnoze));
+            } else {
+                echo '<em>Nema dodanih dijagnoza</em>';
+            }
+            ?>
         </div>
     </div>
     <div class="card-block cb-top">
