@@ -28,8 +28,9 @@
         justify-content:center;
     }
     .logo img {
-      max-width: 40%;
+      width: 90px;
       margin-bottom: 20px;
+      height:auto;
     }
     .menu-title {
       font-weight: 600;
