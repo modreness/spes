@@ -1668,14 +1668,17 @@ margin-bottom:20px;
     .select2-dijagnoze + .select2-container .select2-selection__choice__remove {
         color: white !important;
         margin-right: 5px !important;
+        border:0px !important;
+        background: #000 !important;
+        border-radius:4px !important;
+    }
+    .select2-dijagnoze + .select2-container .select2-selection__choice__remove:hover {
+        background:#289CC6 !important;
     }
     .select2-dijagnoze + .select2-container--default .select2-selection--multiple .select2-selection__choice__display {
     padding-left: 10px !important;
     }
-    .select2-dijagnoze + .select2-selection__choice__remove {
-    background: #000 !important;
-    border: 0px !important; 
-    }   
+    
 
 /*BASIC RESPONSIVE DESIGN*/
 @media (max-width: 1400px) { 
