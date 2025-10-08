@@ -38,7 +38,7 @@ switch ($period) {
 }
 
 try {
-    // Najčešće dijagnoze - AŽURIRANO sa ispravnim query-jem
+    // Najčešće dijagnoze - filtrira po datumu dodavanja dijagnoze
     $stmt = $pdo->prepare("
         SELECT 
             d.id as dijagnoza_id,
@@ -49,7 +49,7 @@ try {
         FROM karton_dijagnoze kd
         JOIN dijagnoze d ON kd.dijagnoza_id = d.id
         JOIN kartoni k ON kd.karton_id = k.id
-        WHERE k.datum_otvaranja BETWEEN ? AND ?
+        WHERE kd.datum_dijagnoze BETWEEN ? AND ?
         GROUP BY d.id, d.naziv, d.opis
         ORDER BY broj_slucajeva DESC
         LIMIT 10
@@ -114,12 +114,11 @@ try {
     $stmt->execute([$datum_od, $datum_do]);
     $ukupno_tretmana = $stmt->fetchColumn();
     
-    // Ukupan broj različitih dijagnoza koje se koriste
+    // Ukupan broj različitih dijagnoza koje se koriste u periodu
     $stmt = $pdo->prepare("
         SELECT COUNT(DISTINCT kd.dijagnoza_id) 
         FROM karton_dijagnoze kd
-        JOIN kartoni k ON kd.karton_id = k.id
-        WHERE k.datum_otvaranja BETWEEN ? AND ?
+        WHERE kd.datum_dijagnoze BETWEEN ? AND ?
     ");
     $stmt->execute([$datum_od, $datum_do]);
     $ukupno_razlicitih_dijagnoza = $stmt->fetchColumn();
