@@ -21,7 +21,7 @@
                     </select>
                 </div>
                 
-                <div class="form-group" id="custom-dates" style="display: <?= $period === 'custom' ? 'block' : 'none' ?>; align-items:center;">
+                <div class="form-group" id="custom-dates" style="display: <?= $period === 'custom' ? 'flex' : 'none' ?>; align-items:center;">
                     <label for="datum_od">Od - Do</label>
                     <div style="display: flex; gap: 10px;">
                         <input type="date" id="datum_od" style="padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" name="datum_od" value="<?= htmlspecialchars($datum_od) ?>">
