@@ -23,11 +23,11 @@
                 <?= $termini_iz_paketa_mesec ?> iz paketa
             </div>
         </div>
-        <div class="stat-card" style="background: linear-gradient(90deg, #255AA5, #255AA5);">
+        <div class="stat-card" style="background: linear-gradient(90deg, #289CC6, #289CC6);">
             <h3>Prodato paketa (mjesec)</h3>
             <div class="stat-number"><?= $paketi_prodati_mesec ?></div>
         </div>
-        <div class="stat-card" style="background: linear-gradient(135deg, #16a085, #1abc9c);">
+        <div class="stat-card" style="background: linear-gradient(135deg, #289CC6, #255AA5;">
             <h3>Prihod od paketa (mjesec)</h3>
             <div class="stat-number"><?= number_format($prihod_paketi_mesec, 2) ?> KM</div>
         </div>
@@ -77,9 +77,9 @@
 
     <!-- Brzi pregled - poslednji podaci -->
     <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-top: 30px; overflow: hidden;">
-        <div style="background: #255AA5; padding: 20px; border-bottom: 1px solid #e9ecef;">
+        <div style="background: #c2c5c9; padding: 20px; border-bottom: 1px solid #e9ecef;">
             <h3 style="margin: 0; color: #ffffff;">
-                <i class="fa-solid fa-clock" style="margin-right: 10px; color: #ffffff;"></i>
+                <i class="fa-solid fa-clock" style="margin-right: 10px; color: #666666;"></i>
                 Brzi pregled - posljednjih 7 dana
             </h3>
         </div>
