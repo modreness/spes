@@ -15,17 +15,17 @@ if (!in_array($user['uloga'], ['admin', 'recepcioner'])) {
 }
 
 // Filter parametri
-$period = $_GET['period'] ?? 'ovaj_mesec';
+$period = $_GET['period'] ?? 'ovaj_mjesec';
 $datum_od = $_GET['datum_od'] ?? '';
 $datum_do = $_GET['datum_do'] ?? '';
 
 // Izračunaj datume
 switch ($period) {
-    case 'ovaj_mesec':
+    case 'ovaj_mjesec':
         $datum_od = date('Y-m-01');
         $datum_do = date('Y-m-t');
         break;
-    case 'prosli_mesec':
+    case 'prosli_mjesec':
         $datum_od = date('Y-m-01', strtotime('last month'));
         $datum_do = date('Y-m-t', strtotime('last month'));
         break;
@@ -95,12 +95,12 @@ try {
     // Broj novih kartona po mjesecima
     $stmt = $pdo->prepare("
         SELECT 
-            DATE_FORMAT(datum_otvaranja, '%Y-%m') as mesec,
+            DATE_FORMAT(datum_otvaranja, '%Y-%m') as mjesec,
             COUNT(*) as novi_kartoni
         FROM kartoni
         WHERE datum_otvaranja BETWEEN ? AND ?
         GROUP BY DATE_FORMAT(datum_otvaranja, '%Y-%m')
-        ORDER BY mesec
+        ORDER BY mjesec
     ");
     $stmt->execute([$datum_od, $datum_do]);
     $novi_kartoni = $stmt->fetchAll();
