@@ -27,12 +27,13 @@
             <h3>Prodato paketa (mjesec)</h3>
             <div class="stat-number"><?= $paketi_prodati_mesec ?></div>
         </div>
-        <div class="stat-card" style="background: linear-gradient(135deg, #289CC6, #255AA5;">
+         <!--
+        <div class="stat-card" style="background: linear-gradient(135deg, #289CC6, #255AA5);">
             <h3>Prihod od paketa (mjesec)</h3>
             <div class="stat-number"><?= number_format($prihod_paketi_mesec, 2) ?> KM</div>
         </div>
-        <!--
-        <div class="stat-card" style="background: linear-gradient(135deg, #e74c3c, #ec7063);">
+       -->
+        <div class="stat-card" style="background: linear-gradient(135deg, #289CC6, #255AA5);">
             <h3>Top terapeut</h3>
             <div class="stat-number" style="font-size: 18px;">
                 <?= $top_terapeut ? htmlspecialchars($top_terapeut['ime']) : 'N/A' ?>
@@ -43,7 +44,7 @@
                 </div>
             <?php endif; ?>
         </div>
-            -->
+            
         
         
     </div>
@@ -78,7 +79,7 @@
     <!-- Brzi pregled - poslednji podaci -->
     <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-top: 30px; overflow: hidden;">
         <div style="background: #c2c5c9; padding: 20px; border-bottom: 1px solid #e9ecef;">
-            <h3 style="margin: 0; color: #ffffff;">
+            <h3 style="margin: 0; color: #666666;">
                 <i class="fa-solid fa-clock" style="margin-right: 10px; color: #666666;"></i>
                 Brzi pregled - posljednjih 7 dana
             </h3>
