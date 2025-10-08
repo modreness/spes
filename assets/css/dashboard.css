@@ -1037,6 +1037,9 @@ display: inline-block;
 .btn-no-margin {
     margin:0px !important;
 }
+.form-actions {
+    margin-top:20px;
+}
 .btn-top-margin {
     margin-top:50px !important;
     display:inline-block;
