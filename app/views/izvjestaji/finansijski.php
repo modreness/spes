@@ -29,7 +29,7 @@
                     </div>
                 </div>
                 
-                <button type="submit" class="btn btn-primary">Generiši izvještaj</button>
+                <button type="submit" class="btn btn-search">Generiši izvještaj</button>
             </div>
         </form>
     </div>
@@ -104,7 +104,7 @@
                     <th>Kategorija</th>
                     <th>Broj termina</th>
                     <th>Ukupan prihod</th>
-                    <th>Prosečan prihod</th>
+                    <th>Prosječan prihod</th>
                 </tr>
             </thead>
             <tbody>
@@ -134,7 +134,7 @@
                     <th>Terapeut</th>
                     <th>Broj termina</th>
                     <th>Ukupan prihod</th>
-                    <th>Prosečan prihod</th>
+                    <th>Prosječan prihod</th>
                     <th>Učešće u ukupnom prihodu</th>
                 </tr>
             </thead>
@@ -161,7 +161,7 @@
 <!-- Prodati paketi - NOVO -->
     <?php if (!empty($prodati_paketi)): ?>
     <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 25px; overflow: hidden;">
-        <div style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 20px; border-bottom: 1px solid #e9ecef;">
+        <div style="background: linear-gradient(135deg, #289CC6, #255AA5); padding: 20px; border-bottom: 1px solid #e9ecef;">
             <h3 style="margin: 0; color: white;">
                 <i class="fa-solid fa-box"></i> Prodati paketi
             </h3>
@@ -173,7 +173,7 @@
                     <th>Kategorija</th>
                     <th>Broj prodatih</th>
                     <th>Ukupan prihod</th>
-                    <th>Prosečna cijena</th>
+                    <th>Prosječna cijena</th>
                     <th>Učešće u prihodu</th>
                 </tr>
             </thead>
@@ -181,7 +181,7 @@
                 <?php foreach ($prodati_paketi as $paket): ?>
                 <tr>
                     <td>
-                        <i class="fa-solid fa-box" style="color: #667eea; margin-right: 8px;"></i>
+                        <i class="fa-solid fa-box" style="color: #289CC6; margin-right: 8px;"></i>
                         <?= htmlspecialchars($paket['paket']) ?>
                     </td>
                     <td><?= htmlspecialchars($paket['kategorija'] ?? 'Bez kategorije') ?></td>
@@ -194,7 +194,7 @@
                         ?>
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <div style="background: #ecf0f1; height: 8px; width: 100px; border-radius: 4px; overflow: hidden;">
-                                <div style="background: #667eea; height: 100%; width: <?= $procenat ?>%; border-radius: 4px;"></div>
+                                <div style="background: #289CC6; height: 100%; width: <?= $procenat ?>%; border-radius: 4px;"></div>
                             </div>
                             <span><?= number_format($procenat, 1) ?>%</span>
                         </div>
