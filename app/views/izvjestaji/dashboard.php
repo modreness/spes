@@ -77,8 +77,8 @@
     </div>
 
     <!-- Brzi pregled - poslednji podaci -->
-    <div style="background: #f7f7f7; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-top: 50px; overflow: hidden;">
-        <div style="background: #c2c5c9; padding: 20px; border-bottom: 1px solid #e9ecef;">
+    <div style="background: #c2c5c9; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-top: 50px; overflow: hidden;">
+        <div style="background: #ffffff; padding: 20px; border-bottom: 1px solid #ffffff;">
             <h3 style="margin: 0; color: #2c3e50;">
                 <i class="fa-solid fa-clock" style="margin-right: 10px; color: #2c3e50;"></i>
                 Brzi pregled - posljednjih 7 dana
