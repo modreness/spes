@@ -212,6 +212,6 @@
 function toggleCustomDates() {
     const period = document.getElementById('period').value;
     const customDates = document.getElementById('custom-dates');
-    customDates.style.display = period === 'custom' ? 'block' : 'none';
+    customDates.style.display = period === 'custom' ? 'flex' : 'none';
 }
 </script>
