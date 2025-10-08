@@ -38,7 +38,7 @@ switch ($period) {
 }
 
 try {
-    // Najčešće dijagnoze - AŽURIRANO za novu strukturu
+    // Najčešće dijagnoze - AŽURIRANO sa ispravnim query-jem
     $stmt = $pdo->prepare("
         SELECT 
             d.id as dijagnoza_id,
@@ -46,12 +46,11 @@ try {
             d.opis,
             COUNT(kd.id) as broj_slucajeva,
             COUNT(DISTINCT k.pacijent_id) as broj_pacijenata
-        FROM dijagnoze d
-        LEFT JOIN karton_dijagnoze kd ON d.id = kd.dijagnoza_id
-        LEFT JOIN kartoni k ON kd.karton_id = k.id
+        FROM karton_dijagnoze kd
+        JOIN dijagnoze d ON kd.dijagnoza_id = d.id
+        JOIN kartoni k ON kd.karton_id = k.id
         WHERE k.datum_otvaranja BETWEEN ? AND ?
         GROUP BY d.id, d.naziv, d.opis
-        HAVING broj_slucajeva > 0
         ORDER BY broj_slucajeva DESC
         LIMIT 10
     ");
