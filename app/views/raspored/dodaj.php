@@ -63,7 +63,7 @@ endif;
         </table>
 
         <div class="form-actions">
-            <button type="submit" name="snimi" class="btn btn-add">
+            <button type="submit" name="snimi" class="btn btn-add btn-no-margin">
                 <i class="fa-solid fa-save"></i> Snimi raspored
             </button>
             <a href="/raspored" class="btn btn-secondary">Otkaži</a>
