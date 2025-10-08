@@ -36,22 +36,22 @@
 
     <!-- Osnovne statistike - AŽURIRANO -->
     <div class="stats-grid" style="margin-bottom: 30px;">
-        <div class="stat-card" style="background: linear-gradient(135deg, #27ae60, #2ecc71);">
+        <div class="stat-card" style="background: linear-gradient(90deg, #255AA5, #255AA5);">
             <h3>Ukupni prihod</h3>
             <div class="stat-number"><?= number_format($ukupni_prihodi['ukupno'], 2) ?> KM</div>
             <small style="opacity: 0.9;">Paketi + Termini</small>
         </div>
-        <div class="stat-card" style="background: linear-gradient(135deg, #3498db, #5dade2);">
+        <div class="stat-card" style="background: linear-gradient(90deg, #255AA5, #255AA5);">
             <h3>Prihod od paketa</h3>
             <div class="stat-number"><?= number_format($ukupni_prihodi['paketi_prihod'], 2) ?> KM</div>
             <small style="opacity: 0.9;"><?= $ukupni_prihodi['broj_paketa'] ?> prodatih</small>
         </div>
-        <div class="stat-card" style="background: linear-gradient(135deg, #f39c12, #f4d03f);">
+        <div class="stat-card" style="background: linear-gradient(90deg, #289CC6, #289CC6);">
             <h3>Prihod od termina</h3>
             <div class="stat-number"><?= number_format($ukupni_prihodi['termini_prihod'], 2) ?> KM</div>
             <small style="opacity: 0.9;"><?= $ukupni_prihodi['broj_termina'] ?> pojedinačnih</small>
         </div>
-        <div class="stat-card" style="background: linear-gradient(135deg, #9b59b6, #bb6bd9);">
+        <div class="stat-card" style="background: linear-gradient(135deg, #289CC6, #255AA5);">
             <h3>Broj termina</h3>
             <div class="stat-number">
                 <div class="stat-number"><?php $ukupan_broj = $ukupni_prihodi['broj_termina'] + $ukupni_prihodi['broj_paketa']; echo $ukupan_broj; ?></div>
@@ -70,18 +70,18 @@
             <h3 style="margin: 0; color: #2c3e50;">Prihodi po danima</h3>
         </div>
         <div style="padding: 20px;">
-            <div style="display: flex; align-items: end; gap: 5px; height: 200px; overflow-x: auto;">
+            <div style="display: flex; align-items: end; gap: 5px; height: 250px; overflow-x: auto; padding-bottom:10px;">
                 <?php 
                 $max_prihod = max(array_column($prihodi_po_danima, 'prihod'));
                 foreach ($prihodi_po_danima as $dan): 
                     $visina = $max_prihod > 0 ? ($dan['prihod'] / $max_prihod) * 160 : 0;
                 ?>
                 <div style="display: flex; flex-direction: column; align-items: center; min-width: 60px;">
-                    <div style="color: #2c3e50; font-size: 12px; margin-bottom: 5px; font-weight: 600;">
+                    <div style="color: #255AA5; font-size: 12px; margin-bottom: 5px; font-weight: 600;">
                         <?= number_format($dan['prihod'], 0) ?>
                     </div>
-                    <div style="background: #3498db; width: 40px; height: <?= $visina ?>px; border-radius: 4px 4px 0 0;"></div>
-                    <div style="color: #7f8c8d; font-size: 11px; margin-top: 5px; transform: rotate(-45deg); white-space: nowrap;">
+                    <div style="background: #289CC6; width: 40px; height: <?= $visina ?>px; border-radius: 4px 4px 0 0;"></div>
+                    <div style="color: #666666; font-size: 11px; margin-top: 5px; transform: rotate(-45deg); white-space: nowrap;">
                         <?= date('d.m', strtotime($dan['dan'])) ?>
                     </div>
                 </div>
