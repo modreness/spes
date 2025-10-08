@@ -14,8 +14,8 @@
                     <select id="period" name="period" onchange="toggleCustomDates()" style="padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
                         <option value="danas" <?= $period === 'danas' ? 'selected' : '' ?>>Danas</option>
                         <option value="ova_sedmica" <?= $period === 'ova_sedmica' ? 'selected' : '' ?>>Ova sedmica</option>
-                        <option value="ovaj_mesec" <?= $period === 'ovaj_mesec' ? 'selected' : '' ?>>Ovaj mesec</option>
-                        <option value="prosli_mesec" <?= $period === 'prosli_mesec' ? 'selected' : '' ?>>Prošli mesec</option>
+                        <option value="ovaj_mjesec" <?= $period === 'ovaj_mjesec' ? 'selected' : '' ?>>Ovaj mjesec</option>
+                        <option value="prosli_mjesec" <?= $period === 'prosli_mjesec' ? 'selected' : '' ?>>Prošli mjesec</option>
                         <option value="ova_godina" <?= $period === 'ova_godina' ? 'selected' : '' ?>>Ova godina</option>
                         <option value="custom" <?= $period === 'custom' ? 'selected' : '' ?>>Prilagođeno</option>
                     </select>

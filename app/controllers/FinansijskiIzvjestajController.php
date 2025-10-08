@@ -15,7 +15,7 @@ if (!in_array($user['uloga'], ['admin', 'recepcioner'])) {
 }
 
 // Filter parametri
-$period = $_GET['period'] ?? 'ovaj_mesec';
+$period = $_GET['period'] ?? 'ovaj_mjesec';
 $datum_od = $_GET['datum_od'] ?? '';
 $datum_do = $_GET['datum_do'] ?? '';
 
@@ -28,11 +28,11 @@ switch ($period) {
         $datum_od = date('Y-m-d', strtotime('monday this week'));
         $datum_do = date('Y-m-d', strtotime('sunday this week'));
         break;
-    case 'ovaj_mesec':
+    case 'ovaj_mjesec':
         $datum_od = date('Y-m-01');
         $datum_do = date('Y-m-t');
         break;
-    case 'prosli_mesec':
+    case 'prosli_mjesec':
         $datum_od = date('Y-m-01', strtotime('last month'));
         $datum_do = date('Y-m-t', strtotime('last month'));
         break;
