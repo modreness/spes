@@ -65,7 +65,7 @@
 
     <!-- Graf prihoda po danima -->
     <?php if (!empty($prihodi_po_danima)): ?>
-    <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 25px; overflow: hidden;">
+    <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 35px; overflow: hidden;">
         <div style="background: #f8f9fa; padding: 20px; border-bottom: 1px solid #e9ecef;">
             <h3 style="margin: 0; color: #2c3e50;">Prihodi po danima</h3>
         </div>
@@ -93,7 +93,7 @@
 
     <!-- Prihodi po uslugama -->
     <?php if (!empty($prihodi_po_uslugama)): ?>
-    <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 25px; overflow: hidden;">
+    <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 35px; overflow: hidden;">
         <div style="background: #f8f9fa; padding: 20px; border-bottom: 1px solid #e9ecef;">
             <h3 style="margin: 0; color: #2c3e50;">Prihodi po uslugama</h3>
         </div>
@@ -124,7 +124,7 @@
 
     <!-- Prihodi po terapeutima -->
     <?php if (!empty($prihodi_po_terapeutima)): ?>
-    <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 25px; overflow: hidden;">
+    <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 35px; overflow: hidden;">
         <div style="background: #f8f9fa; padding: 20px; border-bottom: 1px solid #e9ecef;">
             <h3 style="margin: 0; color: #2c3e50;">Prihodi po terapeutima</h3>
         </div>
@@ -160,7 +160,7 @@
 
 <!-- Prodati paketi - NOVO -->
     <?php if (!empty($prodati_paketi)): ?>
-    <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 25px; overflow: hidden;">
+    <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 35px; overflow: hidden;">
         <div style="background: linear-gradient(135deg, #289CC6, #255AA5); padding: 20px; border-bottom: 1px solid #e9ecef;">
             <h3 style="margin: 0; color: white;">
                 <i class="fa-solid fa-box"></i> Prodati paketi
