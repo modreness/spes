@@ -50,7 +50,7 @@
     </div>
 
     <!-- Tipovi izvještaja -->
-    <div class="action-cards" style="margin-top:20px;">
+    <div class="action-cards" style="margin-top:50px;">
         <div class="action-card">
             <h3>Finansijski izvještaji</h3>
             <p>Prihodi, troškovi i finansijske analize po periodima</p>
@@ -77,7 +77,7 @@
     </div>
 
     <!-- Brzi pregled - poslednji podaci -->
-    <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-top: 50px; overflow: hidden;">
+    <div style="background: #f7f7f7; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-top: 50px; overflow: hidden;">
         <div style="background: #c2c5c9; padding: 20px; border-bottom: 1px solid #e9ecef;">
             <h3 style="margin: 0; color: #2c3e50;">
                 <i class="fa-solid fa-clock" style="margin-right: 10px; color: #2c3e50;"></i>
