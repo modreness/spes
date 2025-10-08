@@ -38,16 +38,20 @@ switch ($period) {
 }
 
 try {
-    // Najčešće dijagnoze
+    // Najčešće dijagnoze - AŽURIRANO za novu strukturu
     $stmt = $pdo->prepare("
         SELECT 
-            k.dijagnoza,
-            COUNT(*) as broj_slucajeva,
+            d.id as dijagnoza_id,
+            d.naziv as dijagnoza,
+            d.opis,
+            COUNT(kd.id) as broj_slucajeva,
             COUNT(DISTINCT k.pacijent_id) as broj_pacijenata
-        FROM kartoni k
+        FROM dijagnoze d
+        LEFT JOIN karton_dijagnoze kd ON d.id = kd.dijagnoza_id
+        LEFT JOIN kartoni k ON kd.karton_id = k.id
         WHERE k.datum_otvaranja BETWEEN ? AND ?
-        AND k.dijagnoza IS NOT NULL AND k.dijagnoza != ''
-        GROUP BY k.dijagnoza
+        GROUP BY d.id, d.naziv, d.opis
+        HAVING broj_slucajeva > 0
         ORDER BY broj_slucajeva DESC
         LIMIT 10
     ");
@@ -111,6 +115,16 @@ try {
     $stmt->execute([$datum_od, $datum_do]);
     $ukupno_tretmana = $stmt->fetchColumn();
     
+    // Ukupan broj različitih dijagnoza koje se koriste
+    $stmt = $pdo->prepare("
+        SELECT COUNT(DISTINCT kd.dijagnoza_id) 
+        FROM karton_dijagnoze kd
+        JOIN kartoni k ON kd.karton_id = k.id
+        WHERE k.datum_otvaranja BETWEEN ? AND ?
+    ");
+    $stmt->execute([$datum_od, $datum_do]);
+    $ukupno_razlicitih_dijagnoza = $stmt->fetchColumn();
+    
 } catch (PDOException $e) {
     error_log("Greška pri generiranju medicinskog izvještaja: " . $e->getMessage());
     $dijagnoze = [];
@@ -119,6 +133,7 @@ try {
     $novi_kartoni = [];
     $ukupno_kartona = 0;
     $ukupno_tretmana = 0;
+    $ukupno_razlicitih_dijagnoza = 0;
 }
 
 $title = "Medicinski izvještaj";

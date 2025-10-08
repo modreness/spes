@@ -50,7 +50,7 @@
         </div>
         <div class="stat-card" style="background: linear-gradient(135deg, #289CC6, #255AA5);">
             <h3>Različitih dijagnoza</h3>
-            <div class="stat-number"><?= count($dijagnoze) ?></div>
+            <div class="stat-number"><?= $ukupno_razlicitih_dijagnoza ?></div>
         </div>
     </div>
 
@@ -63,10 +63,10 @@
         <table class="table-standard">
             <thead>
                 <tr>
-                    <th>Dijagnoza</th>
-                    <th>Broj slučajeva</th>
-                    <th>Broj pacijenata</th>
-                    <th>Procenat</th>
+                    <th style="width: 35%;">Dijagnoza</th>
+                    <th style="width: 15%;">Broj slučajeva</th>
+                    <th style="width: 15%;">Broj pacijenata</th>
+                    <th style="width: 35%;">Procenat</th>
                 </tr>
             </thead>
             <tbody>
@@ -76,8 +76,13 @@
                     $procenat = $ukupno_slucajeva > 0 ? ($d['broj_slucajeva'] / $ukupno_slucajeva) * 100 : 0;
                 ?>
                 <tr>
-                    <td><?= htmlspecialchars($d['dijagnoza']) ?></td>
-                    <td><?= $d['broj_slucajeva'] ?></td>
+                    <td>
+                        <strong style="color: #2c3e50;"><?= htmlspecialchars($d['dijagnoza']) ?></strong>
+                        <?php if ($d['opis']): ?>
+                            <br><small style="color: #7f8c8d;"><?= htmlspecialchars($d['opis']) ?></small>
+                        <?php endif; ?>
+                    </td>
+                    <td style="font-weight: 600; color: #27ae60;"><?= $d['broj_slucajeva'] ?></td>
                     <td><?= $d['broj_pacijenata'] ?></td>
                     <td>
                         <div style="display: flex; align-items: center; gap: 10px;">
