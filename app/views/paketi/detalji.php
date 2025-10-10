@@ -61,7 +61,7 @@
                     </span>
                 </div>
                 <div style="background: #ecf0f1; border-radius: 20px; height: 20px; overflow: hidden;">
-                    <div style="background: <?= $procenat >= 100 ? '#e74c3c' : ($procenat >= 75 ? '#f39c12' : '#3498db') ?>; height: 100%; width: <?= $procenat ?>%; transition: width 0.5s; border-radius: 20px;"></div>
+                    <div style="background: <?= $procenat >= 100 ? '#e74c3c' : ($procenat >= 75 ? '#f39c12' : '#289CC6') ?>; height: 100%; width: <?= $procenat ?>%; transition: width 0.5s; border-radius: 20px;"></div>
                 </div>
             </div>
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px;">
@@ -117,8 +117,8 @@
 
     <!-- Napomena -->
     <?php if (!empty($paket['napomena'])): ?>
-    <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; border-radius: 8px; margin-bottom: 25px;">
-        <strong><i class="fa-solid fa-sticky-note"></i> Napomena:</strong><br>
+    <div style="background: #fff3cd; border-left: 4px solid #fff7df; padding: 15px; border-radius: 8px; margin-bottom: 25px;">
+        <strong style="margin-top:15px;"><i class="fa-solid fa-sticky-note"></i> Napomena:</strong><br>
         <?= nl2br(htmlspecialchars($paket['napomena'])) ?>
     </div>
     <?php endif; ?>
