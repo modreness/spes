@@ -8,23 +8,23 @@
     <div style="background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 25px;">
         <form method="get" style="display: flex; gap: 15px; align-items: end; flex-wrap: wrap;">
             <div class="form-group">
-                <label for="mesec">Mesec</label>
-                <select id="mesec" name="mesec">
+                <label for="mjesec">Mjesec</label>
+                <select id="mjesec" name="mjesec" style="padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
                     <?php 
-                    $meseci = [
+                    $mjeseci = [
                         1 => 'Januar', 2 => 'Februar', 3 => 'Mart', 4 => 'April',
                         5 => 'Maj', 6 => 'Jun', 7 => 'Jul', 8 => 'Avgust',
                         9 => 'Septembar', 10 => 'Oktobar', 11 => 'Novembar', 12 => 'Decembar'
                     ];
-                    foreach ($meseci as $br => $naziv): ?>
-                        <option value="<?= $br ?>" <?= $mesec == $br ? 'selected' : '' ?>><?= $naziv ?></option>
+                    foreach ($mjeseci as $br => $naziv): ?>
+                        <option value="<?= $br ?>" <?= $mjesec == $br ? 'selected' : '' ?>><?= $naziv ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
             
             <div class="form-group">
                 <label for="godina">Godina</label>
-                <select id="godina" name="godina">
+                <select id="godina" name="godina" style="padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
                     <?php for ($g = 2024; $g <= 2030; $g++): ?>
                         <option value="<?= $g ?>" <?= $godina == $g ? 'selected' : '' ?>><?= $g ?></option>
                     <?php endfor; ?>
@@ -33,7 +33,7 @@
             
             <div class="form-group">
                 <label for="terapeut">Terapeut</label>
-                <select id="terapeut" name="terapeut">
+                <select id="terapeut" name="terapeut" style="padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
                     <option value="">Svi terapeuti</option>
                     <?php foreach ($terapeuti as $t): ?>
                         <option value="<?= $t['id'] ?>" <?= $terapeut_filter == $t['id'] ? 'selected' : '' ?>>
@@ -43,7 +43,7 @@
                 </select>
             </div>
             
-            <button type="submit" class="btn btn-primary">Prikaži</button>
+            <button type="submit" class="btn btn-search">Prikaži</button>
         </form>
     </div>
 
@@ -56,7 +56,7 @@
     
     <div class="calendar-grid" style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden;">
         <div style="background: #2c3e50; color: white; padding: 20px; text-align: center;">
-            <h3 style="margin: 0; font-size: 24px;"><?= $meseci[$mesec] ?> <?= $godina ?></h3>
+            <h3 style="margin: 0; font-size: 24px;"><?= $mjeseci[$mjesec] ?> <?= $godina ?></h3>
         </div>
 
         <div style="display: grid; grid-template-columns: repeat(7, 1fr); background: #34495e;">
@@ -74,7 +74,7 @@
 
             <?php for ($dan = 1; $dan <= $broj_dana; $dan++): ?>
                 <?php 
-                $danas = date('j') == $dan && date('m') == $mesec && date('Y') == $godina;
+                $danas = date('j') == $dan && date('m') == $mjesec && date('Y') == $godina;
                 $termini_dana = $termini_po_danu[$dan] ?? [];
                 ?>
                 <div style="background: #fff; min-height: 120px; padding: 8px; <?= $danas ? 'border: 2px solid #3498db;' : '' ?>">
