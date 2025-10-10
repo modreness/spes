@@ -78,6 +78,7 @@
     padding: 10px;
     column-gap:5px;
     border-radius:10px;
+    border-left: 2px solid #255AA5;
 }
 .sidebar-nav a.active:hover {
     color:#000;
@@ -101,6 +102,7 @@
     padding: 10px;
     column-gap:5px;
     border-radius:10px;
+    border-left: 2px solid #255AA5;
 }
 
     .zakazani-link {
