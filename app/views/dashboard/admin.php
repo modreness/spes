@@ -202,7 +202,7 @@
                                     <?= htmlspecialchars($karton['pacijent_ime']) ?>
                                 </div>
                                 <div class="admin-list-details">
-                                    Broj upisa: <?= htmlspecialchars($karton['broj_upisa']) ?>
+                                    Broj kartona: <?= htmlspecialchars($karton['broj_upisa']) ?>
                                 </div>
                                 <div class="admin-list-extra">
                                     Otvorio: <?= htmlspecialchars($karton['otvorio_ime']) ?>
