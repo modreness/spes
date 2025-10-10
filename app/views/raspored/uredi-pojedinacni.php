@@ -51,8 +51,7 @@
                     <?php endforeach; ?>
                 </select>
                 <small style="display: block; margin-top: 8px; color: #7f8c8d;">
-                    Trenutna smjena: <strong><?= smjene()[$raspored['smjena']] ?? ucfirst($raspored['smjena']) ?>
-// "vecer" → "Večer" ✅ (tačno)</strong>
+                    Trenutna smjena: <strong><?= smjene()[$raspored['smjena']] ?? ucfirst($raspored['smjena']) ?></strong>
                 </small>
             </div>
 
