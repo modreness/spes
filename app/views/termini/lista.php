@@ -93,7 +93,7 @@
                     <td><?= htmlspecialchars($t['usluga_naziv']) ?></td>
                     <td>
                         <?php if ($t['placeno_iz_paketa']): ?>
-                            <span style="display: inline-block; background: linear-gradient(90deg, #255AA5, #289CC6); color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.85em; font-weight: 600;">
+                            <span style="display: inline-block; background: linear-gradient(90deg, #255AA5, #289CC6); color: white; padding: 6px 25px; border-radius: 20px; font-size: 0.85em; font-weight: 600;">
                                 <i class="fa-solid fa-box"></i> Paket
                             </span>
                         <?php else: ?>
