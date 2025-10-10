@@ -16,9 +16,9 @@
             <?php 
             $smjena_data = $vremena[$key] ?? null;
             $smjena_colors = [
-                'jutro' => '#f39c12',
-                'popodne' => '#3498db', 
-                'vecer' => '#9b59b6'
+                'jutro' => '#289cc6',
+                'popodne' => '#255AA5', 
+                'vecer' => '#666666'
             ];
             ?>
             <div class="shift-card" style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden; border-left: 5px solid <?= $smjena_colors[$key] ?>;">
