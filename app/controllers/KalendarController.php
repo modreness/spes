@@ -15,12 +15,12 @@ if (!in_array($user['uloga'], ['admin', 'recepcioner'])) {
 }
 
 // Filter parametri
-$mesec = $_GET['mesec'] ?? date('m');
+$mjesec = $_GET['mjesec'] ?? date('m');
 $godina = $_GET['godina'] ?? date('Y');
 $terapeut_filter = $_GET['terapeut'] ?? '';
 
 // Validacija
-$mesec = max(1, min(12, intval($mesec)));
+$mjesec = max(1, min(12, intval($mjesec)));
 $godina = max(2020, min(2030, intval($godina)));
 
 try {
@@ -29,8 +29,8 @@ try {
     $stmt->execute();
     $terapeuti = $stmt->fetchAll();
     
-    // Pripremi datum range za mesec
-    $prvi_dan = "$godina-" . str_pad($mesec, 2, '0', STR_PAD_LEFT) . "-01";
+    // Pripremi datum range za mjesec
+    $prvi_dan = "$godina-" . str_pad($mjesec, 2, '0', STR_PAD_LEFT) . "-01";
     $poslednji_dan = date('Y-m-t', strtotime($prvi_dan));
     
     // Query sa filterom
