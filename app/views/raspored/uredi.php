@@ -122,7 +122,7 @@
                             <td style="text-align: center;">
                                 <!-- Uredi -->
                                 <a href="/raspored/uredi-pojedinacni?id=<?= $r['id'] ?>" 
-                                   class="btn btn-primary btn-no-margin" 
+                                   class="btn btn-sm btn-edit" 
                                    style="padding: 6px 12px; font-size: 0.85em; margin-right: 5px;"
                                    title="Uredi raspored">
                                     <i class="fa-solid fa-edit"></i>
@@ -130,7 +130,7 @@
                                 
                                 <!-- Obriši -->
                                 <button type="button" 
-                                        class="btn btn-danger btn-no-margin" 
+                                        class="btn btn-sm btn-danger" 
                                         style="padding: 6px 12px; font-size: 0.85em;"
                                         title="Obriši raspored"
                                         onclick="otvoriModalBrisanja(<?= $r['id'] ?>, '<?= htmlspecialchars($podaci['info']['ime'], ENT_QUOTES) ?>', '<?= dani()[$r['dan']] ?>', '<?= ucfirst($r['smjena']) ?>')">
