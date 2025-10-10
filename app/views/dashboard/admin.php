@@ -241,17 +241,17 @@
                 <i class="fa-solid fa-money-bill"></i>
                 <span>Cjenovnik</span>
             </a>
+            <a href="/paketi" class="admin-quick-link">
+                <i class="fa-solid fa-box"></i>
+                <span>Paketi</span>
+            </a>
+            <a href="/dijagnoze" class="admin-quick-link">
+                <i class="fa-solid fa-notes-medical"></i>
+                <span>Dijagnoze</span>
+            </a>
             <a href="/timetable" class="admin-quick-link">
                 <i class="fa-solid fa-business-time"></i>
                 <span>Radna vremena</span>
-            </a>
-            <a href="/backup" class="admin-quick-link">
-                <i class="fa-solid fa-database"></i>
-                <span>Backup sistema</span>
-            </a>
-            <a href="/logs" class="admin-quick-link">
-                <i class="fa-solid fa-file-lines"></i>
-                <span>System logs</span>
             </a>
         </div>
     </div>
