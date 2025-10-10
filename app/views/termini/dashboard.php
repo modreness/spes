@@ -8,18 +8,18 @@
     <div class="alert alert-warning">Greška pri kreiranju termina.</div>
 <?php endif; ?>
 
-<div class="main-content">
+<div class="main-content-fw">
     <!-- Statistike -->
     <div class="stats-grid">
-        <div class="stat-card" style="background: linear-gradient(135deg, #3498db, #2980b9);">
+        <div class="stat-card" style="background: linear-gradient(135deg, #255AA5, #255AA5);">
             <h3>Termini danas</h3>
             <div class="stat-number"><?= $termini_danas ?></div>
         </div>
-        <div class="stat-card" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+        <div class="stat-card" style="background: linear-gradient(135deg, #255AA5, #289CC6);">
             <h3>Termini ove sedmice</h3>
             <div class="stat-number"><?= $termini_sedmica ?></div>
         </div>
-        <div class="stat-card" style="background: linear-gradient(135deg, #27ae60, #229954);">
+        <div class="stat-card" style="background: linear-gradient(135deg, #289CC6, #289CC6);">
             <h3>Ukupno aktivnih</h3>
             <div class="stat-number"><?= $ukupno_termina ?></div>
         </div>
