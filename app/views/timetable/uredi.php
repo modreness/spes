@@ -34,7 +34,7 @@
                 </div>
 
                 <div class="shift-content" style="padding: 25px;">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 200px; gap: 20px; align-items: end;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 200px; gap: 20px; align-items: center;">
                         
                         <div class="form-group">
                             <label for="<?= $key ?>_pocetak">Početak smjene</label>
@@ -56,13 +56,13 @@
                                    style="padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; width: 100%;">
                         </div>
                         
-                        <div class="form-group" style="margin-bottom: 0;">
-                            <label style="display: flex; align-items: center; cursor: pointer; padding: 12px; background: <?= $je_aktivna ? '#d4edda' : '#f8d7da' ?>; border: 2px solid <?= $je_aktivna ? '#28a745' : '#dc3545' ?>; border-radius: 8px; transition: all 0.3s;">
+                        <div style="margin-top: 28px;">
+                            <label style="display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 12px 16px; background: <?= $je_aktivna ? '#d4edda' : '#f8d7da' ?>; border-radius: 8px; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.08);">
                                 <input type="checkbox" 
                                        name="smjene[<?= $key ?>][aktivan]" 
                                        <?= $je_aktivna ? 'checked' : '' ?>
-                                       style="width: 20px; height: 20px; margin-right: 10px; cursor: pointer;">
-                                <span style="font-weight: 600; color: <?= $je_aktivna ? '#155724' : '#721c24' ?>; font-size: 14px;">
+                                       style="width: 18px; height: 18px; margin-right: 8px; cursor: pointer;">
+                                <span style="font-weight: 600; color: <?= $je_aktivna ? '#155724' : '#721c24' ?>; font-size: 14px; white-space: nowrap;">
                                     <i class="fa-solid fa-<?= $je_aktivna ? 'check-circle' : 'times-circle' ?>" style="margin-right: 5px;"></i>
                                     <?= $je_aktivna ? 'Aktivna' : 'Neaktivna' ?>
                                 </span>
@@ -104,13 +104,11 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (this.checked) {
                 label.style.background = '#d4edda';
-                label.style.borderColor = '#28a745';
                 span.style.color = '#155724';
                 icon.className = 'fa-solid fa-check-circle';
                 span.childNodes[2].textContent = 'Aktivna';
             } else {
                 label.style.background = '#f8d7da';
-                label.style.borderColor = '#dc3545';
                 span.style.color = '#721c24';
                 icon.className = 'fa-solid fa-times-circle';
                 span.childNodes[2].textContent = 'Neaktivna';
