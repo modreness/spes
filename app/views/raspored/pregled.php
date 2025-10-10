@@ -20,8 +20,8 @@
             <label for="filter_datum_od" style="font-weight: 500; color: #34495e;">Sedmica počinje:</label>
             <input type="date" id="filter_datum_od" name="filter_datum_od" 
                    value="<?= htmlspecialchars($datum_od) ?>"
-                   style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px;">
-            <button type="submit" class="btn btn-primary">
+                   style="padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px;">
+            <button type="submit" class="btn btn-search">
                 <i class="fa-solid fa-search"></i> Prikaži
             </button>
         </form>
@@ -48,7 +48,7 @@
             <div class="day-row" style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 20px; overflow: hidden; border: 1px solid <?= $ima_terapeute ? '#e8f5e8' : '#f8f9fa' ?>;">
                 
                 <!-- Dan header -->
-                <div class="day-header" style="background: <?= $ima_terapeute ? 'linear-gradient(135deg, #27ae60, #2ecc71)' : '#f8f9fa' ?>; padding: 15px 25px; color: <?= $ima_terapeute ? '#fff' : '#7f8c8d' ?>;">
+                <div class="day-header" style="background: <?= $ima_terapeute ? 'linear-gradient(135deg, #289cc6, #255AA5)' : '#f8f9fa' ?>; padding: 15px 25px; color: <?= $ima_terapeute ? '#fff' : '#7f8c8d' ?>;">
                     <h4 style="margin: 0; font-size: 18px; font-weight: 600;"><?= $label ?></h4>
                     <small style="opacity: 0.9;"><?= $dan_datum ?></small>
                     <?php if ($user['uloga'] === 'terapeut' && !$ima_terapeute): ?>
@@ -62,9 +62,9 @@
                         <?php 
                         $terapeuti_u_smjeni = $raspored_po_danu[$slug][$key] ?? [];
                         $smjena_colors = [
-                            'jutro' => '#f39c12',
-                            'popodne' => '#3498db', 
-                            'vecer' => '#9b59b6'
+                            'jutro' => '#289cc6',
+                            'popodne' => '#255AA5', 
+                            'vecer' => '#666666'
                         ];
                         ?>
                         <div class="shift-block" style="flex: 1; min-width: 200px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid <?= $smjena_colors[$key] ?>;">
