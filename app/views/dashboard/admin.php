@@ -1,8 +1,8 @@
 <div class="admin-dashboard">
     <!-- Uvodni naslov -->
     <div class="admin-header">
-        <h2>Admin Dashboard</h2>
-        <p>Kompletni pregled klinike i upravljanje sistemom</p>
+        <h2>Administracija/h2>
+        <p>Kompletni pregled i upravljanje sistemom</p>
     </div>
 
     <!-- Statisticki kartoni -->
@@ -43,7 +43,7 @@
 
     <!-- Mesečni pregled -->
     <div class="admin-monthly-overview">
-        <h3>Pregled ovog meseca</h3>
+        <h3>Pregled ovog mjeseca</h3>
         <div class="admin-monthly-stats">
             <div class="admin-monthly-stat">
                 <div class="admin-monthly-number"><?= number_format($dashboard_data['prihod_mesec'] ?? 0, 2) ?> KM</div>
@@ -81,7 +81,7 @@
             <h3>Termini i raspored</h3>
             <p>Pregled svih termina i upravljanje rasporedom terapeuta</p>
             <div class="admin-action-buttons">
-                <a href="/termini" class="admin-btn admin-btn-success admin-btn-sm">
+                <a href="/termini" class="admin-btn admin-btn-primary admin-btn-sm">
                     <i class="fa-solid fa-calendar"></i> Termini
                 </a>
                 <a href="/raspored" class="admin-btn admin-btn-outline admin-btn-sm">
@@ -94,7 +94,7 @@
             <h3>Izvještaji i analiza</h3>
             <p>Detaljni finansijski i operativni izvještaji klinike</p>
             <div class="admin-action-buttons">
-                <a href="/izvjestaji" class="admin-btn admin-btn-info admin-btn-sm">
+                <a href="/izvjestaji" class="admin-btn admin-btn-primary admin-btn-sm">
                     <i class="fa-solid fa-chart-line"></i> Izvještaji
                 </a>
                 <a href="/izvjestaji/medicinski" class="admin-btn admin-btn-outline admin-btn-sm">
@@ -107,7 +107,7 @@
             <h3>Konfiguracija sistema</h3>
             <p>Cjenovnik, kategorije usluga i sistemske postavke</p>
             <div class="admin-action-buttons">
-                <a href="/cjenovnik" class="admin-btn admin-btn-warning admin-btn-sm">
+                <a href="/cjenovnik" class="admin-btn admin-btn-primary admin-btn-sm">
                     <i class="fa-solid fa-money-bill"></i> Cjenovnik
                 </a>
                 <a href="/kategorije" class="admin-btn admin-btn-outline admin-btn-sm">
