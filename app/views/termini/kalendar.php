@@ -55,7 +55,7 @@
     ?>
     
     <div class="calendar-grid" style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden;">
-        <div style="background: 255AA5; color: white; padding: 20px; text-align: center;">
+        <div style="background: #255AA5; color: white; padding: 20px; text-align: center;">
             <h3 style="margin: 0; font-size: 24px;"><?= $mjeseci[$mjesec] ?> <?= $godina ?></h3>
         </div>
 
