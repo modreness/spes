@@ -45,7 +45,7 @@
         <div class="action-card">
             <h3>Lista termina</h3>
             <p>Tabelarni prikaz sa filterima</p>
-            <a href="/termini/lista" class="btn btn-yellow">
+            <a href="/termini/lista" class="btn btn-add">
                 <i class="fa-solid fa-list"></i> Lista termina
             </a>
         </div>
