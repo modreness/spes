@@ -29,7 +29,7 @@
     <div class="action-cards">
         <div class="action-card">
             <h3>Kalendar termina</h3>
-            <p>Pregled svih termina u kalendarskom prikazu</p>
+            <p>Kalendarski prikaz termina</p>
             <a href="/termini/kalendar" class="btn btn-blue">
                 <i class="fa-solid fa-calendar-days"></i> Otvori kalendar
             </a>
@@ -37,14 +37,14 @@
         
         <div class="action-card">
             <h3>Novi termin</h3>
-            <p>Zakazivanje novog termina za pacijenta</p>
+            <p>Zakaži novi termin za pacijenta</p>
             <a href="/termini/kreiraj" class="btn btn-add">
                 <i class="fa-solid fa-plus"></i> Kreiraj termin
             </a>
         </div>
         <div class="action-card">
             <h3>Lista termina</h3>
-            <p>Pregled svih termina u tabeli sa filterima</p>
+            <p>Tabelarni prikaz sa filterima</p>
             <a href="/termini/lista" class="btn btn-yellow">
                 <i class="fa-solid fa-list"></i> Lista termina
             </a>
