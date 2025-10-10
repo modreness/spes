@@ -114,7 +114,7 @@
 
         <div class="form-actions">
             <button type="submit" class="btn btn-edit">
-                <i class="fa-solid fa-save"></i> Sačuvaj promjene
+                <i class="fa-solid fa-save"></i> Spremi izmjene
             </button>
             <a href="/termini" class="btn btn-secondary">Otkaži</a>
         </div>
