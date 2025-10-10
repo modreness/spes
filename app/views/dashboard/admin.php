@@ -66,7 +66,7 @@
     <div class="admin-action-cards">
         <div class="admin-action-card">
             <h3>Upravljanje korisnicima</h3>
-            <p>Dodaj novi profil, pregled pacijenata</p>
+            <p>Dodaj novi profil, pregled svih pacijenata</p>
             <div class="admin-action-buttons">
                 <a href="/profil/kreiraj" class="admin-btn admin-btn-primary admin-btn-sm">
                     <i class="fa-solid fa-user-plus"></i> Novi korisnik
@@ -92,7 +92,7 @@
         
         <div class="admin-action-card">
             <h3>Izvještaji i analiza</h3>
-            <p>Detaljni finansijski i operativni izvještaji klinike</p>
+            <p>Detaljni finansijski i medicinski izvještaji klinike</p>
             <div class="admin-action-buttons">
                 <a href="/izvjestaji" class="admin-btn admin-btn-primary admin-btn-sm">
                     <i class="fa-solid fa-chart-line"></i> Izvještaji
@@ -192,24 +192,28 @@
                         <p>Nema novih kartona</p>
                     </div>
                 <?php else: ?>
-                    <?php foreach ($dashboard_data['nedavni_kartoni'] as $karton): ?>
-                    <div class="admin-list-item admin-list-vertical">
-                        <div>
-                            <div class="admin-list-name">
-                                <?= htmlspecialchars($karton['pacijent_ime']) ?>
+                <?php foreach ($dashboard_data['nedavni_kartoni'] as $karton): ?>
+                    <a href="/kartoni/pregled?id=<?= $karton['id'] ?>" style="text-decoration: none; color: inherit; display: block;">
+                        <div class="admin-list-item admin-list-vertical" style="cursor: pointer; transition: all 0.2s;" 
+                            onmouseover="this.style.background='#f8f9fa'; this.style.transform='translateX(5px)';" 
+                            onmouseout="this.style.background=''; this.style.transform='translateX(0)';">
+                            <div>
+                                <div class="admin-list-name">
+                                    <?= htmlspecialchars($karton['pacijent_ime']) ?>
+                                </div>
+                                <div class="admin-list-details">
+                                    Broj upisa: <?= htmlspecialchars($karton['broj_upisa']) ?>
+                                </div>
+                                <div class="admin-list-extra">
+                                    Otvorio: <?= htmlspecialchars($karton['otvorio_ime']) ?>
+                                </div>
                             </div>
-                            <div class="admin-list-details">
-                                <?= htmlspecialchars($karton['dijagnoza']) ?>
-                            </div>
-                            <div class="admin-list-extra">
-                                Otvorio: <?= htmlspecialchars($karton['otvorio_ime']) ?>
+                            <div class="admin-list-date">
+                                <?= date('d.m.Y', strtotime($karton['datum_otvaranja'])) ?>
                             </div>
                         </div>
-                        <div class="admin-list-date">
-                            <?= date('d.m.Y', strtotime($karton['datum_otvaranja'])) ?>
-                        </div>
-                    </div>
-                    <?php endforeach; ?>
+                    </a>
+                <?php endforeach; ?>
                     <div class="admin-activity-footer">
                         <a href="/kartoni/lista" class="admin-btn admin-btn-outline admin-btn-sm">Svi kartoni</a>
                     </div>
