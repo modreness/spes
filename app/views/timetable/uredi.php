@@ -17,6 +17,7 @@
         <?php foreach (smjene() as $key => $naziv): ?>
             <?php 
             $smjena_data = $vremena[$key] ?? null;
+            $je_aktivna = $smjena_data ? (bool)$smjena_data['aktivan'] : true;
             $smjena_colors = [
                 'jutro' => '#289cc6',
                 'popodne' => '#255AA5', 
@@ -33,7 +34,7 @@
                 </div>
 
                 <div class="shift-content" style="padding: 25px;">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: end;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 200px; gap: 20px; align-items: end;">
                         
                         <div class="form-group">
                             <label for="<?= $key ?>_pocetak">Početak smjene</label>
@@ -54,13 +55,29 @@
                                    required
                                    style="padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; width: 100%;">
                         </div>
-                        <div class="status-smjene">Test</div>
+                        
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label style="display: flex; align-items: center; cursor: pointer; padding: 12px; background: <?= $je_aktivna ? '#d4edda' : '#f8d7da' ?>; border: 2px solid <?= $je_aktivna ? '#28a745' : '#dc3545' ?>; border-radius: 8px; transition: all 0.3s;">
+                                <input type="checkbox" 
+                                       name="smjene[<?= $key ?>][aktivan]" 
+                                       <?= $je_aktivna ? 'checked' : '' ?>
+                                       style="width: 20px; height: 20px; margin-right: 10px; cursor: pointer;">
+                                <span style="font-weight: 600; color: <?= $je_aktivna ? '#155724' : '#721c24' ?>; font-size: 14px;">
+                                    <i class="fa-solid fa-<?= $je_aktivna ? 'check-circle' : 'times-circle' ?>" style="margin-right: 5px;"></i>
+                                    <?= $je_aktivna ? 'Aktivna' : 'Neaktivna' ?>
+                                </span>
+                            </label>
+                        </div>
                     </div>
 
                     <?php if ($smjena_data): ?>
                         <div class="current-time" style="margin-top: 15px; padding: 10px; background: #f8f9fa; border-radius: 6px; text-align: center; color: #7f8c8d; font-size: 14px;">
                             <strong>Trenutno:</strong> 
                             <?= date('H:i', strtotime($smjena_data['pocetak'])) ?> - <?= date('H:i', strtotime($smjena_data['kraj'])) ?>
+                            <span style="margin-left: 15px;">
+                                <i class="fa-solid fa-circle" style="color: <?= $je_aktivna ? '#28a745' : '#dc3545' ?>; font-size: 8px;"></i>
+                                <?= $je_aktivna ? 'Aktivna' : 'Neaktivna' ?>
+                            </span>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -75,3 +92,30 @@
         </div>
     </form>
 </div>
+
+<script>
+// Dinamički mijenjaj stil checkboxa
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('input[type="checkbox"][name^="smjene"]').forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+            const label = this.closest('label');
+            const span = label.querySelector('span');
+            const icon = span.querySelector('i');
+            
+            if (this.checked) {
+                label.style.background = '#d4edda';
+                label.style.borderColor = '#28a745';
+                span.style.color = '#155724';
+                icon.className = 'fa-solid fa-check-circle';
+                span.childNodes[2].textContent = 'Aktivna';
+            } else {
+                label.style.background = '#f8d7da';
+                label.style.borderColor = '#dc3545';
+                span.style.color = '#721c24';
+                icon.className = 'fa-solid fa-times-circle';
+                span.childNodes[2].textContent = 'Neaktivna';
+            }
+        });
+    });
+});
+</script>

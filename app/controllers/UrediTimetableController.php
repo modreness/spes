@@ -16,9 +16,15 @@ if (!in_array($user['uloga'], ['admin', 'recepcioner'])) {
 
 $errors = [];
 
-// Dohvati trenutna vremena smjena
+// Dohvati trenutna vremena smjena (i aktivne i neaktivne)
 try {
-    $stmt = $pdo->prepare("SELECT * FROM smjene_vremena WHERE aktivan = 1 ORDER BY FIELD(smjena, 'jutro', 'popodne', 'vecer')");
+    $stmt = $pdo->prepare("
+        SELECT * FROM smjene_vremena 
+        WHERE id IN (
+            SELECT MAX(id) FROM smjene_vremena GROUP BY smjena
+        )
+        ORDER BY FIELD(smjena, 'jutro', 'popodne', 'vecer')
+    ");
     $stmt->execute();
     $vremena_smjena = $stmt->fetchAll();
     
@@ -37,6 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     foreach ($smjene_data as $smjena_key => $data) {
         $pocetak = trim($data['pocetak'] ?? '');
         $kraj = trim($data['kraj'] ?? '');
+        $aktivan = isset($data['aktivan']) ? 1 : 0;
         
         // Validacija
         if (empty($pocetak) || empty($kraj)) {
@@ -54,19 +61,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Spremi promjene ako nema grešaka
     if (empty($errors)) {
         try {
-            // Deaktiviraj stara vremena
-            $stmt = $pdo->prepare("UPDATE smjene_vremena SET aktivan = 0");
-            $stmt->execute();
+            $pdo->beginTransaction();
             
-            // Ubaci nova vremena
+            // Ubaci nova vremena (ne brišemo stara zbog historije)
             foreach ($smjene_data as $smjena_key => $data) {
-                $stmt = $pdo->prepare("INSERT INTO smjene_vremena (smjena, pocetak, kraj, kreirao_id) VALUES (?, ?, ?, ?)");
-                $stmt->execute([$smjena_key, $data['pocetak'], $data['kraj'], $user['id']]);
+                $aktivan = isset($data['aktivan']) ? 1 : 0;
+                
+                // Deaktiviraj prethodne verzije ove smjene
+                $stmt = $pdo->prepare("UPDATE smjene_vremena SET aktivan = 0 WHERE smjena = ?");
+                $stmt->execute([$smjena_key]);
+                
+                // Ubaci novu verziju
+                $stmt = $pdo->prepare("INSERT INTO smjene_vremena (smjena, pocetak, kraj, aktivan, kreirao_id) VALUES (?, ?, ?, ?, ?)");
+                $stmt->execute([$smjena_key, $data['pocetak'], $data['kraj'], $aktivan, $user['id']]);
             }
             
+            $pdo->commit();
             header('Location: /timetable?msg=azurirano');
             exit;
         } catch (PDOException $e) {
+            $pdo->rollBack();
             error_log("Greška pri ažuriranju vremena: " . $e->getMessage());
             $errors[] = 'Greška pri spremanju promjena.';
         }
