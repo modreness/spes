@@ -56,7 +56,7 @@
                                    style="padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; width: 100%;">
                         </div>
                         
-                        <div style="margin-top: 0px;">
+                        <div style="margin-top: 5px;">
                             <label style="display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 13px 16px; background: <?= $je_aktivna ? '#d4edda' : '#f8d7da' ?>; border-radius: 8px; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.08);">
                                 <input type="checkbox" 
                                        name="smjene[<?= $key ?>][aktivan]" 
