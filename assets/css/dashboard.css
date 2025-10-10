@@ -1408,12 +1408,12 @@ margin-bottom:20px;
 }
 
 .admin-btn-primary {
-    background: #3498db;
+    background: linear-gradient(135deg, #255AA5, #289CC6);
     color: white;
 }
 
 .admin-btn-primary:hover {
-    background: #2980b9;
+    background: #289CC6;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
 }

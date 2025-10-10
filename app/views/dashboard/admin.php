@@ -66,13 +66,13 @@
     <div class="admin-action-cards">
         <div class="admin-action-card">
             <h3>Upravljanje korisnicima</h3>
-            <p>Dodaj novi profil, uredi postojeće korisnike ili promeni uloge</p>
+            <p>Dodaj novi profil, pregled pacijenata</p>
             <div class="admin-action-buttons">
                 <a href="/profil/kreiraj" class="admin-btn admin-btn-primary admin-btn-sm">
                     <i class="fa-solid fa-user-plus"></i> Novi korisnik
                 </a>
-                <a href="/profil/admin" class="admin-btn admin-btn-outline admin-btn-sm">
-                    <i class="fa-solid fa-users"></i> Svi korisnici
+                <a href="/profil/pacijent" class="admin-btn admin-btn-outline admin-btn-sm">
+                    <i class="fa-solid fa-users"></i> Svi pacijenti
                 </a>
             </div>
         </div>
