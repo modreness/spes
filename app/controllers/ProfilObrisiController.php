@@ -25,19 +25,23 @@ if ((int)$id === (int)$user['id']) {
     exit;
 }
 
-// Provjera da li korisnik postoji
-$stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+// Provjera da li korisnik postoji i aktivan je
+$stmt = $pdo->prepare("SELECT * FROM users WHERE id = ? AND aktivan = 1");
 $stmt->execute([$id]);
 $korisnik = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if (!$korisnik) {
+if (!korisnik) {
     http_response_code(404);
-    echo "Korisnik nije pronađen.";
+    echo "Korisnik nije pronađen ili je već obrisan.";
     exit;
 }
 
+// **SOFT DELETE** - označavamo korisnika kao neaktivnog
+$uloga = $korisnik['uloga'];
+$razlog_brisanja = "[" . date('Y-m-d H:i:s') . "] Obrisan od strane: " . $user['ime'] . " " . $user['prezime'];
+
 // Ako je korisnik terapeut — zamrzni ime i prezime u rasporedu
-if ($korisnik['uloga'] === 'terapeut') {
+if ($uloga === 'terapeut') {
     // Prvo pronađi sve rasporede gdje je on terapeut
     $stmtRasporedi = $pdo->prepare("SELECT id FROM rasporedi_sedmicni WHERE terapeut_id = ?");
     $stmtRasporedi->execute([$id]);
@@ -56,10 +60,17 @@ if ($korisnik['uloga'] === 'terapeut') {
     }
 }
 
+// **SOFT DELETE** - postavi deleted_at na trenutno vrijeme
+$stmt = $pdo->prepare("
+    UPDATE users 
+    SET deleted_at = NOW(), 
+        napomena = CONCAT(COALESCE(napomena, ''), '\n\n[", NOW(), "] ', ?)
+    WHERE id = ?
+");
+$stmt->execute([$razlog_brisanja, $id]);
 
-// Brisanje korisnika
-$stmt = $pdo->prepare("DELETE FROM users WHERE id = ?");
-$stmt->execute([$id]);
+// Postavimo flash poruku
+$_SESSION['success_message'] = "Korisnik " . htmlspecialchars($korisnik['ime'] . " " . $korisnik['prezime']) . " je uspješno obrisan.";
 
 // Vrati korisnika na prethodnu stranicu
 header("Location: {$_SERVER['HTTP_REFERER']}");
