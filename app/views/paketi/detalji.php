@@ -117,8 +117,8 @@
 
     <!-- Napomena -->
     <?php if (!empty($paket['napomena'])): ?>
-    <div style="display:flex; flex-direction:column; row-gap:5px; background: #fcf4d7ff; border-left: 4px solid #fff7df; padding: 15px; border-radius: 8px; margin-bottom: 25px;">
-        <strong><i class="fa-solid fa-sticky-note"></i> Napomena:</strong><br>
+    <div style="display:flex; flex-direction:column; row-gap:5px; background: #fcf4d7ff; padding: 15px; border-radius: 8px; margin-bottom: 25px;">
+        <strong><i class="fa-solid fa-sticky-note"></i> Napomena:</strong>
         <?= nl2br(htmlspecialchars($paket['napomena'])) ?>
     </div>
     <?php endif; ?>
