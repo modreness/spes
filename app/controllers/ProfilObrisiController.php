@@ -30,7 +30,7 @@ $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ? AND aktivan = 1");
 $stmt->execute([$id]);
 $korisnik = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if (!korisnik) {
+if (!$korisnik) {
     http_response_code(404);
     echo "Korisnik nije pronađen ili je već obrisan.";
     exit;
@@ -60,11 +60,11 @@ if ($uloga === 'terapeut') {
     }
 }
 
-// **SOFT DELETE** - postavi deleted_at na trenutno vrijeme
+// **SOFT DELETE** - postavi aktivan na 0 (deaktiviraj korisnika)
 $stmt = $pdo->prepare("
     UPDATE users 
-    SET deleted_at = NOW(), 
-        napomena = CONCAT(COALESCE(napomena, ''), '\n\n[", NOW(), "] ', ?)
+    SET aktivan = 0, 
+        napomena = CONCAT(COALESCE(napomena, ''), '\n\n', ?)
     WHERE id = ?
 ");
 $stmt->execute([$razlog_brisanja, $id]);
