@@ -154,7 +154,7 @@
                         <td>
                             <span style="display: inline-block; padding: 4px 10px; border-radius: 15px; font-size: 0.85em; background: <?= 
                                 $t['status'] === 'zavrsen' ? '#27ae60' : 
-                                ($t['status'] === 'otkazan' ? '#e74c3c' : '#3498db') 
+                                ($t['status'] === 'otkazan' ? '#e74c3c' : '#255AA5') 
                             ?>; color: white;">
                                 <?= ucfirst($t['status']) ?>
                             </span>
