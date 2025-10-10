@@ -1,7 +1,7 @@
 <div class="admin-dashboard">
     <!-- Uvodni naslov -->
     <div class="admin-header">
-        <h2>Administracija/h2>
+        <h2>Administracija</h2>
         <p>Kompletni pregled i upravljanje sistemom</p>
     </div>
 
