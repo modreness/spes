@@ -76,25 +76,30 @@
                 <?php 
                 $danas = date('j') == $dan && date('m') == $mjesec && date('Y') == $godina;
                 $termini_dana = $termini_po_danu[$dan] ?? [];
+                $termin_dan = sprintf('%04d-%02d-%02d', $godina, $mjesec, $dan);
                 ?>
-                <div style="background: #fff; min-height: 120px; padding: 8px; <?= $danas ? 'border: 2px solid #3498db;' : '' ?>">
+                <a href="/termini/lista?datum_od=<?= $termin_dan ?>&datum_do=<?= $termin_dan ?>&status=&terapeut=" 
+                   style="background: #fff; min-height: 120px; padding: 8px; display: block; text-decoration: none; transition: all 0.2s; <?= $danas ? 'border: 2px solid #3498db;' : '' ?>"
+                   onmouseover="this.style.background='#f8f9fa'; this.style.transform='scale(1.02)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)';"
+                   onmouseout="this.style.background='#fff'; this.style.transform='scale(1)'; this.style.boxShadow='none';">
+                    
                     <div style="font-weight: 600; color: #2c3e50; margin-bottom: 5px;">
                         <?= $dan ?>
                     </div>
                     
                     <?php foreach (array_slice($termini_dana, 0, 3) as $termin): ?>
-                        <div style="background: #27ae60; color: white; padding: 2px 6px; margin: 2px 0; border-radius: 3px; font-size: 11px;">
+                        <div style="background: #27ae60; color: white; padding: 2px 6px; margin: 2px 0; border-radius: 3px; font-size: 11px; pointer-events: none;">
                             <?= date('H:i', strtotime($termin['datum_vrijeme'])) ?> 
                             <?= htmlspecialchars($termin['pacijent_ime']) ?>
                         </div>
                     <?php endforeach; ?>
                     
                     <?php if (count($termini_dana) > 3): ?>
-                        <div style="font-size: 10px; color: #7f8c8d; text-align: center;">
+                        <div style="font-size: 10px; color: #7f8c8d; text-align: center; pointer-events: none;">
                             +<?= count($termini_dana) - 3 ?> više
                         </div>
                     <?php endif; ?>
-                </div>
+                </a>
             <?php endfor; ?>
         </div>
     </div>
