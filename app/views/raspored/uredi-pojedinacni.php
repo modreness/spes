@@ -16,7 +16,7 @@
     <div style="background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); max-width: 600px; margin: 0 auto;">
         
         <!-- Info card -->
-        <div style="background: linear-gradient(135deg, #289cc6, #255AA5; padding: 20px; border-radius: 8px; color: white; margin-bottom: 25px;">
+        <div style="background: linear-gradient(135deg, #289cc6, #255AA5); padding: 20px; border-radius: 8px; color: white; margin-bottom: 25px;">
             <h3 style="margin: 0 0 10px 0; font-size: 1.2rem;">
                 <i class="fa-solid fa-user-doctor"></i> 
                 <?= htmlspecialchars($raspored['terapeut_ime']) ?>
