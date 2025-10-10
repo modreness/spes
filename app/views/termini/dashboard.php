@@ -37,7 +37,7 @@
         
         <div class="action-card">
             <h3>Novi termin</h3>
-            <p>Zakaži novi termin za pacijenta</p>
+            <p>Zakazivanje novog termina za pacijenta</p>
             <a href="/termini/kreiraj" class="btn btn-add">
                 <i class="fa-solid fa-plus"></i> Kreiraj termin
             </a>
