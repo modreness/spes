@@ -23,17 +23,17 @@
             
             <div class="form-group">
                 <label for="datum_od">Datum od</label>
-                <input type="date" id="datum_od" name="datum_od" value="<?= htmlspecialchars($datum_od) ?>">
+                <input type="date" id="datum_od" name="datum_od" value="<?= htmlspecialchars($datum_od) ?>" style="padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
             </div>
             
             <div class="form-group">
                 <label for="datum_do">Datum do</label>
-                <input type="date" id="datum_do" name="datum_do" value="<?= htmlspecialchars($datum_do) ?>">
+                <input type="date" id="datum_do" name="datum_do" value="<?= htmlspecialchars($datum_do) ?>" style="padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
             </div>
             
             <div class="form-group">
                 <label for="status">Status</label>
-                <select id="status" name="status">
+                <select id="status" name="status" style="padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
                     <option value="">Svi statusi</option>
                     <option value="zakazan" <?= $status_filter == 'zakazan' ? 'selected' : '' ?>>Zakazan</option>
                     <option value="otkazan" <?= $status_filter == 'otkazan' ? 'selected' : '' ?>>Otkazan</option>
@@ -44,7 +44,7 @@
             
             <div class="form-group">
                 <label for="terapeut">Terapeut</label>
-                <select id="terapeut" name="terapeut">
+                <select id="terapeut" name="terapeut" style="padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
                     <option value="">Svi terapeuti</option>
                     <?php foreach ($terapeuti as $t): ?>
                         <option value="<?= $t['id'] ?>" <?= $terapeut_filter == $t['id'] ? 'selected' : '' ?>>
@@ -54,7 +54,7 @@
                 </select>
             </div>
             
-            <button type="submit" class="btn btn-primary">Filtriraj</button>
+            <button type="submit" class="btn btn-search">Filtriraj</button>
         </form>
     </div>
 
