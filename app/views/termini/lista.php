@@ -116,7 +116,7 @@
                             <button class="btn btn-sm btn-warning" onclick="promeniStatus(<?= $t['id'] ?>, 'otkazan')" title="Otkaži">
                                 <i class="fa-solid fa-times"></i>
                             </button>
-                            <button class="btn btn-sm btn-success" onclick="promeniStatus(<?= $t['id'] ?>, 'obavljen')" title="Označи kao obavljen">
+                            <button class="btn btn-sm btn-success" onclick="promeniStatus(<?= $t['id'] ?>, 'obavljen')" title="Označi kao obavljen">
                                 <i class="fa-solid fa-check"></i>
                             </button>
                         <?php endif; ?>
