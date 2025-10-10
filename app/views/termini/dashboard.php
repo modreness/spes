@@ -30,7 +30,7 @@
         <div class="action-card">
             <h3>Kalendar termina</h3>
             <p>Kalendarski prikaz termina</p>
-            <a href="/termini/kalendar" class="btn btn-blue">
+            <a href="/termini/kalendar" class="btn btn-add">
                 <i class="fa-solid fa-calendar-days"></i> Otvori kalendar
             </a>
         </div>
