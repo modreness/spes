@@ -54,6 +54,7 @@
                                    required
                                    style="padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; width: 100%;">
                         </div>
+                        <div class="status-smjene">Test</div>
                     </div>
 
                     <?php if ($smjena_data): ?>
