@@ -61,13 +61,8 @@ if ($uloga === 'terapeut') {
 }
 
 // **SOFT DELETE** - postavi aktivan na 0 (deaktiviraj korisnika)
-$stmt = $pdo->prepare("
-    UPDATE users 
-    SET aktivan = 0, 
-        napomena = CONCAT(COALESCE(napomena, ''), '\n\n', ?)
-    WHERE id = ?
-");
-$stmt->execute([$razlog_brisanja, $id]);
+$stmt = $pdo->prepare("UPDATE users SET aktivan = 0 WHERE id = ?");
+$stmt->execute([$id]);
 
 // Postavimo flash poruku
 $_SESSION['success_message'] = "Korisnik " . htmlspecialchars($korisnik['ime'] . " " . $korisnik['prezime']) . " je uspješno obrisan.";
