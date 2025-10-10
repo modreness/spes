@@ -33,13 +33,13 @@
                 <label for="datum_od" style="font-weight: 500; color: #34495e;">Sedmica počinje:</label>
                 <input type="date" id="datum_od" name="datum_od" 
                        value="<?= htmlspecialchars($datum_od) ?>"
-                       style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px;">
+                       style="padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px;">
             </div>
             
             <div style="display: flex; align-items: center; gap: 8px;">
                 <label for="filter_terapeut" style="font-weight: 500; color: #34495e;">Terapeut:</label>
                 <select id="filter_terapeut" name="filter_terapeut" 
-                        style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; min-width: 200px;">
+                        style="padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; min-width: 200px;">
                     <option value="">Svi terapeuti</option>
                     <?php foreach ($svi_terapeuti as $t): ?>
                         <option value="<?= $t['id'] ?>" <?= $terapeut_filter == $t['id'] ? 'selected' : '' ?>>
@@ -49,7 +49,7 @@
                 </select>
             </div>
             
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="btn btn-search">
                 <i class="fa-solid fa-search"></i> Prikaži
             </button>
         </form>
@@ -70,7 +70,7 @@
         <?php foreach ($rasporedi_po_terapeutu as $terapeut_id => $podaci): ?>
         <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 20px; overflow: hidden;">
             <!-- Header terapeuta -->
-            <div style="background: linear-gradient(135deg, #3498db, #2980b9); padding: 20px; color: white;">
+            <div style="background: linear-gradient(135deg, #289cc6, #255AA5); padding: 20px; color: white;">
                 <h3 style="margin: 0; font-size: 1.3rem;"><?= htmlspecialchars($podaci['info']['ime']) ?></h3>
                 <p style="margin: 5px 0 0 0; opacity: 0.9;">
                     <?= htmlspecialchars($podaci['info']['email']) ?>
@@ -101,9 +101,9 @@
                             
                             // Boja smjene
                             $smjena_boja = [
-                                'jutro' => '#f39c12',
-                                'popodne' => '#3498db', 
-                                'vecer' => '#9b59b6'
+                                'jutro' => '#289cc6',
+                                'popodne' => '#255AA5', 
+                                'vecer' => '#666666'
                             ];
                             ?>
                         <tr>
