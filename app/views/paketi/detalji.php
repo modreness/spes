@@ -8,7 +8,7 @@
 <div class="main-content-fw">
     
     <!-- Kartica sa osnovnim informacijama -->
-    <div style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 30px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);">
+    <div style="background: linear-gradient(135deg, #255AA5, #289CC6); color: white; padding: 30px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);">
         <div style="display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: start;">
             <div>
                 <h3 style="margin: 0 0 15px 0; font-size: 1.8em;">
@@ -74,7 +74,7 @@
                     <small style="color: #7f8c8d;">Iskorišteno</small>
                 </div>
                 <div style="text-align: center; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                    <div style="color: #e67e22; font-size: 2em; font-weight: bold;"><?= $paket['ukupno_termina'] - $paket['iskoristeno_termina'] ?></div>
+                    <div style="color: #333333; font-size: 2em; font-weight: bold;"><?= $paket['ukupno_termina'] - $paket['iskoristeno_termina'] ?></div>
                     <small style="color: #7f8c8d;">Preostalo</small>
                 </div>
             </div>
@@ -89,9 +89,9 @@
                 <?php
                 $status_boja = [
                     'aktivan' => '#27ae60',
-                    'zavrsen' => '#95a5a6',
+                    'zavrsen' => '#289CC6',
                     'istekao' => '#e74c3c',
-                    'otkazan' => '#e67e22'
+                    'otkazan' => '#333333'
                 ];
                 ?>
                 <span style="display: inline-block; padding: 8px 16px; border-radius: 25px; font-size: 1.1em; font-weight: 600; background: <?= $status_boja[$paket['status']] ?>; color: white;">
