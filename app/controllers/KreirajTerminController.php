@@ -170,6 +170,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $pdo->beginTransaction();
             
+            // 👉 VAŽNO: Učitaj podatke o terapeutu i pacijentu za zamrzavanje
+            $stmt = $pdo->prepare("SELECT ime, prezime FROM users WHERE id = ?");
+            $stmt->execute([$terapeut_id]);
+            $terapeut = $stmt->fetch();
+            
+            $stmt = $pdo->prepare("SELECT ime, prezime FROM users WHERE id = ?");
+            $stmt->execute([$pacijent_id]);
+            $pacijent = $stmt->fetch();
+            
             // Odredi cijenu
             $iz_paketa = !empty($paket_id) ? 1 : 0;
             $cijena = 0;
@@ -181,15 +190,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $cijena = $stmt->fetchColumn();
             }
             
-            // 1. Kreiraj termin
+            // 1. Kreiraj termin SA ZAMRZNUTIM PODACIMA
             $stmt = $pdo->prepare("
                 INSERT INTO termini 
-                (pacijent_id, terapeut_id, usluga_id, datum_vrijeme, status, tip_zakazivanja, napomena, placeno_iz_paketa, stvarna_cijena) 
-                VALUES (?, ?, ?, ?, 'zakazan', 'recepcioner', ?, ?, ?)
+                (pacijent_id, pacijent_ime, pacijent_prezime, terapeut_id, terapeut_ime, terapeut_prezime, 
+                 usluga_id, datum_vrijeme, status, tip_zakazivanja, napomena, placeno_iz_paketa, stvarna_cijena) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'zakazan', 'recepcioner', ?, ?, ?)
             ");
             $stmt->execute([
-                $pacijent_id, 
-                $terapeut_id, 
+                $pacijent_id,
+                $pacijent['ime'],           // 👈 Zamrzni ime pacijenta
+                $pacijent['prezime'],       // 👈 Zamrzni prezime pacijenta
+                $terapeut_id,
+                $terapeut['ime'],           // 👈 Zamrzni ime terapeuta
+                $terapeut['prezime'],       // 👈 Zamrzni prezime terapeuta
                 $usluga_id, 
                 $datum_vrijeme, 
                 $napomena,
@@ -229,4 +243,3 @@ require_once __DIR__ . '/../views/termini/kreiraj.php';
 $content = ob_get_clean();
 
 require_once __DIR__ . '/../views/layout.php';
-?>

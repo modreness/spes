@@ -42,11 +42,13 @@ try {
     
     $where_clause = implode(' AND ', $where_conditions);
     
-    // Dohvati termine - DODATO: placeno_iz_paketa i stvarna_cijena
+    // 👉 Dohvati termine - koristi COALESCE za zamrznute podatke
     $stmt = $pdo->prepare("
         SELECT t.*, 
-               CONCAT(u_pacijent.ime, ' ', u_pacijent.prezime) as pacijent_ime,
-               CONCAT(u_terapeut.ime, ' ', u_terapeut.prezime) as terapeut_ime,
+               COALESCE(CONCAT(u_pacijent.ime, ' ', u_pacijent.prezime), 
+                        CONCAT(t.pacijent_ime, ' ', t.pacijent_prezime)) as pacijent_ime,
+               COALESCE(CONCAT(u_terapeut.ime, ' ', u_terapeut.prezime), 
+                        CONCAT(t.terapeut_ime, ' ', t.terapeut_prezime)) as terapeut_ime,
                c.naziv as usluga_naziv,
                c.cijena as usluga_cijena,
                t.placeno_iz_paketa,
@@ -74,4 +76,3 @@ require_once __DIR__ . '/../views/termini/lista.php';
 $content = ob_get_clean();
 
 require_once __DIR__ . '/../views/layout.php';
-?>

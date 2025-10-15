@@ -133,12 +133,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Ažuriraj termin
     if (empty($errors)) {
         try {
+            // 👉 VAŽNO: Učitaj podatke o terapeutu i pacijentu za zamrzavanje
+            $stmt = $pdo->prepare("SELECT ime, prezime FROM users WHERE id = ?");
+            $stmt->execute([$terapeut_id]);
+            $terapeut = $stmt->fetch();
+            
+            $stmt = $pdo->prepare("SELECT ime, prezime FROM users WHERE id = ?");
+            $stmt->execute([$pacijent_id]);
+            $pacijent = $stmt->fetch();
+            
+            // Ažuriraj sa zamrznutim podacima
             $stmt = $pdo->prepare("
                 UPDATE termini 
-                SET pacijent_id = ?, terapeut_id = ?, usluga_id = ?, datum_vrijeme = ?, status = ?, napomena = ?
+                SET pacijent_id = ?, 
+                    pacijent_ime = ?,
+                    pacijent_prezime = ?,
+                    terapeut_id = ?, 
+                    terapeut_ime = ?,
+                    terapeut_prezime = ?,
+                    usluga_id = ?, 
+                    datum_vrijeme = ?, 
+                    status = ?, 
+                    napomena = ?
                 WHERE id = ?
             ");
-            $stmt->execute([$pacijent_id, $terapeut_id, $usluga_id, $datum_vrijeme, $status, $napomena, $termin_id]);
+            $stmt->execute([
+                $pacijent_id,
+                $pacijent['ime'],           // 👈 Ažuriraj zamrznuto ime pacijenta
+                $pacijent['prezime'],       // 👈 Ažuriraj zamrznuto prezime pacijenta
+                $terapeut_id,
+                $terapeut['ime'],           // 👈 Ažuriraj zamrznuto ime terapeuta
+                $terapeut['prezime'],       // 👈 Ažuriraj zamrznuto prezime terapeuta
+                $usluga_id, 
+                $datum_vrijeme, 
+                $status, 
+                $napomena, 
+                $termin_id
+            ]);
             
             header('Location: /termini?msg=azuriran');
             exit;
@@ -156,4 +187,3 @@ require_once __DIR__ . '/../views/termini/uredi.php';
 $content = ob_get_clean();
 
 require_once __DIR__ . '/../views/layout.php';
-?>

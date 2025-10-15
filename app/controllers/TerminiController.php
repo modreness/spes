@@ -35,11 +35,13 @@ try {
     $stmt->execute();
     $ukupno_termina = $stmt->fetchColumn();
     
-    // Najnoviji termini (poslednji zakazani)
+    // 👉 Najnoviji termini (poslednji zakazani) - sa zamrznutim podacima
     $stmt = $pdo->prepare("
         SELECT t.*, 
-               CONCAT(u_pacijent.ime, ' ', u_pacijent.prezime) as pacijent_ime,
-               CONCAT(u_terapeut.ime, ' ', u_terapeut.prezime) as terapeut_ime,
+               COALESCE(CONCAT(u_pacijent.ime, ' ', u_pacijent.prezime), 
+                        CONCAT(t.pacijent_ime, ' ', t.pacijent_prezime)) as pacijent_ime,
+               COALESCE(CONCAT(u_terapeut.ime, ' ', u_terapeut.prezime), 
+                        CONCAT(t.terapeut_ime, ' ', t.terapeut_prezime)) as terapeut_ime,
                c.naziv as usluga_naziv
         FROM termini t
         LEFT JOIN users u_pacijent ON t.pacijent_id = u_pacijent.id
@@ -67,4 +69,3 @@ require_once __DIR__ . '/../views/termini/dashboard.php';
 $content = ob_get_clean();
 
 require_once __DIR__ . '/../views/layout.php';
-?>
