@@ -34,11 +34,13 @@
 
     <!-- Osnovne statistike -->
     <div class="stats-grid" style="margin-bottom: 30px;">
+        <?php if ($novi_pacijenti !== null): ?>
         <div class="stat-card" style="background: linear-gradient(90deg, #255AA5, #255AA5);">
             <h3><i class="fa-solid fa-user-plus"></i> Novi pacijenti</h3>
             <div class="stat-number"><?= $novi_pacijenti ?></div>
             <small style="opacity: 0.9;">u odabranom periodu</small>
         </div>
+        <?php endif; ?>
         <div class="stat-card" style="background: linear-gradient(90deg, #255AA5, #255AA5);">
             <h3><i class="fa-solid fa-users"></i> Ukupno pacijenata</h3>
             <div class="stat-number"><?= $ukupno_pacijenata ?></div>
@@ -50,16 +52,9 @@
             <small style="opacity: 0.9;"><?= date('d.m.Y', strtotime($datum_od)) ?> - <?= date('d.m.Y', strtotime($datum_do)) ?></small>
         </div>
         <div class="stat-card" style="background: linear-gradient(135deg, #289CC6, #255AA5);">
-            <h3><i class="fa-solid fa-chart-line"></i> Prosječno vrijeme</h3>
-            <div class="stat-number">
-                <?php 
-                $sati = floor($prosecno_vreme / 60);
-                $minuti = $prosecno_vreme % 60;
-                echo $sati > 0 ? $sati . 'h ' : '';
-                echo round($minuti) . 'min';
-                ?>
-            </div>
-            <small style="opacity: 0.9;">između termina</small>
+            <h3><i class="fa-solid fa-user-doctor"></i> Broj terapeuta</h3>
+            <div class="stat-number"><?= $broj_terapeuta ?></div>
+            <small style="opacity: 0.9;">aktivnih</small>
         </div>
     </div>
 

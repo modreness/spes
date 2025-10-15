@@ -136,19 +136,9 @@ try {
     $stmt->execute([$datum_od, $datum_do]);
     $statistike_po_danima = $stmt->fetchAll();
     
-    // 7. PROSJEČNO VRIJEME IZMEĐU TERMINA (opcionalno)
-    $stmt = $pdo->prepare("
-        SELECT 
-            AVG(TIMESTAMPDIFF(MINUTE, 
-                LAG(datum_vrijeme) OVER (PARTITION BY terapeut_id ORDER BY datum_vrijeme), 
-                datum_vrijeme
-            )) as prosecno_vreme_minuta
-        FROM termini 
-        WHERE DATE(datum_vrijeme) BETWEEN ? AND ?
-        AND status IN ('zakazan', 'obavljen')
-    ");
-    $stmt->execute([$datum_od, $datum_do]);
-    $prosecno_vreme = $stmt->fetchColumn() ?: 0;
+    // 7. BROJ AKTIVNIH TERAPEUTA
+    $stmt = $pdo->query("SELECT COUNT(*) FROM users WHERE uloga = 'terapeut'");
+    $broj_terapeuta = $stmt->fetchColumn();
     
     // 8. BROJ TERMINA PO DANIMA (za graf)
     $stmt = $pdo->prepare("
@@ -173,7 +163,7 @@ try {
     $iskoriscenost_terapeuta = [];
     $popularne_usluge = [];
     $statistike_po_danima = [];
-    $prosecno_vreme = 0;
+    $broj_terapeuta = 0;
     $termini_po_danima = [];
 }
 
