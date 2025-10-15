@@ -39,15 +39,20 @@ switch ($period) {
 }
 
 try {
-    // 1. NOVI PACIJENTI u periodu
-    $stmt = $pdo->prepare("
-        SELECT COUNT(*) as broj_novih
-        FROM users 
-        WHERE uloga = 'pacijent' 
-        AND DATE(created_at) BETWEEN ? AND ?
-    ");
-    $stmt->execute([$datum_od, $datum_do]);
-    $novi_pacijenti = $stmt->fetchColumn();
+    // 1. NOVI PACIJENTI u periodu - provjerimo da li kolona postoji
+    try {
+        $stmt = $pdo->prepare("
+            SELECT COUNT(*) as broj_novih
+            FROM users 
+            WHERE uloga = 'pacijent' 
+            AND DATE(created_at) BETWEEN ? AND ?
+        ");
+        $stmt->execute([$datum_od, $datum_do]);
+        $novi_pacijenti = $stmt->fetchColumn();
+    } catch (PDOException $e) {
+        // Ako kolona created_at ne postoji, prikaži 0 ili sakrij statistiku
+        $novi_pacijenti = null; // null = ne prikazuj statistiku
+    }
     
     // 2. UKUPNO AKTIVNIH PACIJENATA
     $stmt = $pdo->query("SELECT COUNT(*) FROM users WHERE uloga = 'pacijent'");
@@ -71,19 +76,18 @@ try {
     // 4. ISKORIŠĆENOST TERAPEUTA
     $stmt = $pdo->prepare("
         SELECT 
-            COALESCE(u.ime, t.terapeut_ime) as ime,
-            COALESCE(u.prezime, t.terapeut_prezime) as prezime,
+            u.ime,
+            u.prezime,
             COUNT(t.id) as ukupno_termina,
             SUM(CASE WHEN t.status = 'obavljen' THEN 1 ELSE 0 END) as obavljeni,
             SUM(CASE WHEN t.status = 'otkazan' THEN 1 ELSE 0 END) as otkazani,
             SUM(CASE WHEN t.status = 'zakazan' THEN 1 ELSE 0 END) as zakazani,
             SUM(CASE WHEN t.status = 'propusten' THEN 1 ELSE 0 END) as propusteni
-        FROM termini t
-        LEFT JOIN users u ON u.id = t.terapeut_id
-        WHERE DATE(t.datum_vrijeme) BETWEEN ? AND ?
-        GROUP BY COALESCE(u.id, t.terapeut_ime, t.terapeut_prezime), 
-                 COALESCE(u.ime, t.terapeut_ime), 
-                 COALESCE(u.prezime, t.terapeut_prezime)
+        FROM users u
+        LEFT JOIN termini t ON u.id = t.terapeut_id 
+            AND DATE(t.datum_vrijeme) BETWEEN ? AND ?
+        WHERE u.uloga = 'terapeut'
+        GROUP BY u.id, u.ime, u.prezime
         ORDER BY obavljeni DESC
     ");
     $stmt->execute([$datum_od, $datum_do]);
@@ -162,7 +166,7 @@ try {
     
 } catch (PDOException $e) {
     error_log("Greška pri generiranju operativnog izvještaja: " . $e->getMessage());
-    $novi_pacijenti = 0;
+    $novi_pacijenti = null;
     $ukupno_pacijenata = 0;
     $statistike_statusa = [];
     $ukupno_termina = 0;
