@@ -13,10 +13,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stanje_poslije = $_POST['stanje_poslije'] ?? '';
     $terapeut_id = $_POST['terapeut_id'] ?? null;
 
-    // Podaci o korisniku koji unosi tretman
-    $unio_id = $user['id'];
-    $unio_ime = $user['ime'];
-    $unio_prezime = $user['prezime'];
+    // 👉 VAŽNO: Učitaj podatke o PACIJENTU iz kartona
+    $stmt = $pdo->prepare("
+        SELECT k.pacijent_id, u.ime as pacijent_ime, u.prezime as pacijent_prezime
+        FROM kartoni k
+        JOIN users u ON k.pacijent_id = u.id
+        WHERE k.id = ?
+    ");
+    $stmt->execute([$karton_id]);
+    $karton_data = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if (!$karton_data) {
+        header("Location: " . $_SERVER['HTTP_REFERER'] . "?msg=tretman-greska");
+        exit;
+    }
 
     // Podaci o terapeutu
     $terapeut_ime = null;
@@ -32,23 +42,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Unos u bazu
+    // 👉 Unos u bazu SA ZAMRZNUTIM PODACIMA (bez pacijent_id)
     $stmt = $pdo->prepare("
-    INSERT INTO tretmani 
-    (karton_id, datum, stanje_prije, terapija, stanje_poslije, unio_id, terapeut_id, terapeut_ime, terapeut_prezime)
-    VALUES (?, NOW(), ?, ?, ?, ?, ?, ?, ?)
-");
+        INSERT INTO tretmani 
+        (karton_id, pacijent_ime, pacijent_prezime, 
+         datum, stanje_prije, terapija, stanje_poslije, 
+         unio_id, terapeut_id, terapeut_ime, terapeut_prezime)
+        VALUES (?, ?, ?, NOW(), ?, ?, ?, ?, ?, ?, ?)
+    ");
 
-$stmt->execute([
-    $karton_id,
-    $stanje_prije,
-    $terapija,
-    $stanje_poslije,
-    $user['id'],
-    $terapeut_id,
-    $terapeut_ime,
-    $terapeut_prezime
-]);
+    $stmt->execute([
+        $karton_id,
+        $karton_data['pacijent_ime'],      // 👈 Zamrzni ime pacijenta
+        $karton_data['pacijent_prezime'],  // 👈 Zamrzni prezime pacijenta
+        $stanje_prije,
+        $terapija,
+        $stanje_poslije,
+        $user['id'],
+        $terapeut_id,
+        $terapeut_ime,                     // 👈 Zamrzni ime terapeuta
+        $terapeut_prezime                  // 👈 Zamrzni prezime terapeuta
+    ]);
 
     header("Location: " . $_SERVER['HTTP_REFERER'] . "?msg=tretman-ok");
     exit;

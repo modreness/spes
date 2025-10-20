@@ -28,12 +28,16 @@ if (!$karton) {
     exit('Karton nije pronađen.');
 }
 
-// Dohvati sve tretmane
+// 👉 Dohvati sve tretmane sa COALESCE za zamrznute podatke
 $stmt = $pdo->prepare("
-    SELECT t.*, u.ime AS unio_ime, u.prezime AS unio_prezime, ter.ime AS terapeut_ime, ter.prezime  AS terapeut_prezime
+    SELECT t.*, 
+           COALESCE(CONCAT(u.ime, ' ', u.prezime), 'N/A') as unio_ime_prezime,
+           COALESCE(CONCAT(ter.ime, ' ', ter.prezime), 
+                    CONCAT(t.terapeut_ime, ' ', t.terapeut_prezime), 
+                    'N/A') as terapeut_ime_prezime
     FROM tretmani t
     LEFT JOIN users u ON t.unio_id = u.id
-    LEFT JOIN users AS ter  ON t.terapeut_id = ter.id
+    LEFT JOIN users ter ON t.terapeut_id = ter.id
     WHERE t.karton_id = ?
     ORDER BY t.datum DESC
 ");
@@ -58,7 +62,3 @@ $filename = 'tretmani_' . $karton['ime'] . '_' . $karton['prezime'] . '_' . $kar
 
 $dompdf->stream($filename, ['Attachment' => false]);
 exit;
-
-
-
-

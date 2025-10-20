@@ -20,11 +20,13 @@ if (!$karton) {
     exit;
 }
 
-// Dohvati sve tretmane
+// 👉 Dohvati sve tretmane sa COALESCE za zamrznute podatke
 $tretmani = $pdo->prepare("
   SELECT t.*, 
-         u.ime AS unio_ime, u.prezime AS unio_prezime,
-         ter.ime AS terapeut_ime, ter.prezime AS terapeut_prezime
+         COALESCE(CONCAT(u.ime, ' ', u.prezime), 'N/A') AS unio_ime_prezime,
+         COALESCE(CONCAT(ter.ime, ' ', ter.prezime), 
+                  CONCAT(t.terapeut_ime, ' ', t.terapeut_prezime), 
+                  'N/A') AS terapeut_ime_prezime
   FROM tretmani t
   LEFT JOIN users u ON t.unio_id = u.id
   LEFT JOIN users ter ON t.terapeut_id = ter.id
@@ -32,9 +34,9 @@ $tretmani = $pdo->prepare("
   ORDER BY t.datum DESC
 ");
 
-
 $tretmani->execute([$karton_id]);
 $tretmani = $tretmani->fetchAll(PDO::FETCH_ASSOC);
+
 // Dohvati sve terapeute
 $terapeuti = $pdo->query("SELECT id, ime, prezime FROM users WHERE uloga = 'terapeut' ORDER BY ime ASC")->fetchAll(PDO::FETCH_ASSOC);
 

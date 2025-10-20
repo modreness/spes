@@ -26,6 +26,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tretman_id'])) {
 
     $pdo = db();
 
+    // 👉 Učitaj podatke o PACIJENTU iz kartona
+    $stmt = $pdo->prepare("
+        SELECT k.pacijent_id, u.ime as pacijent_ime, u.prezime as pacijent_prezime
+        FROM kartoni k
+        JOIN users u ON k.pacijent_id = u.id
+        WHERE k.id = ?
+    ");
+    $stmt->execute([$karton_id]);
+    $karton_data = $stmt->fetch(PDO::FETCH_ASSOC);
+
     // Dohvati terapeuta ako postoji
     $terapeut_ime = null;
     $terapeut_prezime = null;
@@ -39,11 +49,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tretman_id'])) {
         }
     }
 
-    // Ažuriraj tretman
+    // 👉 Ažuriraj tretman SA ZAMRZNUTIM PODACIMA (bez pacijent_id)
     $stmt = $pdo->prepare("
         UPDATE tretmani
-        SET stanje_prije = ?, terapija = ?, stanje_poslije = ?,
-            terapeut_id = ?, terapeut_ime = ?, terapeut_prezime = ?
+        SET stanje_prije = ?, 
+            terapija = ?, 
+            stanje_poslije = ?,
+            pacijent_ime = ?,
+            pacijent_prezime = ?,
+            terapeut_id = ?, 
+            terapeut_ime = ?, 
+            terapeut_prezime = ?
         WHERE id = ?
     ");
 
@@ -51,9 +67,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tretman_id'])) {
         $stanje_prije,
         $terapija,
         $stanje_poslije,
+        $karton_data['pacijent_ime'],      // 👈 Ažuriraj zamrznuto ime pacijenta
+        $karton_data['pacijent_prezime'],  // 👈 Ažuriraj zamrznuto prezime pacijenta
         $terapeut_id,
-        $terapeut_ime,
-        $terapeut_prezime,
+        $terapeut_ime,                     // 👈 Ažuriraj zamrznuto ime terapeuta
+        $terapeut_prezime,                 // 👈 Ažuriraj zamrznuto prezime terapeuta
         $tretman_id
     ]);
 
