@@ -133,12 +133,12 @@ try {
 
 // Redirect na ispravnu stranicu ovisno o ulozi
 $redirect_map = [
-    'pacijent' => '/profil/pregled/pacijent',
-    'terapeut' => '/profil/pregled/terapeut',
-    'recepcioner' => '/profil/pregled/recepcioner',
-    'admin' => '/profil/pregled/admin'
+    'pacijent' => '/profil/pacijent',
+    'terapeut' => '/profil/terapeut',
+    'recepcioner' => '/profil/recepcioner',
+    'admin' => '/profil/admin'
 ];
 
-$redirect = $redirect_map[$uloga] ?? '/profil/pregled/pacijent';
+$redirect = $redirect_map[$uloga] ?? '/profil/pacijent';
 header("Location: $redirect");
 exit;
