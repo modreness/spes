@@ -214,6 +214,23 @@ elseif ($uri === '/kartoni/nalazi') {
 elseif ($uri === '/admin/dozvole') {
     require_once __DIR__ . '/../app/controllers/AdminPermissionsController.php';
 }
+// Dodaj ove rute u web.php (pre else bloka)
+
+elseif ($uri === '/raspored/moj') {
+    require_once __DIR__ . '/../app/controllers/RasporedMojController.php';
+}
+elseif ($uri === '/kartoni/moji') {
+    require_once __DIR__ . '/../app/controllers/KartoniMojiController.php';
+}
+elseif ($uri === '/tretmani/moji') {
+    require_once __DIR__ . '/../app/controllers/TretmaniMojiController.php';
+}
+elseif ($uri === '/izvjestaji/terapeut') {
+    require_once __DIR__ . '/../app/controllers/IzvjestajiTerapeutController.php';
+}
+elseif ($uri === '/nalazi/moji-pacijenti') {
+    require_once __DIR__ . '/../app/controllers/NalaziMojiPacijentiController.php';
+}
 /*
 else {
     http_response_code(404);
