@@ -82,6 +82,9 @@ $user = current_user();
         <ul class="menu-list">
           <li><a href="/dashboard" class="<?= $current_path === '/dashboard' ? 'active' : '' ?>"><i class="fa-solid fa-house"></i> Dashboard</a></li>
           <li><a href="/moj-raspored" class="<?= $current_path === '/moj-raspored' ? 'active' : '' ?>"><i class="fa-solid fa-calendar-days"></i> Moj raspored</a></li>
+          <li><a href="/kartoni/moji" class="<?= $current_path === '/kartoni/moji' ? 'active' : '' ?>"><i class="fa-solid fa-calendar-days"></i> Moji pacijenti</a></li>
+          <li><a href="/tretmani/moji" class="<?= $current_path === '/tretmani/moji' ? 'active' : '' ?>"><i class="fa-solid fa-calendar-days"></i> Moji tretmani</a></li>
+        </ul>
         </ul>
         <?php elseif ($user['uloga'] === 'pacijent'): ?>
         <ul class="menu-list">
