@@ -19,10 +19,10 @@ function send_mail($to, $subject, $body) {
     try {
         // SMTP konfiguracija
         $mail->isSMTP();
-        $mail->Host = 'mail.spes.ba';              // <-- SMTP host
+        $mail->Host = 'smtp.gmail.com';              // <-- SMTP host
         $mail->SMTPAuth = true;
-        $mail->Username = 'spes.app@spes.ba';      // <-- SMTP username
-        $mail->Password = '^Wt9CwW{UL-w';           // <-- SMTP password
+        $mail->Username = 'admin@spes.ba';      // <-- SMTP username
+        $mail->Password = 'galoperiNABudozelju23!!';           // <-- SMTP password
         $mail->SMTPSecure = 'ssl';                 // 'ssl' ili 'tls'
         $mail->Port = 465;                         // 465 za SSL, 587 za TLS
 
