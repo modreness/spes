@@ -31,7 +31,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['terapeut_id']) && iss
         // Započni transakciju
         $pdo->beginTransaction();
 
-// Loop kroz raspored po danima
+        // Dohvati ime i prezime terapeuta za zamrzavanje
+        $stmt_terapeut = $pdo->prepare("SELECT ime, prezime FROM users WHERE id = ?");
+        $stmt_terapeut->execute([$terapeut_id]);
+        $terapeut_podaci = $stmt_terapeut->fetch();
+
+        if (!$terapeut_podaci) {
+            $pdo->rollBack();
+            header("Location: /raspored/dodaj?msg=greska");
+            exit;
+        }
+
+        $terapeut_ime = $terapeut_podaci['ime'];
+        $terapeut_prezime = $terapeut_podaci['prezime'];
+
+        // Dohvati ime i prezime unositelja za zamrzavanje
+        $unosio_ime = current_user()['ime'];
+        $unosio_prezime = current_user()['prezime'];
+
+        // Loop kroz raspored po danima
         foreach ($_POST['raspored'] as $dan_key => $podatak) {
 
             $smjena = $podatak['smjena'];
@@ -67,11 +85,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['terapeut_id']) && iss
                 continue; // Preskoči ako već postoji
             }
 
-            // Ubaci u bazu - KORISTI DATUM POČETKA SEDMICE
+            // Ubaci u bazu - KORISTI DATUM POČETKA SEDMICE + ZAMRZNI PODATKE
             $stmt = $pdo->prepare("INSERT INTO rasporedi_sedmicni 
-                (terapeut_id, datum_od, datum_do, dan, smjena, pocetak, kraj, unosio_id, datum_unosa)
+                (terapeut_id, datum_od, datum_do, dan, smjena, pocetak, kraj, unosio_id, datum_unosa, terapeut_ime, terapeut_prezime, unosio_ime, unosio_prezime)
                 VALUES 
-                (:terapeut_id, :datum_od, :datum_do, :dan, :smjena, :pocetak, :kraj, :unosio_id, :datum_unosa)");
+                (:terapeut_id, :datum_od, :datum_do, :dan, :smjena, :pocetak, :kraj, :unosio_id, :datum_unosa, :terapeut_ime, :terapeut_prezime, :unosio_ime, :unosio_prezime)");
 
             $stmt->execute([
                 'terapeut_id' => $terapeut_id,
@@ -82,7 +100,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['terapeut_id']) && iss
                 'pocetak'     => null,
                 'kraj'        => null,
                 'unosio_id'   => $unosio_id,
-                'datum_unosa' => $datum_unosa
+                'datum_unosa' => $datum_unosa,
+                'terapeut_ime' => $terapeut_ime,        // ZAMRZNUTO!
+                'terapeut_prezime' => $terapeut_prezime, // ZAMRZNUTO!
+                'unosio_ime' => $unosio_ime,            // ZAMRZNUTO!
+                'unosio_prezime' => $unosio_prezime     // ZAMRZNUTO!
             ]);
             
             $dodano++;

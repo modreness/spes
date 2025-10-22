@@ -43,14 +43,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
-// Dohvati sve rasporede za sedmicu
+// Dohvati sve rasporede za sedmicu - KORISTI ZAMRZNUTE PODATKE
 try {
     $sql = "SELECT r.*, 
-               CONCAT(u.ime, ' ', u.prezime) AS terapeut_ime,
+               -- Koristi zamrznute podatke ako postoje, inače trenutne iz users tabele
+               COALESCE(r.terapeut_ime, u.ime) AS terapeut_ime_display,
+               COALESCE(r.terapeut_prezime, u.prezime) AS terapeut_prezime_display,
+               CONCAT(COALESCE(r.terapeut_ime, u.ime), ' ', COALESCE(r.terapeut_prezime, u.prezime)) AS terapeut_ime,
                u.email as terapeut_email,
-               r.terapeut_id
+               r.terapeut_id,
+               -- Dodaj i podatke o unositelju
+               COALESCE(r.unosio_ime, u2.ime) as unosio_ime_display,
+               COALESCE(r.unosio_prezime, u2.prezime) as unosio_prezime_display
         FROM rasporedi_sedmicni r
-        JOIN users u ON r.terapeut_id = u.id
+        LEFT JOIN users u ON r.terapeut_id = u.id
+        LEFT JOIN users u2 ON r.unosio_id = u2.id
         WHERE r.datum_od = ?";
     
     $params = [$datum_od];
@@ -61,7 +68,7 @@ try {
         $params[] = $terapeut_filter;
     }
     
-    $sql .= " ORDER BY u.prezime, u.ime, 
+    $sql .= " ORDER BY COALESCE(r.terapeut_prezime, u.prezime), COALESCE(r.terapeut_ime, u.ime), 
               FIELD(r.dan, 'pon','uto','sri','cet','pet','sub','ned'),
               FIELD(r.smjena, 'jutro','popodne','vecer')";
     
