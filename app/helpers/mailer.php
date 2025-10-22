@@ -23,8 +23,8 @@ function send_mail($to, $subject, $body) {
         $mail->SMTPAuth = true;
         $mail->Username = 'admin@spes.ba';      // <-- SMTP username
         $mail->Password = 'skunrotwxabywvlz';           // <-- SMTP password
-        $mail->SMTPSecure = 'ssl';                 // 'ssl' ili 'tls'
-        $mail->Port = 465;                         // 465 za SSL, 587 za TLS
+        $mail->SMTPSecure = 'tls';                 // 'ssl' ili 'tls'
+        $mail->Port = 587;                         // 465 za SSL, 587 za TLS
 
         // Sender i recipient
         $mail->setFrom('spes.app@spes.ba', 'SPES aplikacija');
