@@ -9,7 +9,8 @@ if (!is_logged_in()) {
 
 $user = current_user();
 
-if (!in_array($user['uloga'], ['admin', 'recepcioner'])) {
+// AŽURIRANO - dodaj terapeuta u dozvoljene uloge
+if (!in_array($user['uloga'], ['admin', 'recepcioner', 'terapeut'])) {
     header('Location: /dashboard');
     exit;
 }
@@ -20,11 +21,20 @@ $terapeut_filter = $_GET['terapeut'] ?? '';
 $datum_od = $_GET['datum_od'] ?? date('Y-m-d');
 $datum_do = $_GET['datum_do'] ?? date('Y-m-d', strtotime('+30 days'));
 
+// Ako je terapeut, automatski postavi filter na sebe
+if ($user['uloga'] === 'terapeut') {
+    $terapeut_filter = $user['id'];
+}
+
 try {
-    // Dohvati terapeute za filter
-    $stmt = $pdo->prepare("SELECT id, ime, prezime FROM users WHERE uloga = 'terapeut' AND aktivan = 1 ORDER BY ime, prezime");
-    $stmt->execute();
-    $terapeuti = $stmt->fetchAll();
+    // Dohvati terapeute za filter - SAMO ako nije terapeut
+    if ($user['uloga'] !== 'terapeut') {
+        $stmt = $pdo->prepare("SELECT id, ime, prezime FROM users WHERE uloga = 'terapeut' AND aktivan = 1 ORDER BY ime, prezime");
+        $stmt->execute();
+        $terapeuti = $stmt->fetchAll();
+    } else {
+        $terapeuti = []; // Terapeut ne vidi dropdown za terapeute
+    }
     
     // Builduj WHERE clause
     $where_conditions = ["DATE(t.datum_vrijeme) BETWEEN ? AND ?"];
@@ -69,7 +79,7 @@ try {
     $terapeuti = [];
 }
 
-$title = "Lista termina";
+$title = $user['uloga'] === 'terapeut' ? "Moji termini" : "Lista termina";
 
 ob_start();
 require_once __DIR__ . '/../views/termini/lista.php';

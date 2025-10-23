@@ -1,8 +1,10 @@
 <div class="naslov-dugme">
-    <h2>Lista termina</h2>
+    <h2><?= $user['uloga'] === 'terapeut' ? 'Moji termini' : 'Lista termina' ?></h2>
     <div>
+        <?php if ($user['uloga'] !== 'terapeut'): ?>
         <a href="/termini/kreiraj" class="btn btn-add"><i class="fa-solid fa-plus"></i> Novi termin</a>
-        <a href="/termini" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Povratak</a>
+        <?php endif; ?>
+        <a href="/<?= $user['uloga'] === 'terapeut' ? 'dashboard' : 'termini' ?>" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Povratak</a>
     </div>
 </div>
 
@@ -42,6 +44,8 @@
                 </select>
             </div>
             
+            <!-- Sakrij terapeut dropdown ako je korisnik terapeut -->
+            <?php if ($user['uloga'] !== 'terapeut'): ?>
             <div class="form-group">
                 <label for="terapeut">Terapeut</label>
                 <select id="terapeut" name="terapeut" style="padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
@@ -53,6 +57,7 @@
                     <?php endforeach; ?>
                 </select>
             </div>
+            <?php endif; ?>
             
             <button type="submit" class="btn btn-search">Filtriraj</button>
         </form>
@@ -65,7 +70,9 @@
                 <th>ID</th>
                 <th>Datum i vrijeme</th>
                 <th>Pacijent</th>
+                <?php if ($user['uloga'] !== 'terapeut'): ?>
                 <th>Terapeut</th>
+                <?php endif; ?>
                 <th>Usluga</th>
                 <th>Cijena</th>
                 <th>Status</th>
@@ -89,7 +96,9 @@
                         <div style="color: #7f8c8d; font-size: 13px;"><?= date('H:i', strtotime($t['datum_vrijeme'])) ?></div>
                     </td>
                     <td><?= htmlspecialchars($t['pacijent_ime']) ?></td>
+                    <?php if ($user['uloga'] !== 'terapeut'): ?>
                     <td><?= htmlspecialchars($t['terapeut_ime']) ?></td>
+                    <?php endif; ?>
                     <td><?= htmlspecialchars($t['usluga_naziv']) ?></td>
                     <td>
                         <?php if ($t['placeno_iz_paketa']): ?>
@@ -106,18 +115,28 @@
                         </span>
                     </td>
                     <td>
+                        <?php if ($user['uloga'] !== 'terapeut'): ?>
+                        <!-- Admin/recepcioner vidi sve opcije -->
                         <a href="/termini/uredi?id=<?= $t['id'] ?>" class="btn btn-sm btn-edit" title="Uredi">
                             <i class="fa-solid fa-edit"></i>
                         </a>
                         <button class="btn btn-sm btn-danger" onclick="potvrdiBrisanje(<?= $t['id'] ?>)" title="Obriši">
                             <i class="fa-solid fa-trash"></i>
                         </button>
+                        <?php endif; ?>
+                        
+                        <!-- Status akcije - svi mogu da menjaju status -->
                         <?php if ($t['status'] == 'zakazan'): ?>
                             <button class="btn btn-sm btn-warning" onclick="promeniStatus(<?= $t['id'] ?>, 'otkazan')" title="Otkaži">
                                 <i class="fa-solid fa-times"></i>
                             </button>
                             <button class="btn btn-sm btn-success" onclick="promeniStatus(<?= $t['id'] ?>, 'obavljen')" title="Označi kao obavljen">
                                 <i class="fa-solid fa-check"></i>
+                            </button>
+                        <?php elseif ($t['status'] == 'otkazan' && $user['uloga'] !== 'terapeut'): ?>
+                            <!-- Samo admin/recepcioner može da vrati otkazane termine -->
+                            <button class="btn btn-sm btn-success" onclick="promeniStatus(<?= $t['id'] ?>, 'zakazan')" title="Vrati u zakazane">
+                                <i class="fa-solid fa-undo"></i>
                             </button>
                         <?php endif; ?>
                     </td>
@@ -129,7 +148,13 @@
 
 <script>
 function promeniStatus(terminId, noviStatus) {
-    const poruka = noviStatus === 'otkazan' ? 'otkazati' : 'označiti kao obavljen';
+    let poruka = '';
+    switch(noviStatus) {
+        case 'otkazan': poruka = 'otkazati'; break;
+        case 'obavljen': poruka = 'označiti kao obavljen'; break;
+        case 'zakazan': poruka = 'vratiti u zakazane'; break;
+        default: poruka = 'promeniti status';
+    }
     
     if (confirm(`Da li ste sigurni da želite ${poruka} ovaj termin?`)) {
         // Kreiraj form i pošalji
@@ -155,7 +180,8 @@ function promeniStatus(terminId, noviStatus) {
 }
 </script>
 
-<!-- Modal za brisanje -->
+<?php if ($user['uloga'] !== 'terapeut'): ?>
+<!-- Modal za brisanje - samo za admin/recepcioner -->
 <div id="modal-overlay" class="modal-overlay" style="display: none;"></div>
 
 <div id="brisanje-modal" class="modal" style="display:none;">
@@ -185,3 +211,4 @@ function zatvoriModal() {
 
 document.getElementById('modal-overlay').addEventListener('click', zatvoriModal);
 </script>
+<?php endif; ?>
