@@ -30,8 +30,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
         
-        $stmt = $pdo->prepare("UPDATE rasporedi_sedmicni SET smjena = ? WHERE id = ?");
-        $stmt->execute([$smjena, $raspored_id]);
+        // Dohvati vremena za novu smjenu iz smjene_vremena tabele
+        $stmt_smjena = $pdo->prepare("SELECT pocetak, kraj FROM smjene_vremena WHERE smjena = ?");
+        $stmt_smjena->execute([$smjena]);
+        $smjena_vremena = $stmt_smjena->fetch();
+
+        // Ako nema definisanih vremena, koristi NULL
+        $pocetak = $smjena_vremena ? $smjena_vremena['pocetak'] : null;
+        $kraj = $smjena_vremena ? $smjena_vremena['kraj'] : null;
+        
+        // Ažuriraj smjenu I vremena
+        $stmt = $pdo->prepare("UPDATE rasporedi_sedmicni SET smjena = ?, pocetak = ?, kraj = ? WHERE id = ?");
+        $stmt->execute([$smjena, $pocetak, $kraj, $raspored_id]);
         
         // Dohvati datum_od za redirect
         $stmt = $pdo->prepare("SELECT datum_od FROM rasporedi_sedmicni WHERE id = ?");
@@ -51,9 +61,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // GET - Prikaz forme
 try {
     $stmt = $pdo->prepare("
-        SELECT r.*, CONCAT(u.ime, ' ', u.prezime) as terapeut_ime, u.email as terapeut_email
+        SELECT r.*, 
+               -- Koristi zamrznute podatke ako postoje, inače trenutne iz users tabele
+               COALESCE(r.terapeut_ime, u.ime, 'Nepoznat') as terapeut_ime_display,
+               COALESCE(r.terapeut_prezime, u.prezime, '') as terapeut_prezime_display,
+               CONCAT(COALESCE(r.terapeut_ime, u.ime, 'Nepoznat'), ' ', COALESCE(r.terapeut_prezime, u.prezime, '')) as terapeut_ime,
+               u.email as terapeut_email
         FROM rasporedi_sedmicni r
-        JOIN users u ON r.terapeut_id = u.id
+        LEFT JOIN users u ON r.terapeut_id = u.id
         WHERE r.id = ?
     ");
     $stmt->execute([$raspored_id]);
