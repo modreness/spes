@@ -273,69 +273,6 @@
         </div>
     </div>
 
-    <!-- Moji pacijenti -->
-    <div class="admin-activity-grid">
-        <div class="admin-activity-section" style="grid-column: 1 / -1;">
-            <div class="admin-activity-header">
-                <h3>Moji pacijenti</h3>
-                <div class="admin-header-actions">
-                    <a href="/kartoni/moji" class="admin-btn admin-btn-outline admin-btn-xs">Svi pacijenti</a>
-                </div>
-            </div>
-            <div class="admin-activity-content">
-                <?php if (empty($dashboard_data['moji_pacijenti'])): ?>
-                    <div class="admin-empty-state">
-                        <i class="fa-solid fa-users"></i>
-                        <p>Nema dodeljenih pacijenata</p>
-                    </div>
-                <?php else: ?>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
-                    <?php foreach (array_slice($dashboard_data['moji_pacijenti'], 0, 6) as $pacijent): ?>
-                    <div style="border: 1px solid #e3e6f0; border-radius: 8px; padding: 15px; background: white;">
-                        <div class="admin-list-item admin-list-vertical">
-                            <div>
-                                <div class="admin-list-name">
-                                    <a href="/kartoni/pregled?id=<?= $pacijent['id'] ?>">
-                                        <?= htmlspecialchars($pacijent['pacijent_ime']) ?>
-                                    </a>
-                                </div>
-                                <div class="admin-list-details">
-                                    Karton: #<?= htmlspecialchars($pacijent['broj_upisa']) ?>
-                                </div>
-                                <div class="admin-list-extra">
-                                    <?= $pacijent['broj_tretmana'] ?> tretmana
-                                    <?php if ($pacijent['poslednji_tretman']): ?>
-                                        | Poslednji: <?= date('d.m.Y', strtotime($pacijent['poslednji_tretman'])) ?>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                        </div>
-                        <div style="margin-top: 10px; text-align: center;">
-                            <a href="/kartoni/pregled?id=<?= $pacijent['id'] ?>" class="admin-btn admin-btn-outline admin-btn-xs">
-                                <i class="fa-solid fa-eye"></i> Karton
-                            </a>
-                            <a href="/kartoni/tretmani?id=<?= $pacijent['id'] ?>" class="admin-btn admin-btn-success admin-btn-xs">
-                                <i class="fa-solid fa-notes-medical"></i> Tretmani
-                            </a>
-                        </div>
-                    </div>
-                    <?php endforeach; ?>
-                    
-                    <?php if (count($dashboard_data['moji_pacijenti']) > 6): ?>
-                    <div style="border: 2px dashed #e3e6f0; border-radius: 8px; padding: 30px; background: #f8f9fa; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
-                        <div style="font-size: 1.5em; font-weight: 600; color: #858796; margin-bottom: 5px;">
-                            +<?= count($dashboard_data['moji_pacijenti']) - 6 ?>
-                        </div>
-                        <div style="color: #858796; margin-bottom: 15px;">više pacijenata</div>
-                        <a href="/kartoni/moji" class="admin-btn admin-btn-primary admin-btn-sm">Vidi sve</a>
-                    </div>
-                    <?php endif; ?>
-                </div>
-                <?php endif; ?>
-            </div>
-        </div>
-    </div>
-
     <!-- Sedmični pregled -->
     <?php if (!empty($dashboard_data['termini_sedmica'])): ?>
     <div class="admin-quick-nav">
