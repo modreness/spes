@@ -40,37 +40,7 @@
         </div>
     </div>
 
-    <!-- Mesečni pregled (kao admin) -->
-    <?php if (!empty($dashboard_data['radno_vreme_danas']) || !empty($dashboard_data['top_usluge'])): ?>
-    <div class="admin-monthly-overview">
-        <h3>Pregled danas</h3>
-        <div class="admin-monthly-stats">
-            <?php if (!empty($dashboard_data['radno_vreme_danas'])): ?>
-            <div class="admin-monthly-stat">
-                <div class="admin-monthly-number">
-                    <?= date('H:i', strtotime($dashboard_data['radno_vreme_danas'][0]['pocetak'])) ?> - 
-                    <?= date('H:i', strtotime($dashboard_data['radno_vreme_danas'][0]['kraj'])) ?>
-                </div>
-                <div class="admin-monthly-label">Radno vreme</div>
-            </div>
-            <?php endif; ?>
-            
-            <?php if (!empty($dashboard_data['top_usluge'])): ?>
-            <div class="admin-monthly-stat">
-                <div class="admin-monthly-number"><?= $dashboard_data['top_usluge'][0]['broj_termina'] ?></div>
-                <div class="admin-monthly-label">Top usluga - <?= htmlspecialchars($dashboard_data['top_usluge'][0]['naziv']) ?></div>
-            </div>
-            <?php endif; ?>
-            
-            <div class="admin-monthly-stat">
-                <div class="admin-monthly-number"><?= $dashboard_data['termini_ova_sedmica'] ?? 0 ?></div>
-                <div class="admin-monthly-label">Termini ove sedmice</div>
-            </div>
-        </div>
-    </div>
-    <?php endif; ?>
-
-    <!-- Glavne akcije (kao admin) -->
+    <!-- Glavne akcije -->
     <div class="admin-action-cards">
         <div class="admin-action-card">
             <h3>Moj raspored</h3>
@@ -125,7 +95,7 @@
         </div>
     </div>
 
-    <!-- Pregled aktivnosti (kao admin) -->
+    <!-- Pregled aktivnosti -->
     <div class="admin-activity-grid">
         <!-- Moji termini danas -->
         <div class="admin-activity-section">
@@ -205,85 +175,138 @@
             </div>
         </div>
 
-        <!-- Sidebar sa informacijama -->
+        <!-- Brzi pregled - POJEDNOSTAVLJENA VERZIJA -->
         <div class="admin-activity-section">
             <div class="admin-activity-header">
                 <h3>Brzi pregled</h3>
             </div>
             <div class="admin-activity-content">
                 
+                <!-- Moja smjena danas -->
+                <div style="margin-bottom: 20px; padding: 15px; background: #e7f3ff; border-radius: 8px; border-left: 4px solid #4e73df;">
+                    <h4 style="color: #4e73df; font-size: 0.9em; margin-bottom: 10px;">
+                        <i class="fa-solid fa-clock"></i> Moja smjena danas
+                    </h4>
+                    <?php if (!empty($dashboard_data['moja_smjena_danas'])): ?>
+                        <div style="font-size: 1.1em; font-weight: 600; color: #2c3e50;">
+                            <?= ucfirst($dashboard_data['moja_smjena_danas']['smjena']) ?> smjena
+                        </div>
+                        <?php if ($dashboard_data['moja_smjena_danas']['pocetak'] && $dashboard_data['moja_smjena_danas']['kraj']): ?>
+                        <div style="color: #666; font-size: 0.9em;">
+                            <?= date('H:i', strtotime($dashboard_data['moja_smjena_danas']['pocetak'])) ?> - 
+                            <?= date('H:i', strtotime($dashboard_data['moja_smjena_danas']['kraj'])) ?>
+                        </div>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        <div style="color: #666; font-style: italic;">
+                            <i class="fa-solid fa-calendar-xmark"></i> Nema rasporeda za danas
+                        </div>
+                    <?php endif; ?>
+                </div>
+
                 <!-- Termini sutra -->
                 <?php if (!empty($dashboard_data['termini_sutra'])): ?>
                 <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #e3e6f0;">
-                    <h4 style="color: #5a5c69; font-size: 0.9em; margin-bottom: 10px;">
+                    <h4 style="color: #f6c23e; font-size: 0.9em; margin-bottom: 10px;">
                         <i class="fa-solid fa-calendar-plus"></i> Sutra (<?= count($dashboard_data['termini_sutra']) ?>)
                     </h4>
                     <?php foreach (array_slice($dashboard_data['termini_sutra'], 0, 3) as $termin): ?>
-                    <div class="admin-list-item admin-list-vertical">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 8px; background: #fff8e1; border-radius: 4px;">
                         <div>
-                            <div class="admin-list-name">
-                                <?= date('H:i', strtotime($termin['vrijeme'])) ?> - <?= htmlspecialchars($termin['pacijent_ime']) ?>
+                            <div style="font-weight: 600; color: #2c3e50;">
+                                <?= date('H:i', strtotime($termin['vrijeme'])) ?>
                             </div>
-                            <div class="admin-list-details">
-                                <?= htmlspecialchars($termin['usluga']) ?>
+                            <div style="font-size: 0.85em; color: #666;">
+                                <?= htmlspecialchars($termin['pacijent_ime']) ?>
                             </div>
+                        </div>
+                        <div style="font-size: 0.8em; color: #f6c23e;">
+                            <i class="fa-solid fa-clock"></i>
                         </div>
                     </div>
                     <?php endforeach; ?>
                     <?php if (count($dashboard_data['termini_sutra']) > 3): ?>
-                    <div style="text-align: center; margin-top: 10px;">
+                    <div style="text-align: center; margin-top: 8px;">
                         <small style="color: #858796;">+<?= count($dashboard_data['termini_sutra']) - 3 ?> više termina</small>
                     </div>
                     <?php endif; ?>
                 </div>
                 <?php endif; ?>
 
-                <!-- Follow-up potreban -->
-                <?php if (!empty($dashboard_data['potreban_followup'])): ?>
-                <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #e3e6f0;">
-                    <h4 style="color: #e74a3b; font-size: 0.9em; margin-bottom: 10px;">
-                        <i class="fa-solid fa-exclamation-triangle"></i> Potreban follow-up
+                <!-- Ova sedmica - pregled -->
+                <div style="margin-bottom: 20px;">
+                    <h4 style="color: #28a745; font-size: 0.9em; margin-bottom: 10px;">
+                        <i class="fa-solid fa-calendar-week"></i> Ova sedmica
                     </h4>
-                    <?php foreach (array_slice($dashboard_data['potreban_followup'], 0, 3) as $pacijent): ?>
-                    <div class="admin-list-item admin-list-vertical">
-                        <div>
-                            <div class="admin-list-name">
-                                <a href="/kartoni/pregled?id=<?= $pacijent['id'] ?>" style="color: #e74a3b;">
-                                    <?= htmlspecialchars($pacijent['pacijent_ime']) ?>
-                                </a>
+                    <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center;">
+                        <?php 
+                        // Generiši celu sedmicu
+                        $week_schedule = $dashboard_data['raspored_ova_sedmica'] ?? [];
+                        
+                        for ($i = 1; $i <= 7; $i++) {
+                            $day_date = date('Y-m-d', strtotime('this week +' . ($i-1) . ' days'));
+                            $day_name = ['Ned', 'Pon', 'Uto', 'Sre', 'Čet', 'Pet', 'Sub'][date('w', strtotime($day_date))];
+                            $day_short = ['ned', 'pon', 'uto', 'sri', 'cet', 'pet', 'sub'][date('w', strtotime($day_date))];
+                            
+                            // Pronađi raspored za dan
+                            $smjena_dan = '';
+                            foreach ($week_schedule as $raspored) {
+                                if ($raspored['dan'] === $day_short) {
+                                    $smjena_dan = $raspored['smjena'];
+                                    break;
+                                }
+                            }
+                            
+                            $is_today = $day_date === date('Y-m-d');
+                            $has_schedule = !empty($smjena_dan);
+                        ?>
+                        <div style="padding: 8px 4px; font-size: 0.8em; border-radius: 4px; 
+                                    <?= $is_today ? 'background: #4e73df; color: white;' : ($has_schedule ? 'background: #d4edda; color: #155724;' : 'background: #f8f9fa; color: #999;') ?>">
+                            <div style="font-weight: 600; margin-bottom: 2px;">
+                                <?= $day_name ?>
                             </div>
-                            <div class="admin-list-details">
-                                <?= $pacijent['dana_od_tretmana'] ?> dana od poslednjeg tretmana
+                            <div style="font-size: 0.75em;">
+                                <?= date('d.m', strtotime($day_date)) ?>
                             </div>
+                            <?php if ($has_schedule): ?>
+                            <div style="font-size: 0.7em; margin-top: 2px;">
+                                <?= ucfirst(substr($smjena_dan, 0, 3)) ?>
+                            </div>
+                            <?php else: ?>
+                            <div style="font-size: 0.7em; margin-top: 2px;">
+                                -
+                            </div>
+                            <?php endif; ?>
                         </div>
+                        <?php } ?>
                     </div>
-                    <?php endforeach; ?>
                 </div>
-                <?php endif; ?>
 
-                <!-- Poslednji tretmani -->
-                <?php if (!empty($dashboard_data['poslednji_tretmani'])): ?>
-                <div>
-                    <h4 style="color: #5a5c69; font-size: 0.9em; margin-bottom: 10px;">
-                        <i class="fa-solid fa-history"></i> Poslednji tretmani
-                    </h4>
-                    <?php foreach (array_slice($dashboard_data['poslednji_tretmani'], 0, 3) as $tretman): ?>
-                    <div class="admin-list-item admin-list-vertical">
-                        <div>
-                            <div class="admin-list-name">
-                                <?= htmlspecialchars($tretman['pacijent_ime']) ?>
-                            </div>
-                            <div class="admin-list-details">
-                                <?= date('d.m.Y', strtotime($tretman['datum'])) ?> - Karton #<?= $tretman['broj_upisa'] ?>
-                            </div>
+                <!-- Statistika sedmica -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                    <div style="text-align: center; padding: 10px; background: #f8f9fa; border-radius: 6px;">
+                        <div style="font-size: 1.2em; font-weight: 600; color: #4e73df;">
+                            <?= $dashboard_data['termini_ova_sedmica'] ?? 0 ?>
                         </div>
+                        <div style="font-size: 0.8em; color: #666;">Termina</div>
                     </div>
-                    <?php endforeach; ?>
-                    <div class="admin-activity-footer">
-                        <a href="/tretmani/moji" class="admin-btn admin-btn-outline admin-btn-sm">Svi tretmani</a>
+                    <div style="text-align: center; padding: 10px; background: #f8f9fa; border-radius: 6px;">
+                        <div style="font-size: 1.2em; font-weight: 600; color: #28a745;">
+                            <?= $dashboard_data['radnih_dana_sedmica'] ?? 0 ?>
+                        </div>
+                        <div style="font-size: 0.8em; color: #666;">Radnih dana</div>
                     </div>
                 </div>
-                <?php endif; ?>
+
+                <!-- Brze akcije -->
+                <div style="display: grid; gap: 8px;">
+                    <a href="/raspored/moj" class="admin-btn admin-btn-outline admin-btn-sm" style="text-align: center;">
+                        <i class="fa-solid fa-calendar"></i> Moj raspored
+                    </a>
+                    <a href="/termini/kalendar" class="admin-btn admin-btn-primary admin-btn-sm" style="text-align: center;">
+                        <i class="fa-solid fa-calendar-days"></i> Kalendar termina
+                    </a>
+                </div>
             </div>
         </div>
     </div>
