@@ -277,16 +277,7 @@
                 <label for="terapeut_id">Terapeut</label>
                 <select name="terapeut_id" id="modal-terapeut-select" required>
                     <option value="">-- Odaberi terapeuta --</option>
-                    <?php 
-                    // Dohvati terapeute za dropdown - trebamo dodati ovo u DashboardController.php
-                    try {
-                        $stmt = $pdo->prepare("SELECT id, ime, prezime FROM users WHERE uloga = 'terapeut' AND aktivan = 1 ORDER BY ime, prezime");
-                        $stmt->execute();
-                        $svi_terapeuti = $stmt->fetchAll();
-                    } catch (PDOException $e) {
-                        $svi_terapeuti = [];
-                    }
-                    ?>
+                  
                     <?php foreach ($svi_terapeuti as $terapeut): ?>
                         <option value="<?= $terapeut['id'] ?>"><?= htmlspecialchars($terapeut['ime'] . ' ' . $terapeut['prezime']) ?></option>
                     <?php endforeach; ?>
