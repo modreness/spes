@@ -9,7 +9,8 @@ if (!is_logged_in()) {
 
 $user = current_user();
 
-if (!in_array($user['uloga'], ['admin', 'recepcioner'])) {
+// AŽURIRANO - dodaj terapeuta u dozvoljene uloge
+if (!in_array($user['uloga'], ['admin', 'recepcioner', 'terapeut'])) {
     header('Location: /dashboard');
     exit;
 }
@@ -32,11 +33,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     try {
         // Provjeri da li termin postoji
-        $stmt = $pdo->prepare("SELECT id, status FROM termini WHERE id = ?");
+        $stmt = $pdo->prepare("SELECT id, status, terapeut_id FROM termini WHERE id = ?");
         $stmt->execute([$termin_id]);
         $termin = $stmt->fetch();
         
         if (!$termin) {
+            header('Location: /termini/lista?msg=greska');
+            exit;
+        }
+        
+        // DODATNA PROVJERA - terapeut može mijenjati samo svoje termine
+        if ($user['uloga'] === 'terapeut' && $termin['terapeut_id'] != $user['id']) {
             header('Location: /termini/lista?msg=greska');
             exit;
         }
