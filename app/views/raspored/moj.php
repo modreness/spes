@@ -15,7 +15,7 @@
             <div class="stat-number"><?= $broj_obavljenih ?></div>
         </div>
         <div class="stat-card" style="background: linear-gradient(135deg, #289CC6, #289CC6);">
-            <h3>Uspešnost</h3>
+            <h3>Uspješnost</h3>
             <div class="stat-number"><?= $ukupno_termina > 0 ? round(($broj_obavljenih / $ukupno_termina) * 100) : 0 ?>%</div>
         </div>
     </div>
@@ -47,26 +47,26 @@
                 <thead>
                     <tr>
                         <th>Period</th>
-                        <th>Ponedeljak</th>
+                        <th>Ponedjeljak</th>
                         <th>Utorak</th>
-                        <th>Sreda</th>
+                        <th>Srijeda</th>
                         <th>Četvrtak</th>
                         <th>Petak</th>
                         <th>Subota</th>
-                        <th>Nedelja</th>
+                        <th>Nedjelja</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($moj_raspored as $raspored): ?>
                     <tr>
                         <td><strong><?= $raspored['datum_od_format'] ?> - <?= $raspored['datum_do_format'] ?></strong></td>
-                        <td><?= $raspored['ponedeljak'] ?: '<span style="color: #bdc3c7;">-</span>' ?></td>
+                        <td><?= $raspored['ponedjeljak'] ?: '<span style="color: #bdc3c7;">-</span>' ?></td>
                         <td><?= $raspored['utorak'] ?: '<span style="color: #bdc3c7;">-</span>' ?></td>
-                        <td><?= $raspored['sreda'] ?: '<span style="color: #bdc3c7;">-</span>' ?></td>
+                        <td><?= $raspored['srijeda'] ?: '<span style="color: #bdc3c7;">-</span>' ?></td>
                         <td><?= $raspored['cetvrtak'] ?: '<span style="color: #bdc3c7;">-</span>' ?></td>
                         <td><?= $raspored['petak'] ?: '<span style="color: #bdc3c7;">-</span>' ?></td>
                         <td><?= $raspored['subota'] ?: '<span style="color: #bdc3c7;">-</span>' ?></td>
-                        <td><?= $raspored['nedelja'] ?: '<span style="color: #bdc3c7;">-</span>' ?></td>
+                        <td><?= $raspored['nedjelja'] ?: '<span style="color: #bdc3c7;">-</span>' ?></td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -93,7 +93,7 @@
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1px; background: #ecf0f1;">
                 <?php 
                 $dani = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-                $dani_naziv = ['Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak', 'Subota', 'Nedelja'];
+                $dani_naziv = ['Ponedjeljak', 'Utorak', 'Srijeda', 'Četvrtak', 'Petak', 'Subota', 'Nedjelja'];
                 
                 for ($i = 0; $i < 7; $i++):
                     $dan_datum = date('Y-m-d', strtotime($dani[$i] . ' this week'));
@@ -151,7 +151,7 @@
         
         <div class="action-card">
             <h3>Moji tretmani</h3>
-            <p>História tretmana koje sam radio</p>
+            <p>Historija tretmana koje sam radio</p>
             <a href="/tretmani/moji" class="btn btn-add">
                 <i class="fa-solid fa-notes-medical"></i> Pregled tretmana
             </a>
@@ -183,7 +183,7 @@
         </div>
         <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e9ecef;">
             <small style="color: #7f8c8d;">
-                Za izmene rasporeda kontaktirajte administratora. Sedmica se računa od ponedeljka do nedelje.
+                Za izmejne rasporeda kontaktirajte administratora. Sedmica se računa od ponedeljka do nedelje.
             </small>
         </div>
     </div>
