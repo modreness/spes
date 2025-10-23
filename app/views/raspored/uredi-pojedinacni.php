@@ -44,7 +44,7 @@
                 </label>
                 <select name="smjena" id="smjena" required 
                         style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; background: white;">
-                    <?php foreach (smjene() as $key => $naziv): ?>
+                    <?php foreach (aktivne_smjene() as $key => $naziv): ?>
                         <option value="<?= $key ?>" <?= $raspored['smjena'] === $key ? 'selected' : '' ?>>
                             <?= $naziv ?>
                         </option>

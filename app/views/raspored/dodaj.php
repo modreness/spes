@@ -52,7 +52,7 @@ endif;
                     <td>
                         <select name="raspored[<?= $key ?>][smjena]">
                             <option value="">Ne radi</option>
-                            <?php foreach (smjene_sa_vremenima() as $smjenaKey => $smjenaLabel): ?>
+                            <?php foreach (aktivne_smjene() as $smjenaKey => $smjenaLabel): ?>
                                 <option value="<?= $smjenaKey ?>"><?= $smjenaLabel ?></option>
                             <?php endforeach; ?>
                         </select>
