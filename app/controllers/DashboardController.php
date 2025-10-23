@@ -378,7 +378,7 @@ error_log("TERAPEUT DEBUG: " . print_r([
     'smjena_danas' => $dashboard_data['moja_smjena_danas'] ?? 'N/A',
     'raspored_sedmica' => count($dashboard_data['raspored_ova_sedmica'] ?? [])
 ], true));
-?>
+
         
     } elseif ($user['uloga'] === 'pacijent') {
         // Pacijent podaci - moji termini, moj karton, moji nalazi
