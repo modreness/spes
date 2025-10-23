@@ -379,13 +379,7 @@ error_log("TERAPEUT DEBUG: " . print_r([
     'raspored_sedmica' => count($dashboard_data['raspored_ova_sedmica'] ?? [])
 ], true));
 
-try {
-    $stmt = $pdo->prepare("SELECT id, ime, prezime FROM users WHERE uloga = 'terapeut' AND aktivan = 1 ORDER BY ime, prezime");
-    $stmt->execute();
-    $svi_terapeuti = $stmt->fetchAll();
-    } catch (PDOException $e) {
-        $svi_terapeuti = [];
-        }        
+       
     } elseif ($user['uloga'] === 'pacijent') {
         // Pacijent podaci - moji termini, moj karton, moji nalazi
         $stmt = $pdo->prepare("
