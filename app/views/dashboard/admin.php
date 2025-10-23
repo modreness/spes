@@ -275,7 +275,7 @@
 
             <div class="form-group">
                 <label for="terapeut_id">Terapeut</label>
-                <select name="terapeut_id" id="modal-terapeut-select" required>
+                <select name="terapeut_id" id="modal-terapeut-select" class="select2" required>
                     <option value="">-- Odaberi terapeuta --</option>
                     <?php foreach ($svi_terapeuti as $terapeut): ?>
                         <option value="<?= $terapeut['id'] ?>"><?= htmlspecialchars($terapeut['ime'] . ' ' . $terapeut['prezime']) ?></option>
@@ -298,10 +298,7 @@
                 <textarea name="stanje_poslije" rows="3" required placeholder="Opišite stanje pacijenta nakon tretmana..."></textarea>
             </div>
 
-            <div class="form-group">
-                <label for="napomene">Napomene i preporuke</label>
-                <textarea name="napomene" rows="2" placeholder="Dodatne napomene, preporuke za sledeći tretman..."></textarea>
-            </div>
+
 
             <div style="text-align: center; margin-top: 20px;">
                 <button type="button" class="btn btn-secondary" onclick="zatvoriModalTretman()">Otkaži</button>
