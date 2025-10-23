@@ -85,7 +85,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['terapeut_id']) && iss
                 continue; // Preskoči ako već postoji
             }
 
-            // Ubaci u bazu - KORISTI DATUM POČETKA SEDMICE + ZAMRZNI PODATKE
+            // Dohvati vremena za smjenu iz smjene_vremena tabele
+            $stmt_smjena = $pdo->prepare("SELECT pocetak, kraj FROM smjene_vremena WHERE smjena = ?");
+            $stmt_smjena->execute([$smjena]);
+            $smjena_vremena = $stmt_smjena->fetch();
+
+            // Ako nema definisanih vremena, koristi NULL
+            $pocetak = $smjena_vremena ? $smjena_vremena['pocetak'] : null;
+            $kraj = $smjena_vremena ? $smjena_vremena['kraj'] : null;
+
+            // Ubaci u bazu - KORISTI DATUM POČETKA SEDMICE + ZAMRZNI PODATKE + VREMENA
             $stmt = $pdo->prepare("INSERT INTO rasporedi_sedmicni 
                 (terapeut_id, datum_od, datum_do, dan, smjena, pocetak, kraj, unosio_id, datum_unosa, terapeut_ime, terapeut_prezime, unosio_ime, unosio_prezime)
                 VALUES 
@@ -97,8 +106,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['terapeut_id']) && iss
                 'datum_do'    => date('Y-m-d', strtotime('sunday', $start_date)),
                 'dan'         => $dan_key,
                 'smjena'      => $smjena,
-                'pocetak'     => null,
-                'kraj'        => null,
+                'pocetak'     => $pocetak,   // STVARNO VREME IZ smjene_vremena!
+                'kraj'        => $kraj,      // STVARNO VREME IZ smjene_vremena!
                 'unosio_id'   => $unosio_id,
                 'datum_unosa' => $datum_unosa,
                 'terapeut_ime' => $terapeut_ime,        // ZAMRZNUTO!
