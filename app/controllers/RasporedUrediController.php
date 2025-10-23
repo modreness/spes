@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
-// Dohvati sve rasporede za sedmicu - KORISTI ZAMRZNUTE PODATKE + VREMENA
+// Dohvati sve rasporede za sedmicu - KORISTI ZAMRZNUTE PODATKE
 try {
     $sql = "SELECT r.*, 
                -- Koristi zamrznute podatke ako postoje, inače trenutne iz users tabele
@@ -54,14 +54,10 @@ try {
                r.terapeut_id,
                -- Dodaj i podatke o unositelju
                COALESCE(r.unosio_ime, u2.ime) as unosio_ime_display,
-               COALESCE(r.unosio_prezime, u2.prezime) as unosio_prezime_display,
-               -- Vremena - koristi zamrznuta iz rasporedi_sedmicni ili fallback iz smjene_vremena
-               COALESCE(r.pocetak, sv.pocetak) as pocetak_display,
-               COALESCE(r.kraj, sv.kraj) as kraj_display
+               COALESCE(r.unosio_prezime, u2.prezime) as unosio_prezime_display
         FROM rasporedi_sedmicni r
         LEFT JOIN users u ON r.terapeut_id = u.id
         LEFT JOIN users u2 ON r.unosio_id = u2.id
-        LEFT JOIN smjene_vremena sv ON r.smjena = sv.smjena
         WHERE r.datum_od = ?";
     
     $params = [$datum_od];
