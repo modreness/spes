@@ -70,7 +70,7 @@
         
         <div class="admin-action-card">
             <h3>Tretmani i izvještaji</h3>
-            <p>História tretmana i statistike</p>
+            <p>Historija tretmana i statistike</p>
             <div class="admin-action-buttons">
                 <a href="/tretmani/moji" class="admin-btn admin-btn-primary admin-btn-sm">
                     <i class="fa-solid fa-notes-medical"></i> Moji tretmani
