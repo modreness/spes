@@ -545,6 +545,19 @@ display: inline-block;
     box-sizing:border-box;
     border: 1px solid #f5f5f9;
 }
+.modal-content .form-group select {
+    width: 100%;
+    display: flex;
+    font-size: 14px;
+    padding: 12px;
+    border-radius: 8px;
+    background: #f5f5f9;
+    font-family: 'Montserrat';
+    margin-top: 5px;
+    box-sizing: border-box;
+    border: 1px solid #f5f5f9;
+}
+
 .main-content .form-group textarea, .modal-content .form-group textarea {
     box-sizing:border-box;
     width:100%;
