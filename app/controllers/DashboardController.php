@@ -96,11 +96,12 @@ try {
         $stmt->execute();
         $dashboard_data['top_terapeut'] = $stmt->fetch();
         
-        // Termini danas - SVI termini (ne samo zakazani)
+        // Termini danas - SVI termini (ne samo zakazani) - DODAJ terapeut_id
         $stmt = $pdo->prepare("
             SELECT t.*, 
                    CONCAT(p.ime, ' ', p.prezime) as pacijent_ime,
                    CONCAT(te.ime, ' ', te.prezime) as terapeut_ime,
+                   t.terapeut_id,
                    c.naziv as usluga,
                    TIME(t.datum_vrijeme) as vrijeme,
                    k.id as karton_id
@@ -143,6 +144,11 @@ try {
         ");
         $stmt->execute();
         $dashboard_data['poslednji_nalazi'] = $stmt->fetchAll();
+        
+        // DODAJ - Dohvati terapeute za modal dropdown
+        $stmt = $pdo->prepare("SELECT id, ime, prezime FROM users WHERE uloga = 'terapeut' AND aktivan = 1 ORDER BY ime, prezime");
+        $stmt->execute();
+        $svi_terapeuti = $stmt->fetchAll();
         
     } elseif ($user['uloga'] === 'recepcioner') {
         // Recepcioner podaci - pristup gotovo svim podacima kao admin
@@ -280,105 +286,88 @@ try {
         $stmt->execute([$user['id']]);
         $dashboard_data['termini_ova_sedmica'] = $stmt->fetchColumn();
         
-        
-// DODAJ OVO U TERAPEUT SEKCIJU DashboardController.php 
-// (nakon postojećih query-jeva, prije } elseif ($user['uloga'] === 'pacijent'))
+        // Moja smjena danas
+        try {
+            $stmt = $pdo->prepare("
+                SELECT smjena, pocetak, kraj 
+                FROM rasporedi_sedmicni 
+                WHERE terapeut_id = ? 
+                AND DATE_ADD(datum_od, INTERVAL CASE dan 
+                    WHEN 'pon' THEN 0 
+                    WHEN 'uto' THEN 1 
+                    WHEN 'sri' THEN 2 
+                    WHEN 'cet' THEN 3 
+                    WHEN 'pet' THEN 4 
+                    WHEN 'sub' THEN 5 
+                    WHEN 'ned' THEN 6 
+                END DAY) = CURDATE()
+                LIMIT 1
+            ");
+            $stmt->execute([$user['id']]);
+            $dashboard_data['moja_smjena_danas'] = $stmt->fetch();
+        } catch (PDOException $e) {
+            $dashboard_data['moja_smjena_danas'] = null;
+        }
 
-// Moja smjena danas
-try {
-    $stmt = $pdo->prepare("
-        SELECT smjena, pocetak, kraj 
-        FROM rasporedi_sedmicni 
-        WHERE terapeut_id = ? 
-        AND DATE_ADD(datum_od, INTERVAL CASE dan 
-            WHEN 'pon' THEN 0 
-            WHEN 'uto' THEN 1 
-            WHEN 'sri' THEN 2 
-            WHEN 'cet' THEN 3 
-            WHEN 'pet' THEN 4 
-            WHEN 'sub' THEN 5 
-            WHEN 'ned' THEN 6 
-        END DAY) = CURDATE()
-        LIMIT 1
-    ");
-    $stmt->execute([$user['id']]);
-    $dashboard_data['moja_smjena_danas'] = $stmt->fetch();
-} catch (PDOException $e) {
-    $dashboard_data['moja_smjena_danas'] = null;
-}
+        // Raspored za ovu sedmicu
+        try {
+            $datum_od_sedmica = date('Y-m-d', strtotime('monday this week'));
+            $stmt = $pdo->prepare("
+                SELECT dan, smjena, pocetak, kraj 
+                FROM rasporedi_sedmicni 
+                WHERE terapeut_id = ? AND datum_od = ?
+                ORDER BY FIELD(dan, 'pon','uto','sri','cet','pet','sub','ned')
+            ");
+            $stmt->execute([$user['id'], $datum_od_sedmica]);
+            $dashboard_data['raspored_ova_sedmica'] = $stmt->fetchAll();
+        } catch (PDOException $e) {
+            $dashboard_data['raspored_ova_sedmica'] = [];
+        }
 
-// Raspored za ovu sedmicu
-try {
-    $datum_od_sedmica = date('Y-m-d', strtotime('monday this week'));
-    $stmt = $pdo->prepare("
-        SELECT dan, smjena, pocetak, kraj 
-        FROM rasporedi_sedmicni 
-        WHERE terapeut_id = ? AND datum_od = ?
-        ORDER BY FIELD(dan, 'pon','uto','sri','cet','pet','sub','ned')
-    ");
-    $stmt->execute([$user['id'], $datum_od_sedmica]);
-    $dashboard_data['raspored_ova_sedmica'] = $stmt->fetchAll();
-} catch (PDOException $e) {
-    $dashboard_data['raspored_ova_sedmica'] = [];
-}
+        // Termini sutra
+        try {
+            $sutra = date('Y-m-d', strtotime('+1 day'));
+            $stmt = $pdo->prepare("
+                SELECT t.id, 
+                       TIME(t.datum_vrijeme) as vrijeme,
+                       CONCAT(p.ime, ' ', p.prezime) as pacijent_ime,
+                       c.naziv as usluga
+                FROM termini t
+                JOIN users p ON t.pacijent_id = p.id
+                JOIN cjenovnik c ON t.usluga_id = c.id
+                WHERE t.terapeut_id = ? 
+                AND DATE(t.datum_vrijeme) = ?
+                AND t.status IN ('zakazan', 'u_toku')
+                ORDER BY t.datum_vrijeme ASC
+            ");
+            $stmt->execute([$user['id'], $sutra]);
+            $dashboard_data['termini_sutra'] = $stmt->fetchAll();
+            $dashboard_data['broj_termina_sutra'] = count($dashboard_data['termini_sutra']);
+        } catch (PDOException $e) {
+            $dashboard_data['termini_sutra'] = [];
+            $dashboard_data['broj_termina_sutra'] = 0;
+        }
 
-// Termini sutra
-try {
-    $sutra = date('Y-m-d', strtotime('+1 day'));
-    $stmt = $pdo->prepare("
-        SELECT t.id, 
-               TIME(t.datum_vrijeme) as vrijeme,
-               CONCAT(p.ime, ' ', p.prezime) as pacijent_ime,
-               c.naziv as usluga
-        FROM termini t
-        JOIN users p ON t.pacijent_id = p.id
-        JOIN cjenovnik c ON t.usluga_id = c.id
-        WHERE t.terapeut_id = ? 
-        AND DATE(t.datum_vrijeme) = ?
-        AND t.status IN ('zakazan', 'u_toku')
-        ORDER BY t.datum_vrijeme ASC
-    ");
-    $stmt->execute([$user['id'], $sutra]);
-    $dashboard_data['termini_sutra'] = $stmt->fetchAll();
-    $dashboard_data['broj_termina_sutra'] = count($dashboard_data['termini_sutra']);
-} catch (PDOException $e) {
-    $dashboard_data['termini_sutra'] = [];
-    $dashboard_data['broj_termina_sutra'] = 0;
-}
+        // Broj radnih dana ove sedmice
+        $dashboard_data['radnih_dana_sedmica'] = count($dashboard_data['raspored_ova_sedmica']);
 
-// Broj radnih dana ove sedmice
-$dashboard_data['radnih_dana_sedmica'] = count($dashboard_data['raspored_ova_sedmica']);
-
-// Tretmani ovaj mesec
-try {
-    $datum_od_mesec = date('Y-m-01');
-    $datum_do_mesec = date('Y-m-t');
-    $stmt = $pdo->prepare("
-        SELECT COUNT(*) 
-        FROM tretmani tr
-        JOIN kartoni k ON tr.karton_id = k.id
-        WHERE k.terapeut_id = ? 
-        AND DATE(tr.datum) >= ? 
-        AND DATE(tr.datum) <= ?
-    ");
-    $stmt->execute([$user['id'], $datum_od_mesec, $datum_do_mesec]);
-    $dashboard_data['tretmani_ovaj_mesec'] = $stmt->fetchColumn();
-} catch (PDOException $e) {
-    $dashboard_data['tretmani_ovaj_mesec'] = 0;
-}
-
-// Debug - da vidimo šta imamo
-error_log("TERAPEUT DEBUG: " . print_r([
-    'user_id' => $user['id'],
-    'danas' => date('Y-m-d'),
-    'sutra' => date('Y-m-d', strtotime('+1 day')),
-    'sedmica_od' => date('Y-m-d', strtotime('monday this week')),
-    'broj_termina_danas' => $dashboard_data['broj_termina_danas'] ?? 'N/A',
-    'broj_termina_sutra' => $dashboard_data['broj_termina_sutra'] ?? 'N/A',
-    'smjena_danas' => $dashboard_data['moja_smjena_danas'] ?? 'N/A',
-    'raspored_sedmica' => count($dashboard_data['raspored_ova_sedmica'] ?? [])
-], true));
-
+        // Tretmani ovaj mesec
+        try {
+            $datum_od_mesec = date('Y-m-01');
+            $datum_do_mesec = date('Y-m-t');
+            $stmt = $pdo->prepare("
+                SELECT COUNT(*) 
+                FROM tretmani tr
+                JOIN kartoni k ON tr.karton_id = k.id
+                WHERE k.terapeut_id = ? 
+                AND DATE(tr.datum) >= ? 
+                AND DATE(tr.datum) <= ?
+            ");
+            $stmt->execute([$user['id'], $datum_od_mesec, $datum_do_mesec]);
+            $dashboard_data['tretmani_ovaj_mesec'] = $stmt->fetchColumn();
+        } catch (PDOException $e) {
+            $dashboard_data['tretmani_ovaj_mesec'] = 0;
+        }
        
     } elseif ($user['uloga'] === 'pacijent') {
         // Pacijent podaci - moji termini, moj karton, moji nalazi
