@@ -1772,7 +1772,7 @@ margin-bottom:20px;
     display: flex;
     flex-direction: column;
     gap: 15px;
-    margin:10px 20px;
+    margin:10px 0px;
 }
 
 .admin-timeline-item {
