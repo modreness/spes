@@ -86,7 +86,7 @@ $user = current_user();
           <li><a href="/kartoni/moji" class="<?= $current_path === '/kartoni/moji' ? 'active' : '' ?>"><i class="fa-solid fa-user"></i> Moji pacijenti</a></li>
           <li><a href="/tretmani/moji" class="<?= $current_path === '/tretmani/moji' ? 'active' : '' ?>"><i class="fa-solid fa-folder-open"></i> Moji tretmani</a></li>
           <li><a href="/termini/lista" class="<?= $current_path === '/termini/lista' ? 'active' : '' ?>"><i class="fa-solid fa-calendar-check"></i> Moji termini</a></li>
-          
+          <li><a href="/izvjestaji/terapeut" class="<?= $current_path === '/izvjestaji/terapeut' ? 'active' : '' ?>"><i class="fa-solid fa-chart-line"></i> Izvještaji</a></li>
         </ul>
         </ul>
         <?php elseif ($user['uloga'] === 'pacijent'): ?>
