@@ -2479,15 +2479,15 @@ margin-bottom:20px;
 }
 
 .terapeut-stat-blue {
-    background: linear-gradient(135deg, #4a90e2, #357abd);
+    background: linear-gradient(135deg, #255AA5, #255AA5);
 }
 
 .terapeut-stat-green {
-    background: linear-gradient(135deg, #27ae60, #2ecc71);
+    background: linear-gradient(135deg, #255AA5, #289CC6);
 }
 
 .terapeut-stat-purple {
-    background: linear-gradient(135deg, #8e44ad, #9b59b6);
+    background: linear-gradient(135deg, #289CC6, #289CC6);
 }
 
 .terapeut-stat-content {
