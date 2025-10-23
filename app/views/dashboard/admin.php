@@ -275,7 +275,7 @@
 
             <div class="form-group">
                 <label for="terapeut_id">Terapeut</label>
-                <select name="terapeut_id" id="modal-terapeut-select" class="select2" required>
+                <select name="terapeut_id" id="modal-terapeut-select" required>
                     <option value="">-- Odaberi terapeuta --</option>
                     <?php foreach ($svi_terapeuti as $terapeut): ?>
                         <option value="<?= $terapeut['id'] ?>"><?= htmlspecialchars($terapeut['ime'] . ' ' . $terapeut['prezime']) ?></option>
