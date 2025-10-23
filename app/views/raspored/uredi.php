@@ -12,9 +12,9 @@
 
 <?php if (isset($_GET['msg'])): ?>
     <?php if ($_GET['msg'] === 'obrisan'): ?>
-        <div class="uspjeh"><i class="fa-solid fa-check-circle"></i> Raspored je uspešno obrisan.</div>
+        <div class="alert-success"><i class="fa-solid fa-check-circle"></i> Raspored je uspešno obrisan.</div>
     <?php elseif ($_GET['msg'] === 'azuriran'): ?>
-        <div class="uspjeh"><i class="fa-solid fa-check-circle"></i> Raspored je uspešno ažuriran.</div>
+        <div class="alert-success"><i class="fa-solid fa-check-circle"></i> Raspored je uspešno ažuriran.</div>
     <?php elseif ($_GET['msg'] === 'greska'): ?>
         <div class="greska"><i class="fa-solid fa-times-circle"></i> Greška pri obradi zahteva.</div>
     <?php endif; ?>
