@@ -165,6 +165,8 @@
                                 <?php if ($termin['status'] === 'obavljen' && $termin['karton_id']): ?>
                                 <button type="button" 
                                         class="admin-btn admin-btn-success admin-btn-xs" 
+                                        data-terapeut-id="<?= $termin['terapeut_id'] ?? '' ?>"
+                                        data-terapeut-ime="<?= htmlspecialchars($termin['terapeut_ime'] ?? '') ?>"
                                         onclick="otvoriModalTretman(<?= $termin['id'] ?>, '<?= htmlspecialchars($termin['pacijent_ime']) ?>', <?= $termin['karton_id'] ?>)">
                                     <i class="fa-solid fa-notes-medical"></i>
                                 </button>
@@ -264,7 +266,7 @@
 <div id="tretman-modal" class="modal" style="display: none;">
     <div class="modal-content">
         <h3>Dodaj tretman</h3>
-        <p><strong>Karton za:</strong> <span id="modal-ime"></span></p>
+        <p><strong>Pacijent:</strong> <span id="modal-ime"></span></p>
         <p><strong>Karton ID:</strong> <span id="modal-karton-id-display"></span></p>
 
         <form method="post" action="/kartoni/dodaj-tretman">
@@ -272,23 +274,50 @@
             <input type="hidden" name="termin_id" id="modal-termin-id">
 
             <div class="form-group">
-                <label for="stanje_prije">Stanje prije</label>
-                <textarea name="stanje_prije" rows="3" required></textarea>
+                <label for="terapeut_id">Terapeut</label>
+                <select name="terapeut_id" id="modal-terapeut-select" class="select2" required>
+                    <option value="">-- Odaberi terapeuta --</option>
+                    <?php 
+                    // Dohvati terapeute za dropdown - trebamo dodati ovo u DashboardController.php
+                    try {
+                        $stmt = $pdo->prepare("SELECT id, ime, prezime FROM users WHERE uloga = 'terapeut' AND aktivan = 1 ORDER BY ime, prezime");
+                        $stmt->execute();
+                        $svi_terapeuti = $stmt->fetchAll();
+                    } catch (PDOException $e) {
+                        $svi_terapeuti = [];
+                    }
+                    ?>
+                    <?php foreach ($svi_terapeuti as $terapeut): ?>
+                        <option value="<?= $terapeut['id'] ?>"><?= htmlspecialchars($terapeut['ime'] . ' ' . $terapeut['prezime']) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <hr>
+            <div class="form-group">
+                <label for="stanje_prije">Stanje prije tretmana</label>
+                <textarea name="stanje_prije" rows="3" required placeholder="Opišite stanje pacijenta prije početka tretmana..."></textarea>
             </div>
 
             <div class="form-group">
-                <label for="terapija">Terapija</label>
-                <textarea name="terapija" rows="3" required></textarea>
+                <label for="terapija">Sprovedena terapija</label>
+                <textarea name="terapija" rows="4" required placeholder="Detaljno opišite sprovedenu terapiju, tehnike, vežbe..."></textarea>
             </div>
 
             <div class="form-group">
-                <label for="stanje_poslije">Stanje poslije</label>
-                <textarea name="stanje_poslije" rows="3" required></textarea>
+                <label for="stanje_poslije">Stanje nakon tretmana</label>
+                <textarea name="stanje_poslije" rows="3" required placeholder="Opišite stanje pacijenta nakon tretmana..."></textarea>
             </div>
 
-            <div style="text-align: center; margin-top: 15px;">
+            <div class="form-group">
+                <label for="napomene">Napomene i preporuke</label>
+                <textarea name="napomene" rows="2" placeholder="Dodatne napomene, preporuke za sledeći tretman..."></textarea>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;">
                 <button type="button" class="btn btn-secondary" onclick="zatvoriModalTretman()">Otkaži</button>
-                <button type="submit" class="btn btn-add">Snimi tretman</button>
+                <button type="submit" class="btn btn-add">
+                    <i class="fa-solid fa-save"></i> Snimi tretman
+                </button>
             </div>
         </form>
     </div>
@@ -296,15 +325,28 @@
 
 <script>
 function otvoriModalTretman(terminId, imePrezime, kartonId) {
-    // Potrebno je pronaći karton_id na osnovu pacijent_id
-    // Za sada ću koristiti pacijent_id kao karton_id (možda treba AJAX poziv)
+    // Dohvati terapeut_id iz data atributa dugmeta
+    const dugme = event.target.closest('button');
+    const terapeutId = dugme.getAttribute('data-terapeut-id');
+    
     document.getElementById('modal-karton-id').value = kartonId;
     document.getElementById('modal-termin-id').value = terminId;
     document.getElementById('modal-ime').textContent = imePrezime;
     document.getElementById('modal-karton-id-display').textContent = kartonId;
 
+    // Postavi odabranog terapeuta u select
+    const terapeutSelect = document.getElementById('modal-terapeut-select');
+    if (terapeutId) {
+        terapeutSelect.value = terapeutId;
+    }
+
     document.getElementById('tretman-modal').style.display = 'block';
     document.getElementById('modal-overlay').style.display = 'block';
+    
+    // Focus na prvo textarea polje
+    setTimeout(() => {
+        document.querySelector('#tretman-modal textarea[name="stanje_prije"]').focus();
+    }, 100);
 }
 
 function zatvoriModalTretman() {
@@ -320,5 +362,12 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('modal-overlay').addEventListener('click', function() {
         zatvoriModalTretman();
     });
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        zatvoriModalTretman();
+    }
 });
 </script>
