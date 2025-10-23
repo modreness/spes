@@ -15,7 +15,7 @@
             </div>
         </div>
         
-        <div class="terapeut-stat-card terapeut-stat-orange">
+        <div class="terapeut-stat-card terapeut-stat-green">
             <div class="terapeut-stat-content">
                 <div class="terapeut-stat-number"><?= $dashboard_data['broj_termina_sutra'] ?? 0 ?></div>
                 <div class="terapeut-stat-label">Termini sutra</div>
@@ -23,7 +23,7 @@
             </div>
         </div>
         
-        <div class="terapeut-stat-card terapeut-stat-green">
+        <div class="terapeut-stat-card terapeut-stat-purple">
             <div class="terapeut-stat-content">
                 <div class="terapeut-stat-number"><?= $dashboard_data['broj_mojih_pacijenata'] ?? 0 ?></div>
                 <div class="terapeut-stat-label">Moji pacijenti</div>
@@ -31,7 +31,7 @@
             </div>
         </div>
         
-        <div class="terapeut-stat-card terapeut-stat-purple">
+        <div class="terapeut-stat-card terapeut-stat-orange">
             <div class="terapeut-stat-content">
                 <div class="terapeut-stat-number"><?= $dashboard_data['tretmani_ovaj_mesec'] ?? 0 ?></div>
                 <div class="terapeut-stat-label">Tretmani ovaj mesec</div>
