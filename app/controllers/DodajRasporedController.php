@@ -85,8 +85,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['terapeut_id']) && iss
                 continue; // Preskoči ako već postoji
             }
 
-            // Dohvati vremena za smjenu iz smjene_vremena tabele
-            $stmt_smjena = $pdo->prepare("SELECT pocetak, kraj FROM smjene_vremena WHERE smjena = ?");
+            // Dohvati vremena za smjenu iz smjene_vremena tabele - SAMO AKTIVNE!
+            $stmt_smjena = $pdo->prepare("SELECT pocetak, kraj FROM smjene_vremena WHERE smjena = ? AND aktivan = 1");
             $stmt_smjena->execute([$smjena]);
             $smjena_vremena = $stmt_smjena->fetch();
 
