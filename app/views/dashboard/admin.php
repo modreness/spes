@@ -311,35 +311,7 @@
 </div>
 
 <script>
-    // Inicijalizacija kada se DOM učita
-$(document).ready(function() {
-    console.log('DOM ready - initializing Select2');
-    initializeSelect2();
-});
-
-function initializeSelect2() {
-    // Uništi postojeće Select2 instance ako postoje
-    if ($('.select2').hasClass('select2-hidden-accessible')) {
-        $('.select2').select2('destroy');
-    }
     
-    // Inicijalizuj sve Select2 elemente
-    $('.select2').each(function() {
-        var parentModal = $(this).closest('.modal');
-        var config = {
-            width: '100%',
-            placeholder: '-- Odaberi terapeuta --'
-        };
-        
-        if (parentModal.length > 0) {
-            config.dropdownParent = parentModal;
-        }
-        
-        $(this).select2(config);
-    });
-    
-    console.log('Select2 initialized');
-}
 function otvoriModalTretman(terminId, imePrezime, kartonId) {
     // Dohvati terapeut_id iz data atributa dugmeta
     const dugme = event.target.closest('button');
