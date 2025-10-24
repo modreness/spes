@@ -132,40 +132,7 @@
         <?php endif; ?>
     </div>
 
-    <!-- Brze akcije -->
-    <div class="action-cards" style="margin-top: 30px;">
-        <div class="action-card">
-            <h3>Moji tretmani</h3>
-            <p>Pregled svih tretmana koje sam radio</p>
-            <a href="/tretmani/moji" class="btn btn-add">
-                <i class="fa-solid fa-notes-medical"></i> Pregled tretmana
-            </a>
-        </div>
-        
-        <div class="action-card">
-            <h3>Kalendar termina</h3>
-            <p>Kalendarski prikaz mojih termina</p>
-            <a href="/termini/kalendar" class="btn btn-add">
-                <i class="fa-solid fa-calendar-alt"></i> Otvori kalendar
-            </a>
-        </div>
-        
-        <div class="action-card">
-            <h3>Moje statistike</h3>
-            <p>Detaljni izvještaji i analiza rada</p>
-            <a href="/izvjestaji/terapeut" class="btn btn-add">
-                <i class="fa-solid fa-chart-line"></i> Statistike
-            </a>
-        </div>
-        
-        <div class="action-card">
-            <h3>Moj raspored</h3>
-            <p>Pregled radnog vremena i rasporeda</p>
-            <a href="/raspored/moj" class="btn btn-add">
-                <i class="fa-solid fa-calendar-days"></i> Moj raspored
-            </a>
-        </div>
-    </div>
+    
 
     <!-- Legenda -->
     <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin-top: 25px;">
