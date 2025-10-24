@@ -82,7 +82,7 @@ $user = current_user();
         <ul class="menu-list">
           <li><a href="/dashboard" class="<?= $current_path === '/dashboard' ? 'active' : '' ?>"><i class="fa-solid fa-house"></i> Dashboard</a></li>
           <li><a href="/pretraga" class="<?= $current_path === '/pretraga' ? 'active' : '' ?>"><i class="fa-solid fa-magnifying-glass"></i> Pretraga</a></li>
-          <li><a href="/kartoni/lista" class="<?= $current_path === '/kartoni/lista' ? 'active' : '' ?>"><i class="fa-solid fa-folder-open"></i> Kartoteka</a></li>
+          <li><a href="/kartoni/lista" class="<?= strpos($current_path, '/kartoni') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-folder-open"></i> Kartoteka</a></li>
           <li><a href="/raspored/moj" class="<?= $current_path === '/raspored/moj' ? 'active' : '' ?>"><i class="fa-solid fa-calendar-days"></i> Moj raspored</a></li>
           <li><a href="/kartoni/moji" class="<?= $current_path === '/kartoni/moji' ? 'active' : '' ?>"><i class="fa-solid fa-user"></i> Moji pacijenti</a></li>
           <li><a href="/tretmani/moji" class="<?= $current_path === '/tretmani/moji' ? 'active' : '' ?>"><i class="fa-solid fa-list-alt"></i> Moji tretmani</a></li>
