@@ -31,9 +31,11 @@ try {
     
     $stmt = $pdo->prepare("
         SELECT COUNT(DISTINCT k.pacijent_id) 
-        FROM tretmani tr
-        JOIN kartoni k ON tr.karton_id = k.id
-        WHERE tr.terapeut_id = ?
+        FROM kartoni k 
+        WHERE EXISTS (
+            SELECT 1 FROM termini t 
+            WHERE t.pacijent_id = k.pacijent_id AND t.terapeut_id = ?
+        )
     ");
     $stmt->execute([$user['id']]);
     $broj_pacijenata = $stmt->fetchColumn();
