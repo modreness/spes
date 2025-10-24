@@ -1,9 +1,6 @@
 <div class="naslov-dugme">
     <h2>Moji izvještaji</h2>
     <div>
-        <button onclick="window.print()" class="btn btn-print">
-            <i class="fa-solid fa-print"></i> Štampaj izvještaj
-        </button>
         <a href="/dashboard" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Povratak</a>
     </div>
 </div>
@@ -12,7 +9,7 @@
     <!-- Osnovne statistike -->
     <div class="stats-grid">
         <div class="stat-card" style="background: linear-gradient(135deg, #255AA5, #255AA5);">
-            <h3>Ukupno termina</h3>
+            <h3>Ukupno završenih termina</h3>
             <div class="stat-number"><?= $ukupno_termina ?></div>
         </div>
         <div class="stat-card" style="background: linear-gradient(135deg, #255AA5, #289CC6);">
