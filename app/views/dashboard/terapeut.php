@@ -296,7 +296,7 @@
                         <?= date('d.m', strtotime($date)) ?>
                     </div>
                     <div style="font-size: 0.8em;">
-                        <?= ['Ned', 'Pon', 'Uto', 'Sre', 'Čet', 'Pet', 'Sub'][date('w', strtotime($date))] ?>
+                        <?= ['Nedjelja', 'Ponedjeljak', 'Utorak', 'Srijeda', 'Četvrtak', 'Petak', 'Subota'][date('w', strtotime($date))] ?>
                     </div>
                     <div style="font-size: 0.9em; margin-top: 5px;">
                         <?php if (empty($termini)): ?>
@@ -308,9 +308,10 @@
                     <?php if (!empty($termini) && count($termini) <= 2): ?>
                         <?php foreach ($termini as $termin): ?>
                         <div style="font-size: 0.75em; margin-top: 3px; <?= date('Y-m-d') === $date ? 'color: #fff;' : 'color: #858796;' ?>">
-                            <?= date('H:i', strtotime($termin['vrijeme'])) ?>
+                            <?= date('H:i', strtotime($termin['vrijeme'])) ?> 
+                            <?= htmlspecialchars($termin['pacijent_ime']) ?> <?= htmlspecialchars($termin['pacijent_prezime']) ?>
                         </div>
-                        <?php endforeach; ?>
+                    <?php endforeach; ?>
                     <?php endif; ?>
                 </div>
             </div>
@@ -391,7 +392,7 @@ function otvoriModalTretman(terminId, imePrezime, kartonId) {
     if (terapeutId) {
         terapeutSelect.value = terapeutId;
     }
-    
+
     document.getElementById('tretman-modal').style.display = 'block';
     document.getElementById('modal-overlay').style.display = 'block';
     
