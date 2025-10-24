@@ -151,7 +151,8 @@
                                 
                                 <?php if ($termin['status'] === 'obavljen' && $termin['karton_id'] && hasPermission($user, 'unos_tretmana')): ?>
                                 <button type="button" 
-                                        class="admin-btn admin-btn-success admin-btn-xs" 
+                                        class="admin-btn admin-btn-success admin-btn-xs"  data-terapeut-id="<?= $termin['terapeut_id'] ?? '' ?>"
+                                        data-terapeut-ime="<?= htmlspecialchars($termin['terapeut_ime'] ?? '') ?>"
                                         onclick="otvoriModalTretman(<?= $termin['id'] ?>, '<?= htmlspecialchars($termin['pacijent_ime']) ?>', <?= $termin['karton_id'] ?>)">
                                     <i class="fa-solid fa-notes-medical"></i>
                                 </button>
@@ -335,6 +336,17 @@
             <input type="hidden" name="termin_id" id="modal-termin-id">
 
             <div class="form-group">
+                <label for="terapeut_id">Terapeut</label>
+                <select name="terapeut_id" id="modal-terapeut-select" required>
+                    <option value="">-- Odaberi terapeuta --</option>
+                    <?php foreach ($svi_terapeuti as $terapeut): ?>
+                        <option value="<?= $terapeut['id'] ?>"><?= htmlspecialchars($terapeut['ime'] . ' ' . $terapeut['prezime']) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <hr>
+
+            <div class="form-group">
                 <label for="stanje_prije">Stanje prije tretmana</label>
                 <textarea name="stanje_prije" rows="3" required placeholder="Opišite stanje pacijenta prije početka tretmana..."></textarea>
             </div>
@@ -349,10 +361,7 @@
                 <textarea name="stanje_poslije" rows="3" required placeholder="Opišite stanje pacijenta nakon tretmana..."></textarea>
             </div>
 
-            <div class="form-group">
-                <label for="napomene">Napomene i preporuke</label>
-                <textarea name="napomene" rows="2" placeholder="Dodatne napomene, preporuke za sledeći tretman..."></textarea>
-            </div>
+            
 
             <div style="text-align: center; margin-top: 20px;">
                 <button type="button" class="btn btn-secondary" onclick="zatvoriModalTretman()">Otkaži</button>
@@ -368,11 +377,21 @@
 
 <?php if (hasPermission($user, 'unos_tretmana')): ?>
 function otvoriModalTretman(terminId, imePrezime, kartonId) {
+    // Dohvati terapeut_id iz data atributa dugmeta
+    const dugme = event.target.closest('button');
+    const terapeutId = dugme.getAttribute('data-terapeut-id');
+
     document.getElementById('modal-karton-id').value = kartonId;
     document.getElementById('modal-termin-id').value = terminId;
     document.getElementById('modal-ime').textContent = imePrezime;
     document.getElementById('modal-karton-id-display').textContent = kartonId;
 
+    // Postavi odabranog terapeuta u select
+    const terapeutSelect = document.getElementById('modal-terapeut-select');
+    if (terapeutId) {
+        terapeutSelect.value = terapeutId;
+    }
+    
     document.getElementById('tretman-modal').style.display = 'block';
     document.getElementById('modal-overlay').style.display = 'block';
     
