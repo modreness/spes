@@ -44,7 +44,7 @@
     <div class="admin-action-cards">
         <div class="admin-action-card">
             <h3>Moj raspored</h3>
-            <p>Pregled rasporeda rada i dostupnih termina</p>
+            <p>Pregled rasporeda rada </p>
             <div class="admin-action-buttons">
                 <a href="/raspored/moj" class="admin-btn admin-btn-primary admin-btn-sm">
                     <i class="fa-solid fa-calendar-days"></i> Moj raspored
