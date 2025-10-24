@@ -289,40 +289,39 @@
             }
             ?>
             <?php foreach ($week_days as $date => $termini): ?>
-    <a href="/termini/lista?datum_od=<?= urlencode($date) ?>&datum_do=<?= urlencode($date) ?>" 
-       class="admin-quick-link"
-       style="display: block; text-decoration: none; 
-              <?= date('Y-m-d') === $date ? 'background: linear-gradient(135deg, #255AA5, #255AA5); color: white;' : '' ?> 
-              <?= empty($termini) ? 'opacity: 0.6;' : '' ?>">
-        <div style="text-align: center; color: inherit;">
-            <i class="fa-solid fa-calendar-day"></i>
-            <div style="font-weight: 600; margin: 5px 0;">
-                <?= date('d.m', strtotime($date)) ?>
-            </div>
-            <div style="font-size: 0.8em;">
-                <?= ['Nedjelja', 'Ponedjeljak', 'Utorak', 'Srijeda', 'Četvrtak', 'Petak', 'Subota'][date('w', strtotime($date))] ?>
-            </div>
-            <div style="font-size: 0.9em; margin-top: 5px;">
-                <?php if (empty($termini)): ?>
-                    Slobodan
-                <?php else: ?>
-                    <?= count($termini) ?> termin<?= count($termini) > 1 ? 'a' : '' ?>
-                <?php endif; ?>
-            </div>
+                <a href="/termini/lista?datum_od=<?= urlencode($date) ?>&datum_do=<?= urlencode($date) ?>" 
+                class="admin-quick-link"
+                style="display: block; text-decoration: none; 
+                        <?= date('Y-m-d') === $date ? 'background: linear-gradient(135deg, #255AA5, #255AA5); color: white;' : '' ?> 
+                        <?= empty($termini) ? 'opacity: 0.6;' : '' ?>">
+                    <div style="text-align: center; color: inherit;">
+                        <i class="fa-solid fa-calendar-day"></i>
+                        <div style="font-weight: 600; margin: 5px 0;">
+                            <?= date('d.m', strtotime($date)) ?>
+                        </div>
+                        <div style="font-size: 0.8em;">
+                            <?= ['Nedjelja', 'Ponedjeljak', 'Utorak', 'Srijeda', 'Četvrtak', 'Petak', 'Subota'][date('w', strtotime($date))] ?>
+                        </div>
+                        <div style="font-size: 0.9em; margin-top: 5px;">
+                            <?php if (empty($termini)): ?>
+                                Slobodan
+                            <?php else: ?>
+                                <?= count($termini) ?> termin<?= count($termini) > 1 ? 'a' : '' ?>
+                            <?php endif; ?>
+                        </div>
 
-            <?php if (!empty($termini) && count($termini) <= 2): ?>
-                <?php foreach ($termini as $termin): ?>
-                    <div style="font-size: 0.75em; margin-top: 3px; 
-                                <?= date('Y-m-d') === $date ? 'color: #fff;' : 'color: #858796;' ?>">
-                        <?= date('H:i', strtotime($termin['vrijeme'])) ?> 
-                        <?= htmlspecialchars($termin['pacijent_ime']) ?> <?= htmlspecialchars($termin['pacijent_prezime'] ?? '') ?>
+                        <?php if (!empty($termini) && count($termini) <= 2): ?>
+                            <?php foreach ($termini as $termin): ?>
+                                <div style="font-size: 0.75em; margin-top: 3px; 
+                                            <?= date('Y-m-d') === $date ? 'color: #fff;' : 'color: #858796;' ?>">
+                                    <?= date('H:i', strtotime($termin['vrijeme'])) ?> 
+                                    <?= htmlspecialchars($termin['pacijent_ime']) ?> <?= htmlspecialchars($termin['pacijent_prezime'] ?? '') ?>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
-                <?php endforeach; ?>
-            <?php endif; ?>
-        </div>
-    </a>
-<?php endforeach; ?>
-
+                </a>
+            <?php endforeach; ?>
         </div>
     </div>
     <?php endif; ?>
