@@ -17,7 +17,7 @@ if ($user['uloga'] !== 'terapeut') {
 
 try {
     $danas = date('Y-m-d');
-    $ovaj_mesec = date('Y-m');
+    $ovaj_mjesec = date('Y-m');
     $prethodnih_30_dana = date('Y-m-d', strtotime('-30 days'));
     
     // Osnovne statistike
@@ -38,21 +38,21 @@ try {
     $stmt->execute([$user['id']]);
     $broj_pacijenata = $stmt->fetchColumn();
     
-    // Termini ovaj mesec
+    // Termini ovaj mjesec
     $stmt = $pdo->prepare("
         SELECT COUNT(*) FROM termini 
         WHERE terapeut_id = ? AND DATE(datum_vrijeme) LIKE ? AND status = 'obavljen'
     ");
-    $stmt->execute([$user['id'], "$ovaj_mesec%"]);
-    $termini_ovaj_mesec = $stmt->fetchColumn();
+    $stmt->execute([$user['id'], "$ovaj_mjesec%"]);
+    $termini_ovaj_mjesec = $stmt->fetchColumn();
     
-    // Tretmani ovaj mesec
+    // Tretmani ovaj mjesec
     $stmt = $pdo->prepare("
         SELECT COUNT(*) FROM tretmani 
         WHERE terapeut_id = ? AND DATE(datum) LIKE ?
     ");
-    $stmt->execute([$user['id'], "$ovaj_mesec%"]);
-    $tretmani_ovaj_mesec = $stmt->fetchColumn();
+    $stmt->execute([$user['id'], "$ovaj_mjesec%"]);
+    $tretmani_ovaj_mjesec = $stmt->fetchColumn();
     
     // Najčešće usluge koje radim
     $stmt = $pdo->prepare("
@@ -67,28 +67,28 @@ try {
     $stmt->execute([$user['id']]);
     $top_usluge = $stmt->fetchAll();
     
-    // Statistike po mesecima (poslednih 6 meseci)
-    $mesecne_statistike = [];
+    // Statistike po mjesecima (poslednih 6 mjeseci)
+    $mjesecne_statistike = [];
     for ($i = 5; $i >= 0; $i--) {
-        $mesec = date('Y-m', strtotime("-$i months"));
-        $mesec_naziv = date('M Y', strtotime("-$i months"));
+        $mjesec = date('Y-m', strtotime("-$i months"));
+        $mjesec_naziv = date('M Y', strtotime("-$i months"));
         
         $stmt = $pdo->prepare("
             SELECT COUNT(*) FROM termini 
             WHERE terapeut_id = ? AND DATE(datum_vrijeme) LIKE ? AND status = 'obavljen'
         ");
-        $stmt->execute([$user['id'], "$mesec%"]);
+        $stmt->execute([$user['id'], "$mjesec%"]);
         $termini = $stmt->fetchColumn();
         
         $stmt = $pdo->prepare("
             SELECT COUNT(*) FROM tretmani 
             WHERE terapeut_id = ? AND DATE(datum) LIKE ?
         ");
-        $stmt->execute([$user['id'], "$mesec%"]);
+        $stmt->execute([$user['id'], "$mjesec%"]);
         $tretmani = $stmt->fetchColumn();
         
-        $mesecne_statistike[] = [
-            'mesec' => $mesec_naziv,
+        $mjesecne_statistike[] = [
+            'mjesec' => $mjesec_naziv,
             'termini' => $termini,
             'tretmani' => $tretmani
         ];
@@ -136,10 +136,10 @@ try {
     $ukupno_termina = 0;
     $ukupno_tretmana = 0;
     $broj_pacijenata = 0;
-    $termini_ovaj_mesec = 0;
-    $tretmani_ovaj_mesec = 0;
+    $termini_ovaj_mjesec = 0;
+    $tretmani_ovaj_mjesec = 0;
     $top_usluge = [];
-    $mesecne_statistike = [];
+    $mjesecne_statistike = [];
     $dnevne_statistike = [];
     $top_pacijenti = [];
 }

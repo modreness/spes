@@ -23,9 +23,9 @@
             <h3>Broj pacijenata</h3>
             <div class="stat-number"><?= $broj_pacijenata ?></div>
         </div>
-        <div class="stat-card" style="background: linear-gradient(135deg, #f39c12, #e67e22);">
-            <h3>Tretmani ovaj mesec</h3>
-            <div class="stat-number"><?= $tretmani_ovaj_mesec ?></div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #289CC6, #289CC6);">
+            <h3>Tretmani ovaj mjesec</h3>
+            <div class="stat-number"><?= $tretmani_ovaj_mjesec ?></div>
         </div>
     </div>
 
@@ -35,11 +35,11 @@
         <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden;">
             <div style="background: #f8f9fa; padding: 20px; border-bottom: 1px solid #e9ecef;">
                 <h3 style="margin: 0; color: #2c3e50;">
-                    <i class="fa-solid fa-chart-area"></i> Aktivnost poslednih 6 meseci
+                    <i class="fa-solid fa-chart-area"></i> Aktivnost posljednih 6 mjeseci
                 </h3>
             </div>
             <div style="padding: 20px;">
-                <canvas id="mesecniGrafik" width="100%" height="200"></canvas>
+                <canvas id="mjesecniGrafik" width="100%" height="200"></canvas>
             </div>
         </div>
         
@@ -47,7 +47,7 @@
         <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden;">
             <div style="background: #f8f9fa; padding: 20px; border-bottom: 1px solid #e9ecef;">
                 <h3 style="margin: 0; color: #2c3e50;">
-                    <i class="fa-solid fa-chart-bar"></i> Aktivnost poslednih 30 dana
+                    <i class="fa-solid fa-chart-bar"></i> Aktivnost posljednih 30 dana
                 </h3>
             </div>
             <div style="padding: 20px;">
@@ -128,7 +128,7 @@
                                 <th>Pacijent</th>
                                 <th>Termini</th>
                                 <th>Tretmani</th>
-                                <th>Poslednja aktivnost</th>
+                                <th>Posljednja aktivnost</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -167,14 +167,14 @@
     <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden; margin-top: 25px;">
         <div style="background: #f8f9fa; padding: 20px; border-bottom: 1px solid #e9ecef;">
             <h3 style="margin: 0; color: #2c3e50;">
-                <i class="fa-solid fa-calendar-alt"></i> Detaljne mesečne statistike
+                <i class="fa-solid fa-calendar-alt"></i> Detaljne mjesečne statistike
             </h3>
         </div>
         <div style="padding: 20px;">
             <table class="table-standard">
                 <thead>
                     <tr>
-                        <th>Mesec</th>
+                        <th>Mjesec</th>
                         <th>Broj termina</th>
                         <th>Broj tretmana</th>
                         <th>Razlika</th>
@@ -182,23 +182,23 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($mesecne_statistike as $index => $stat): ?>
+                    <?php foreach ($mjesecne_statistike as $index => $stat): ?>
                     <tr>
-                        <td><strong><?= $stat['mesec'] ?></strong></td>
+                        <td><strong><?= $stat['mjesec'] ?></strong></td>
                         <td>
                             <span style="background: #255AA5; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500;">
                                 <?= $stat['termini'] ?>
                             </span>
                         </td>
                         <td>
-                            <span style="background: #27ae60; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500;">
+                            <span style="background: #289CC6; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500;">
                                 <?= $stat['tretmani'] ?>
                             </span>
                         </td>
                         <td>
                             <?php 
                             $razlika = $stat['termini'] - $stat['tretmani'];
-                            $boja = $razlika == 0 ? '#95a5a6' : ($razlika > 0 ? '#f39c12' : '#289CC6');
+                            $boja = $razlika == 0 ? '#95a5a6' : ($razlika > 0 ? '#27ae60' : '#e74c3c');
                             ?>
                             <span style="background: <?= $boja ?>; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500;">
                                 <?= $razlika > 0 ? '+' : '' ?><?= $razlika ?>
@@ -207,7 +207,7 @@
                         <td>
                             <?php if ($index > 0): ?>
                                 <?php 
-                                $prethodni = $mesecne_statistike[$index - 1]['termini'];
+                                $prethodni = $mjesecne_statistike[$index - 1]['termini'];
                                 $trenutni = $stat['termini'];
                                 if ($trenutni > $prethodni): ?>
                                     <i class="fa-solid fa-arrow-up" style="color: #27ae60;"></i>
@@ -234,24 +234,24 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-// Mesečni grafik
-const mesecniCtx = document.getElementById('mesecniGrafik');
-const mesecniData = <?= json_encode($mesecne_statistike) ?>;
+// Mjesečni grafik
+const mjesecniCtx = document.getElementById('mjesecniGrafik');
+const mjesecniData = <?= json_encode($mjesecne_statistike) ?>;
 
-new Chart(mesecniCtx, {
+new Chart(mjesecniCtx, {
     type: 'line',
     data: {
-        labels: mesecniData.map(item => item.mesec),
+        labels: mjesecniData.map(item => item.mjesec),
         datasets: [{
             label: 'Termini',
-            data: mesecniData.map(item => item.termini),
+            data: mjesecniData.map(item => item.termini),
             borderColor: '#255AA5',
             backgroundColor: 'rgba(37, 90, 165, 0.1)',
             tension: 0.4,
             fill: true
         }, {
             label: 'Tretmani',
-            data: mesecniData.map(item => item.tretmani),
+            data: mjesecniData.map(item => item.tretmani),
             borderColor: '#27ae60',
             backgroundColor: 'rgba(39, 174, 96, 0.1)',
             tension: 0.4,
