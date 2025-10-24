@@ -148,7 +148,7 @@
                                 <?php endif; ?>
 
                                 <?php if ($termin['status'] === 'zakazan'): ?>
-                                <button onclick="promeniStatus(<?= $termin['id'] ?>, 'u_toku')" class="admin-btn admin-btn-primary admin-btn-xs">
+                                <button onclick="promeniStatus(<?= $termin['id'] ?>, 'obavljen')" class="admin-btn admin-btn-primary admin-btn-xs">
                                     <i class="fa-solid fa-check"></i>
                                 </button>
                                 <?php elseif ($termin['status'] === 'u_toku'): ?>
