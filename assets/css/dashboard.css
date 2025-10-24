@@ -2781,7 +2781,11 @@ margin-bottom:20px;
     display: flex;
     gap: 5px;
 }
-
+.terapeut-tretmani-date {
+   padding: 10px; 
+   border: 2px solid #e0e0e0; 
+   border-radius: 8px;
+}
 /* Pacijenti prikaz */
 .terapeut-patient-item {
     padding: 15px 0;
