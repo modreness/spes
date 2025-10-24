@@ -157,7 +157,7 @@
                                 </button>
                                 <?php endif; ?>
                                 
-                                <?php if ($termin['status'] === 'obavljen' && $termin['karton_id']): ?>
+                                <?php if ($termin['status'] === 'obavljen' && $termin['karton_id'] && hasPermission($user, 'unos_tretmana')): ?>
                                 <button type="button" 
                                         class="admin-btn admin-btn-success admin-btn-xs" 
                                         onclick="otvoriModalTretman(<?= $termin['id'] ?>, '<?= htmlspecialchars($termin['pacijent_ime']) ?>', <?= $termin['karton_id'] ?>)">
@@ -331,6 +331,7 @@
 <div id="modal-overlay" class="modal-overlay" style="display: none;"></div>
 
 <!-- Modal za tretman -->
+ <?php if (hasPermission($user, 'unos_tretmana')): ?>
 <div id="tretman-modal" class="modal" style="display: none;">
     <div class="modal-content">
         <h3>Dodaj tretman</h3>
@@ -370,8 +371,10 @@
         </form>
     </div>
 </div>
-
+<?php endif; ?>
 <script>
+
+<?php if (hasPermission($user, 'unos_tretmana')): ?>
 function otvoriModalTretman(terminId, imePrezime, kartonId) {
     document.getElementById('modal-karton-id').value = kartonId;
     document.getElementById('modal-termin-id').value = terminId;
@@ -393,6 +396,28 @@ function zatvoriModalTretman() {
     
     document.querySelector('#tretman-modal form').reset();
 }
+
+// Zatvaranje modala na click outside
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('modal-overlay').addEventListener('click', function() {
+        zatvoriModalTretman();
+    });
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        zatvoriModalTretman();
+    }
+});
+<?php else: ?>
+// Ako nema dozvolu, prikaži poruku
+function otvoriModalTretman() {
+    alert('Nemate dozvolu za dodavanje tretmana. Kontaktirajte administratora.');
+}
+<?php endif; ?>
+
+
 
 
 
