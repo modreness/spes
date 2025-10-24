@@ -368,6 +368,10 @@ try {
         } catch (PDOException $e) {
             $dashboard_data['tretmani_ovaj_mesec'] = 0;
         }
+        // DODAJ - Dohvati terapeute za modal dropdown
+        $stmt = $pdo->prepare("SELECT id, ime, prezime FROM users WHERE uloga = 'terapeut' AND aktivan = 1 ORDER BY ime, prezime");
+        $stmt->execute();
+        $svi_terapeuti = $stmt->fetchAll();
        
     } elseif ($user['uloga'] === 'pacijent') {
         // Pacijent podaci - moji termini, moj karton, moji nalazi
