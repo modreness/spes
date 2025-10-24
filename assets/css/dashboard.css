@@ -890,6 +890,9 @@ display: inline-block;
     flex-direction:column;
     row-gap:20px;
 }
+.tretman-view p {
+    text-align:left;
+}
 .tretman-view label {
     font-weight:bold;
     font-size:18px;
