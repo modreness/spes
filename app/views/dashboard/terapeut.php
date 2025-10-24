@@ -169,7 +169,7 @@
                         <?php endforeach; ?>
                     </div>
                     <div class="admin-activity-footer">
-                        <a href="/termini/moji" class="admin-btn admin-btn-outline admin-btn-sm">Svi moji termini</a>
+                        <a href="/termini/lista" class="admin-btn admin-btn-outline admin-btn-sm">Svi moji termini</a>
                     </div>
                 <?php endif; ?>
             </div>

@@ -153,7 +153,7 @@ function promeniStatus(terminId, noviStatus) {
         case 'otkazan': poruka = 'otkazati'; break;
         case 'obavljen': poruka = 'označiti kao obavljen'; break;
         case 'zakazan': poruka = 'vratiti u zakazane'; break;
-        default: poruka = 'promeniti status';
+        default: poruka = 'promjeniti status';
     }
     
     if (confirm(`Da li ste sigurni da želite ${poruka} ovaj termin?`)) {
