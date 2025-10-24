@@ -49,9 +49,7 @@
                 <a href="/raspored/moj" class="admin-btn admin-btn-primary admin-btn-sm">
                     <i class="fa-solid fa-calendar-days"></i> Moj raspored
                 </a>
-                <a href="/termini/kalendar" class="admin-btn admin-btn-outline admin-btn-sm">
-                    <i class="fa-solid fa-calendar"></i> Kalendar
-                </a>
+                
             </div>
         </div>
         
@@ -62,9 +60,7 @@
                 <a href="/kartoni/moji" class="admin-btn admin-btn-primary admin-btn-sm">
                     <i class="fa-solid fa-users"></i> Svi pacijenti
                 </a>
-                <a href="/kartoni/pretraga" class="admin-btn admin-btn-outline admin-btn-sm">
-                    <i class="fa-solid fa-search"></i> Pretraži
-                </a>
+                
             </div>
         </div>
         
@@ -75,9 +71,7 @@
                 <a href="/tretmani/moji" class="admin-btn admin-btn-primary admin-btn-sm">
                     <i class="fa-solid fa-notes-medical"></i> Moji tretmani
                 </a>
-                <a href="/izvjestaji/terapeut" class="admin-btn admin-btn-outline admin-btn-sm">
-                    <i class="fa-solid fa-chart-line"></i> Statistike
-                </a>
+                
             </div>
         </div>
         
@@ -88,9 +82,7 @@
                 <a href="/nalazi/moji-pacijenti" class="admin-btn admin-btn-primary admin-btn-sm">
                     <i class="fa-solid fa-file-medical"></i> Pregled nalaza
                 </a>
-                <a href="/nalazi/upload" class="admin-btn admin-btn-outline admin-btn-sm">
-                    <i class="fa-solid fa-upload"></i> Upload
-                </a>
+                
             </div>
         </div>
     </div>
