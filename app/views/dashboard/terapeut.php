@@ -146,10 +146,10 @@
                                     <i class="fa-solid fa-folder-open"></i>
                                 </a>
                                 <?php endif; ?>
-                                
+
                                 <?php if ($termin['status'] === 'zakazan'): ?>
                                 <button onclick="promeniStatus(<?= $termin['id'] ?>, 'u_toku')" class="admin-btn admin-btn-primary admin-btn-xs">
-                                    <i class="fa-solid fa-play"></i>
+                                    <i class="fa-solid fa-check"></i>
                                 </button>
                                 <?php elseif ($termin['status'] === 'u_toku'): ?>
                                 <button onclick="promeniStatus(<?= $termin['id'] ?>, 'obavljen')" class="admin-btn admin-btn-success admin-btn-xs">
@@ -394,11 +394,37 @@ function zatvoriModalTretman() {
     document.querySelector('#tretman-modal form').reset();
 }
 
+
+
 function promeniStatus(terminId, noviStatus) {
-    if (confirm('Da li ste sigurni da želite da promenite status termina?')) {
-        // Moguće dodati AJAX poziv za promenu statusa
-        // Za sada samo refresh
-        window.location.href = '/termini/promeni-status?id=' + terminId + '&status=' + noviStatus;
+    let poruka = '';
+    switch(noviStatus) {
+        case 'otkazan': poruka = 'otkazati'; break;
+        case 'obavljen': poruka = 'označiti kao obavljen'; break;
+        case 'zakazan': poruka = 'vratiti u zakazane'; break;
+        default: poruka = 'promeniti status';
+    }
+    
+    if (confirm(`Da li ste sigurni da želite ${poruka} ovaj termin?`)) {
+        // Kreiraj form i pošalji
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/termini/status';
+        
+        const idInput = document.createElement('input');
+        idInput.type = 'hidden';
+        idInput.name = 'id';
+        idInput.value = terminId;
+        
+        const statusInput = document.createElement('input');
+        statusInput.type = 'hidden';
+        statusInput.name = 'status';
+        statusInput.value = noviStatus;
+        
+        form.appendChild(idInput);
+        form.appendChild(statusInput);
+        document.body.appendChild(form);
+        form.submit();
     }
 }
 
