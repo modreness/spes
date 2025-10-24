@@ -21,7 +21,7 @@
             <div class="stat-number"><?= $ukupno_svih_tretmana ?></div>
         </div>
         <div class="stat-card" style="background: linear-gradient(135deg, #255AA5, #289CC6);">
-            <h3>Ovaj mesec</h3>
+            <h3>Ovaj mjesec</h3>
             <div class="stat-number"><?= $tretmani_ovaj_mesec ?></div>
         </div>
         <div class="stat-card" style="background: linear-gradient(135deg, #289CC6, #289CC6);">
