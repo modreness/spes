@@ -289,7 +289,7 @@
             }
             ?>
             <?php foreach ($week_days as $date => $termini): ?>
-            <div class="admin-quick-link" style="<?= date('Y-m-d') === $date ? 'background: #4e73df; color: white;' : '' ?> <?= empty($termini) ? 'opacity: 0.6;' : '' ?>">
+            <div class="admin-quick-link" style="<?= date('Y-m-d') === $date ? 'background: linear-gradient(135deg, #255AA5, #255AA5); color: white;' : '' ?> <?= empty($termini) ? 'opacity: 0.6;' : '' ?>">
                 <div style="text-align: center;">
                     <i class="fa-solid fa-calendar-day"></i>
                     <div style="font-weight: 600; margin: 5px 0;">
@@ -309,7 +309,7 @@
                         <?php foreach ($termini as $termin): ?>
                         <div style="font-size: 0.75em; margin-top: 3px; <?= date('Y-m-d') === $date ? 'color: #fff;' : 'color: #858796;' ?>">
                             <?= date('H:i', strtotime($termin['vrijeme'])) ?> 
-                            <?= htmlspecialchars($termin['pacijent_ime']) ?> <?= htmlspecialchars($termin['pacijent_prezime']) ?>
+                            <?= htmlspecialchars($termin['pacijent_ime']) ?>
                         </div>
                     <?php endforeach; ?>
                     <?php endif; ?>
