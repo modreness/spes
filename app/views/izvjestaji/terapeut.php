@@ -227,40 +227,7 @@
         </div>
     </div>
 
-    <!-- Brze akcije -->
-    <div class="action-cards" style="margin-top: 30px;">
-        <div class="action-card">
-            <h3>Moji tretmani</h3>
-            <p>Pregled svih tretmana koje sam radio</p>
-            <a href="/tretmani/moji" class="btn btn-add">
-                <i class="fa-solid fa-notes-medical"></i> Pregled tretmana
-            </a>
-        </div>
-        
-        <div class="action-card">
-            <h3>Moji pacijenti</h3>
-            <p>Lista pacijenata sa kojima radim</p>
-            <a href="/kartoni/moji" class="btn btn-add">
-                <i class="fa-solid fa-users"></i> Pregled pacijenata
-            </a>
-        </div>
-        
-        <div class="action-card">
-            <h3>Kalendar</h3>
-            <p>Kalendarski prikaz termina</p>
-            <a href="/termini/kalendar" class="btn btn-add">
-                <i class="fa-solid fa-calendar-alt"></i> Otvori kalendar
-            </a>
-        </div>
-        
-        <div class="action-card">
-            <h3>Export podataka</h3>
-            <p>Izvez statistika u PDF format</p>
-            <button onclick="window.print()" class="btn btn-print">
-                <i class="fa-solid fa-download"></i> Preuzmi PDF
-            </button>
-        </div>
-    </div>
+   
 </div>
 
 <!-- Chart.js CDN -->
