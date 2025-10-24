@@ -49,11 +49,11 @@
             </div>
             <div class="form-group">
                 <label for="datum_od">Datum od</label>
-                <input type="date" name="datum_od" id="datum_od" value="<?= $datum_od ?>">
+                <input type="date" name="datum_od" id="datum_od" class="terapeut-tretmani-date" value="<?= $datum_od ?>">
             </div>
             <div class="form-group">
                 <label for="datum_do">Datum do</label>
-                <input type="date" name="datum_do" id="datum_do" value="<?= $datum_do ?>">
+                <input type="date" name="datum_do" id="datum_do" class="terapeut-tretmani-date" value="<?= $datum_do ?>">
             </div>
             <button type="submit" class="btn btn-search">
                 <i class="fa-solid fa-search"></i> Filtriraj
