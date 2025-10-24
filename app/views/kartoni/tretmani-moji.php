@@ -148,13 +148,7 @@
                                title="Karton">
                                 <i class="fa-solid fa-folder-open"></i>
                             </a>
-                            <?php if (in_array($user['uloga'], ['admin', 'terapeut'])): ?>
-                            <a href="/kartoni/uredi-tretman?id=<?= $tretman['id'] ?>" 
-                               class="btn btn-sm btn-warning" 
-                               title="Uredi">
-                                <i class="fa-solid fa-edit"></i>
-                            </a>
-                            <?php endif; ?>
+                            
                         </td>
                     </tr>
                     <?php endforeach; ?>
@@ -185,39 +179,12 @@
                 <?php if ($page < $ukupno_stranica): ?>
                 <a href="?page=<?= $page + 1 ?><?= $pacijent_id ? '&pacijent_id=' . $pacijent_id : '' ?><?= $datum_od ? '&datum_od=' . $datum_od : '' ?><?= $datum_do ? '&datum_do=' . $datum_do : '' ?>" 
                    class="btn btn-secondary btn-sm">
-                    Sledeća <i class="fa-solid fa-chevron-right"></i>
+                    Sljedeća <i class="fa-solid fa-chevron-right"></i>
                 </a>
                 <?php endif; ?>
             </div>
             <?php endif; ?>
         <?php endif; ?>
-    </div>
-
-    <!-- Brze akcije -->
-    <div class="action-cards" style="margin-top: 30px;">
-        <div class="action-card">
-            <h3>Moji pacijenti</h3>
-            <p>Lista pacijenata sa kojima radim</p>
-            <a href="/kartoni/moji" class="btn btn-add">
-                <i class="fa-solid fa-users"></i> Pregled pacijenata
-            </a>
-        </div>
-        
-        <div class="action-card">
-            <h3>Kalendar termina</h3>
-            <p>Kalendarski prikaz mojih termina</p>
-            <a href="/termini/kalendar" class="btn btn-add">
-                <i class="fa-solid fa-calendar-alt"></i> Otvori kalendar
-            </a>
-        </div>
-        
-        <div class="action-card">
-            <h3>Moje statistike</h3>
-            <p>Detaljni izvještaji i grafikoni</p>
-            <a href="/izvjestaji/terapeut" class="btn btn-add">
-                <i class="fa-solid fa-chart-line"></i> Statistike
-            </a>
-        </div>
     </div>
 </div>
 
@@ -246,7 +213,7 @@ function prikaziTretman(tretmanId) {
         const modalBody = document.getElementById('tretmanModalBody');
         modalBody.innerHTML = `
             <div class="tretman-view">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div style="display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 20px;">
                     <div>
                         <p><strong>Pacijent:</strong> ${tretman.pacijent_ime}</p>
                         <p><strong>Datum:</strong> ${tretman.datum_format}</p>
