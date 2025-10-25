@@ -69,7 +69,7 @@
                         <th>JMBG</th>
                         <th>Broj termina</th>
                         <th>Broj tretmana</th>
-                        <th>Poslednja aktivnost</th>
+                        <th>Posljednja aktivnost</th>
                         <th>Akcije</th>
                     </tr>
                 </thead>
