@@ -97,7 +97,7 @@
                             </span>
                         </td>
                         <td>
-                            <span style="background: #27ae60; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500;">
+                            <span style="background: #289CC6; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500;">
                                 <?= $karton['broj_tretmana'] ?>
                             </span>
                         </td>
