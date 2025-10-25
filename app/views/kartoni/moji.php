@@ -115,7 +115,7 @@
                                 <i class="fa-solid fa-eye"></i>
                             </a>
                             <a href="/kartoni/tretmani?id=<?= $karton['id'] ?>" class="btn btn-sm btn-add" title="Tretmani">
-                                <i class="fa-solid fa-notes-medical"></i>
+                                <i class="fa-solid fa-list-alt"></i>
                             </a>
                             <a href="/kartoni/nalazi?id=<?= $karton['id'] ?>" class="btn btn-sm btn-edit" title="Nalazi">
                                 <i class="fa-solid fa-file-medical"></i>
