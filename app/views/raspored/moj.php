@@ -171,44 +171,7 @@
         <?php endif; ?>
     </div>
 
-    <!-- Brze akcije -->
-    <div class="action-cards" style="margin-top: 30px;">
-        <div class="action-card">
-            <h3>Kalendar termina</h3>
-            <p>Kalendarski prikaz svih termina</p>
-            <a href="/termini/kalendar" class="btn btn-add">
-                <i class="fa-solid fa-calendar-alt"></i> Otvori kalendar
-            </a>
-        </div>
-        
-        <div class="action-card">
-            <h3>Moji pacijenti</h3>
-            <p>Lista pacijenata sa kojima radim</p>
-            <?php if (hasPermission($user, 'pregled_svih_kartona')): ?>
-            <a href="/kartoni/moji" class="btn btn-add">
-                <i class="fa-solid fa-users"></i> Pregled pacijenata
-            </a>
-            <?php else: ?>
-            <span class="btn btn-add" style="opacity: 0.5; cursor: not-allowed;">
-                <i class="fa-solid fa-users"></i> Pregled pacijenata
-            </span>
-            <?php endif; ?>
-        </div>
-        
-        <div class="action-card">
-            <h3>Moji tretmani</h3>
-            <p>Historija tretmana koje sam radio</p>
-            <?php if (hasPermission($user, 'unos_tretmana')): ?>
-            <a href="/tretmani/moji" class="btn btn-add">
-                <i class="fa-solid fa-notes-medical"></i> Pregled tretmana
-            </a>
-            <?php else: ?>
-            <span class="btn btn-add" style="opacity: 0.5; cursor: not-allowed;">
-                <i class="fa-solid fa-notes-medical"></i> Pregled tretmana
-            </span>
-            <?php endif; ?>
-        </div>
-    </div>
+
 
     <!-- Legenda -->
     <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin-top: 25px;">
@@ -242,41 +205,5 @@
 </div>
 
 <style>
-.btn-outline {
-    background: white;
-    border: 1px solid #ddd;
-    color: #666;
-    padding: 8px 16px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-size: 0.9em;
-    transition: all 0.3s;
-}
 
-.btn-outline:hover {
-    background: #f8f9fa;
-    border-color: #255AA5;
-    color: #255AA5;
-}
-
-.btn-primary {
-    background: #255AA5;
-    border: 1px solid #255AA5;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-size: 0.9em;
-    transition: all 0.3s;
-}
-
-.btn-primary:hover {
-    background: #1e4a8c;
-    border-color: #1e4a8c;
-}
-
-.btn-sm {
-    padding: 6px 12px;
-    font-size: 0.85em;
-}
 </style>
