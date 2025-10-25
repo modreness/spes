@@ -38,52 +38,54 @@ try {
     
     // Dohvati raspored za odabranu sedmicu
     $stmt = $pdo->prepare("
-        SELECT rs.*, 
-               DATE_FORMAT(rs.datum_od, '%d.%m.%Y') as datum_od_format,
-               DATE_FORMAT(rs.datum_do, '%d.%m.%Y') as datum_do_format
-        FROM rasporedi_sedmicni rs
-        WHERE rs.terapeut_id = ? 
-        AND DATE(rs.datum_od) = ?
+        SELECT *,
+               DATE_FORMAT(datum_od, '%d.%m.%Y') as datum_od_format,
+               DATE_FORMAT(datum_do, '%d.%m.%Y') as datum_do_format
+        FROM rasporedi_sedmicni 
+        WHERE terapeut_id = ? 
+        AND ? BETWEEN DATE(datum_od) AND DATE(datum_do)
+        ORDER BY datum_od DESC
+        LIMIT 1
     ");
     $stmt->execute([$user['id'], $datum_od]);
     $moj_raspored = $stmt->fetchAll();
     
-    // Formatiraj raspored u lakši format
+    // Formatiraj raspored
     $formatted_raspored = [];
+    
     if (!empty($moj_raspored)) {
-        $raspored = $moj_raspored[0]; // Uzmi prvi (trebao bi biti jedini)
-        $dani = [
-            'pon' => ['naziv' => 'Ponedjeljak', 'smjena' => $raspored['ponedjeljak']],
-            'uto' => ['naziv' => 'Utorak', 'smjena' => $raspored['utorak']], 
-            'sri' => ['naziv' => 'Srijeda', 'smjena' => $raspored['srijeda']],
-            'cet' => ['naziv' => 'Četvrtak', 'smjena' => $raspored['cetvrtak']],
-            'pet' => ['naziv' => 'Petak', 'smjena' => $raspored['petak']],
-            'sub' => ['naziv' => 'Subota', 'smjena' => $raspored['subota']],
-            'ned' => ['naziv' => 'Nedjelja', 'smjena' => $raspored['nedjelja']]
+        // Grupiraj po danima iz tabele
+        $stmt = $pdo->prepare("
+            SELECT dan, smjena, pocetak, kraj,
+                   DATE_FORMAT(datum_od, '%d.%m.%Y') as datum_od_format,
+                   DATE_FORMAT(datum_do, '%d.%m.%Y') as datum_do_format
+            FROM rasporedi_sedmicni 
+            WHERE terapeut_id = ? 
+            AND ? BETWEEN DATE(datum_od) AND DATE(datum_do)
+            ORDER BY FIELD(dan, 'pon', 'uto', 'sri', 'cet', 'pet', 'sub', 'ned')
+        ");
+        $stmt->execute([$user['id'], $datum_od]);
+        $raspored_dani = $stmt->fetchAll();
+        
+        $dana_nazivi = [
+            'pon' => 'Ponedjeljak',
+            'uto' => 'Utorak', 
+            'sri' => 'Srijeda',
+            'cet' => 'Četvrtak',
+            'pet' => 'Petak',
+            'sub' => 'Subota',
+            'ned' => 'Nedjelja'
         ];
         
-        foreach ($dani as $dan => $info) {
-            if ($info['smjena']) {
-                // Parsiranje smjene za dobijanje vremena
-                $pocetak = $kraj = '';
-                if (preg_match('/jutarnja/i', $info['smjena'])) {
-                    $pocetak = '07:00';
-                    $kraj = '15:00';
-                } elseif (preg_match('/popodnevna/i', $info['smjena'])) {
-                    $pocetak = '15:00';
-                    $kraj = '23:00';
-                } elseif (preg_match('/noćna/i', $info['smjena'])) {
-                    $pocetak = '23:00';
-                    $kraj = '07:00';
-                }
-                
+        foreach ($raspored_dani as $dan_raspored) {
+            if ($dan_raspored['smjena']) {
                 $formatted_raspored[] = [
-                    'dan' => $dan,
-                    'dan_naziv' => $info['naziv'],
-                    'smjena' => $info['smjena'],
-                    'pocetak' => $pocetak,
-                    'kraj' => $kraj,
-                    'period' => $raspored['datum_od_format'] . ' - ' . $raspored['datum_do_format']
+                    'dan' => $dan_raspored['dan'],
+                    'dan_naziv' => $dana_nazivi[$dan_raspored['dan']] ?? ucfirst($dan_raspored['dan']),
+                    'smjena' => $dan_raspored['smjena'],
+                    'pocetak' => $dan_raspored['pocetak'],
+                    'kraj' => $dan_raspored['kraj'],
+                    'period' => $dan_raspored['datum_od_format'] . ' - ' . $dan_raspored['datum_do_format']
                 ];
             }
         }
