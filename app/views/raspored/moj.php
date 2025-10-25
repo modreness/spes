@@ -156,7 +156,7 @@
                         <div style="border: 1px solid #e9ecef; border-radius: 8px; padding: 12px; margin-bottom: 10px; <?= $termin['status'] === 'obavljen' ? 'background: #f8fff9; border-color: #27ae60;' : ($termin['status'] === 'zakazan' ? 'background: #f0f8ff; border-color: #255AA5;' : 'background: #fff8f0; border-color: #f39c12;') ?>">
                             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
                                 <div style="font-weight: 600; color: #2c3e50;"><?= $termin['vrijeme'] ?></div>
-                                <span style="background: <?= $termin['status'] === 'obavljen' ? '#27ae60' : ($termin['status'] === 'zakazan' ? '#255AA5' : '#f39c12') ?>; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 500;">
+                                <span style="background: <?= $termin['status'] === 'obavljen' ? '#27ae60' : ($termin['status'] === 'zakazan' ? '#255AA5' : '#333333') ?>; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 500;">
                                     <?= ucfirst($termin['status']) ?>
                                 </span>
                             </div>
@@ -187,12 +187,9 @@
                 <span style="background: #255AA5; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500;">Zakazan</span>
                 <span style="color: #7f8c8d;">Predstojeci termin</span>
             </div>
+           
             <div style="display: flex; align-items: center; gap: 10px;">
-                <span style="background: #f39c12; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500;">U toku</span>
-                <span style="color: #7f8c8d;">Trenutno izvršavanje</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <span style="background: #e74c3c; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500;">Otkazan</span>
+                <span style="background: #333333; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500;">Otkazan</span>
                 <span style="color: #7f8c8d;">Otkazani termin</span>
             </div>
         </div>
