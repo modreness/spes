@@ -22,7 +22,7 @@
 
     <!-- Follow-up upozorenja -->
     <?php if (!empty($potreban_followup)): ?>
-    <div style="background: linear-gradient(135deg, #f39c12, #e67e22); color: white; padding: 20px; border-radius: 12px; margin-bottom: 25px;">
+    <div style="background: linear-gradient(135deg, #255AA5, #255AA5); color: white; padding: 20px; border-radius: 12px; margin-bottom: 25px;">
         <h3 style="margin: 0 0 15px 0;">
             <i class="fa-solid fa-exclamation-triangle"></i> Pacijenti kojima je potreban follow-up
         </h3>
@@ -35,13 +35,9 @@
                     </a>
                 </div>
                 <div style="opacity: 0.9; margin-top: 5px;">
-                    Poslednji tretman: <strong><?= $pacijent['dana_od_tretmana'] ?> dana ago</strong>
+                    Posljednji tretman: Prije <strong><?= $pacijent['dana_od_tretmana'] ?> dana</strong>
                 </div>
-                <div style="margin-top: 10px;">
-                    <a href="/kartoni/pregled?id=<?= $pacijent['id'] ?>" class="btn btn-secondary btn-sm">
-                        <i class="fa-solid fa-eye"></i> Pregled
-                    </a>
-                </div>
+                
             </div>
             <?php endforeach; ?>
         </div>
@@ -60,7 +56,7 @@
             <div style="padding: 40px; text-align: center; color: #7f8c8d;">
                 <i class="fa-solid fa-users" style="font-size: 48px; margin-bottom: 15px; opacity: 0.3;"></i>
                 <p style="font-size: 18px; margin: 0;">
-                    Nemate dodeljenih pacijenata ili niste još uvek radili ni sa kim.
+                    Nemate dodjeljenih pacijenata ili niste još uvijek radili ni sa jednim pacijentom.
                 </p>
             </div>
         <?php else: ?>
@@ -136,14 +132,12 @@
 
     <!-- Legenda -->
     <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin-top: 25px;">
-        <h4 style="margin: 0 0 15px 0; color: #2c3e50;">
-            <i class="fa-solid fa-info-circle"></i> Legenda
-        </h4>
+       
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; color: #7f8c8d;">
             <div><i class="fa-solid fa-eye" style="color: #255AA5;"></i> Pregled kartona pacijenta</div>
-            <div><i class="fa-solid fa-notes-medical" style="color: #27ae60;"></i> Historie tretmana</div>
-            <div><i class="fa-solid fa-file-medical" style="color: #f39c12;"></i> Nalazi pacijenta</div>
-            <div><i class="fa-solid fa-exclamation-triangle" style="color: #e74c3c;"></i> Follow-up potreban (>14 dana)</div>
+            <div><i class="fa-solid fa-list-alt" style="color: #255AA5;"></i> Tretmani pacijenta</div>
+            <div><i class="fa-solid fa-file-medical" style="color: #255AA5;"></i> Nalazi pacijenta</div>
+            <div><i class="fa-solid fa-exclamation-triangle" style="color: #255AA5;"></i> Follow-up potreban (>14 dana)</div>
         </div>
         <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #e9ecef;">
             <small style="color: #7f8c8d;">
