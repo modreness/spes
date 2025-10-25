@@ -3488,3 +3488,42 @@ margin-bottom:20px;
         gap: 10px;
     }
 }
+
+/*TERAPEUT RASPORED DUGMAD FILTER*/
+.btn-outline {
+    background: white;
+    border: 1px solid #ddd;
+    color: #666;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.9em;
+    transition: all 0.3s;
+}
+
+.btn-outline:hover {
+    background: #f8f9fa;
+    border-color: #255AA5;
+    color: #255AA5;
+}
+
+.btn-primary {
+    background: #255AA5;
+    border: 1px solid #255AA5;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.9em;
+    transition: all 0.3s;
+}
+
+.btn-primary:hover {
+    background: #1e4a8c;
+    border-color: #1e4a8c;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.85em;
+}
