@@ -104,10 +104,17 @@
 
     <button type="submit" class="submit-button">Snimi promjene</button>
   </form>
-  <form method="post" action="/profil/uredi?id=<?= $korisnik['id'] ?>" style="margin-top: 15px;">
+  <?php if (!empty($korisnik['email'])): ?>
+    <form method="post" action="/profil/uredi?id=<?= $korisnik['id'] ?>" style="margin-top: 15px;">
         <input type="hidden" name="id" value="<?= htmlspecialchars($id) ?>">
         <button type="submit" name="posalji_reset" class="btn-reset-pw">Pošalji mail za reset lozinke</button>
     </form>
+    <?php else: ?>
+    <div style="margin-top: 15px; padding: 10px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 6px; color: #856404;">
+        <i class="fa-solid fa-info-circle"></i> 
+        <strong>Napomena:</strong> Email adresa nije unesena. Dodajte email adresu da biste mogli koristiti reset lozinke.
+    </div>
+  <?php endif; ?>
   </div>
   <div class="left-content">
       <?php include __DIR__ . '/../partials/help-box.php'; ?>
