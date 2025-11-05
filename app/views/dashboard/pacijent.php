@@ -1,11 +1,20 @@
+<?php require_once __DIR__ . '/../../helpers/permissions.php'; ?>
+
 <div class="pacijent-dashboard">
     <!-- Uvodni naslov -->
     <div class="pacijent-header">
         <h2>Moj zdravstveni karton</h2>
         <p>Dobro došli, <?= htmlspecialchars($user['ime'] . ' ' . $user['prezime']) ?> - Pregled Vaših termina i tretmana</p>
+        
+        <?php if ($dashboard_data['sljedeci_termin']): ?>
+        <div style="background: #e7f3ff; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #4e73df;">
+            <div style="font-weight: 600; color: #4e73df; font-size: 0.9em;">SLJEDEĆI TERMIN</div>
+            <div style="font-size: 1.1em; color: #2c3e50;"><?= $dashboard_data['sljedeci_termin'] ?></div>
+        </div>
+        <?php endif; ?>
     </div>
 
-    <!-- Statisticki pregled -->
+    <!-- Statistički pregled -->
     <div class="pacijent-stats-grid">
         <div class="pacijent-stat-card pacijent-stat-blue">
             <div class="pacijent-stat-content">
@@ -30,11 +39,21 @@
                 <div class="pacijent-stat-icon"><i class="fa-solid fa-file-medical"></i></div>
             </div>
         </div>
+        
+        <?php if ($dashboard_data['zadnji_termin']): ?>
+        <div class="pacijent-stat-card pacijent-stat-orange">
+            <div class="pacijent-stat-content">
+                <div class="pacijent-stat-number" style="font-size: 0.9em;"><?= $dashboard_data['zadnji_termin'] ?></div>
+                <div class="pacijent-stat-label">Zadnji posjet</div>
+                <div class="pacijent-stat-icon"><i class="fa-solid fa-clock"></i></div>
+            </div>
+        </div>
+        <?php endif; ?>
     </div>
 
     <!-- Brze akcije -->
     <div class="pacijent-action-cards">
-        <?php if ($dashboard_data['aktivan_karton']): ?>
+        <?php if ($dashboard_data['aktivan_karton'] && hasPermission($user, 'pregled_vlastiti_karton')): ?>
         <div class="pacijent-action-card">
             <h3>Moj karton</h3>
             <p>Pregled osnovnih podataka i historie tretmana</p>
@@ -47,9 +66,21 @@
         <div class="pacijent-action-card">
             <h3>Moji nalazi</h3>
             <p>Pregled uploadovanih nalaza i dokumenata</p>
-            <?php if ($dashboard_data['aktivan_karton']): ?>
+            <?php if ($dashboard_data['aktivan_karton'] && hasPermission($user, 'pregled_vlastiti_nalazi')): ?>
             <a href="/kartoni/nalazi?id=<?= $dashboard_data['aktivan_karton']['id'] ?>" class="pacijent-btn pacijent-btn-success">
-                <i class="fa-solid fa-file-medical"></i> Pogledaj nalazi
+                <i class="fa-solid fa-file-medical"></i> Pogledaj nalaze
+            </a>
+            <?php else: ?>
+            <span class="pacijent-btn-disabled">Nema aktivnog kartona</span>
+            <?php endif; ?>
+        </div>
+        
+        <div class="pacijent-action-card">
+            <h3>Moji tretmani</h3>
+            <p>Historija svih provedenih tretmana</p>
+            <?php if ($dashboard_data['aktivan_karton'] && hasPermission($user, 'pregled_vlastiti_tretmani')): ?>
+            <a href="/kartoni/tretmani?id=<?= $dashboard_data['aktivan_karton']['id'] ?>" class="pacijent-btn pacijent-btn-info">
+                <i class="fa-solid fa-notes-medical"></i> Pogledaj tretmane
             </a>
             <?php else: ?>
             <span class="pacijent-btn-disabled">Nema aktivnog kartona</span>
@@ -126,7 +157,7 @@
                     </div>
                     <div class="pacijent-info-item">
                         <label>Datum otvaranja:</label>
-                        <span><?= date('d.m.Y', strtotime($dashboard_data['aktivan_karton']['datum_otvaranja'])) ?></span>
+                        <span><?= $dashboard_data['aktivan_karton']['datum_otvaranja_format'] ?></span>
                     </div>
                     <?php if ($dashboard_data['aktivan_karton']['dijagnoza']): ?>
                     <div class="pacijent-info-item">
@@ -135,16 +166,18 @@
                     </div>
                     <?php endif; ?>
                 </div>
+                <?php if (hasPermission($user, 'pregled_vlastiti_karton')): ?>
                 <div class="pacijent-info-footer">
                     <a href="/kartoni/pregled?id=<?= $dashboard_data['aktivan_karton']['id'] ?>" class="pacijent-btn pacijent-btn-outline pacijent-btn-sm">
                         Detaljan pregled
                     </a>
                 </div>
+                <?php endif; ?>
             </div>
             <?php endif; ?>
 
             <!-- Poslednji tretmani -->
-            <?php if (!empty($dashboard_data['poslednji_tretmani'])): ?>
+            <?php if (!empty($dashboard_data['poslednji_tretmani']) && hasPermission($user, 'pregled_vlastiti_tretmani')): ?>
             <div class="pacijent-info-card">
                 <div class="pacijent-info-header">
                     <h4>Poslednji tretmani</h4>
@@ -153,26 +186,24 @@
                     <?php foreach ($dashboard_data['poslednji_tretmani'] as $tretman): ?>
                     <div class="pacijent-treatment-item">
                         <div class="pacijent-treatment-date">
-                            <?= date('d.m.Y', strtotime($tretman['datum'])) ?>
+                            <?= $tretman['datum_format'] ?>
                         </div>
                         <div class="pacijent-treatment-therapist">
-                            <?= htmlspecialchars($tretman['terapeut_ime'] ?? 'Nepoznat terapeut') ?>
+                            <?= htmlspecialchars($tretman['terapeut_ime']) ?>
                         </div>
                     </div>
                     <?php endforeach; ?>
                 </div>
-                <?php if ($dashboard_data['aktivan_karton']): ?>
                 <div class="pacijent-info-footer">
                     <a href="/kartoni/tretmani?id=<?= $dashboard_data['aktivan_karton']['id'] ?>" class="pacijent-btn pacijent-btn-outline pacijent-btn-sm">
                         Svi tretmani
                     </a>
                 </div>
-                <?php endif; ?>
             </div>
             <?php endif; ?>
 
             <!-- Moji nalazi -->
-            <?php if (!empty($dashboard_data['moji_nalazi'])): ?>
+            <?php if (!empty($dashboard_data['moji_nalazi']) && hasPermission($user, 'pregled_vlastiti_nalazi')): ?>
             <div class="pacijent-info-card">
                 <div class="pacijent-info-header">
                     <h4>Poslednji nalazi</h4>
@@ -184,7 +215,7 @@
                             <?= htmlspecialchars($nalaz['naziv']) ?>
                         </div>
                         <div class="pacijent-finding-date">
-                            <?= date('d.m.Y', strtotime($nalaz['datum_upload'])) ?>
+                            <?= $nalaz['datum_upload_format'] ?>
                         </div>
                         <div class="pacijent-finding-link">
                             <a href="/<?= $nalaz['file_path'] ?>" target="_blank">
@@ -194,13 +225,11 @@
                     </div>
                     <?php endforeach; ?>
                 </div>
-                <?php if ($dashboard_data['aktivan_karton']): ?>
                 <div class="pacijent-info-footer">
                     <a href="/kartoni/nalazi?id=<?= $dashboard_data['aktivan_karton']['id'] ?>" class="pacijent-btn pacijent-btn-outline pacijent-btn-sm">
                         Svi nalazi
                     </a>
                 </div>
-                <?php endif; ?>
             </div>
             <?php endif; ?>
         </div>
