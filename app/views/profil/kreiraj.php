@@ -19,10 +19,7 @@
             <label>Email</label>
             <input type="email" name="email">
           </div>
-          <div style="margin-top: 15px; padding: 10px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 6px; color: #856404;">
-              <i class="fa-solid fa-info-circle"></i> 
-              <strong>Napomena:</strong> Email adresa nije obavezna, ali je potrebna za notifikacije i resetovanje lozinke. 
-          </div>
+          
         
           <div class="form-group">
               <label for="username">Korisničko ime</label>
@@ -56,7 +53,10 @@
               <?php endif; ?>
             </select>
           </div>
-        
+          <div style="margin: 15px 0px; padding: 10px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 6px; color: #856404;">
+              
+             Email adresa nije obavezna, ali je potrebna za notifikacije i resetovanje lozinke. 
+          </div>      
           <button type="submit" class="submit-button">Kreiraj korisnika</button>
         </form>
         <script>
