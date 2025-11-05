@@ -28,7 +28,7 @@
 
     <div class="form-group">
       <label for="email">Email</label>
-      <input type="email" name="email" id="email" value="<?= htmlspecialchars($korisnik['email'] ?? '') ?>" required>
+      <input type="email" name="email" id="email" value="<?= htmlspecialchars($korisnik['email'] ?? '') ?>" >
     </div>
     
     <?php if ($logovani['uloga'] === 'admin' && $logovani['id'] != $korisnik['id']): ?>
