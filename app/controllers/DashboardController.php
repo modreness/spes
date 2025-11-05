@@ -1,9 +1,9 @@
 <?php 
 require_once __DIR__ . '/../helpers/load.php'; 
+require_once __DIR__ . '/../helpers/permissions.php';
 require_login();  
 
 $user = current_user(); 
-
 $title = "Dashboard";  
 
 // Dohvati podatke specifične po ulogama
@@ -375,7 +375,9 @@ try {
         $svi_terapeuti = $stmt->fetchAll();
        
     } elseif ($user['uloga'] === 'pacijent') {
-        // Pacijent podaci - moji termini, moj karton, moji nalazi
+        // MODIFICIRANI PACIJENT PODACI - kopiram iz originalnog i dodajem poboljšanja
+        
+        // Predstojeci termini
         $stmt = $pdo->prepare("
             SELECT t.*, 
                    CONCAT(te.ime, ' ', te.prezime) as terapeut_ime,
@@ -392,15 +394,36 @@ try {
         $stmt->execute([$user['id']]);
         $dashboard_data['predstojeci_termini'] = $stmt->fetchAll();
         
-        // Moj aktivan karton
-        $stmt = $pdo->prepare("SELECT * FROM kartoni WHERE pacijent_id = ? ORDER BY datum_otvaranja DESC LIMIT 1");
+        // Moj aktivan karton sa dodatnim podacima
+        $stmt = $pdo->prepare("
+            SELECT k.*,
+                   DATE_FORMAT(k.datum_otvaranja, '%d.%m.%Y') as datum_otvaranja_format
+            FROM kartoni k 
+            WHERE k.pacijent_id = ? 
+            ORDER BY k.datum_otvaranja DESC 
+            LIMIT 1
+        ");
         $stmt->execute([$user['id']]);
         $dashboard_data['aktivan_karton'] = $stmt->fetch();
         
-        // Poslednji tretmani
+        // Ako ima karton, dohvati dijagnoze iz karton_dijagnoze tabele
+        if ($dashboard_data['aktivan_karton']) {
+            $stmt = $pdo->prepare("
+                SELECT GROUP_CONCAT(d.naziv SEPARATOR ', ') as dijagnoze
+                FROM karton_dijagnoze kd
+                LEFT JOIN dijagnoze d ON kd.dijagnoza_id = d.id
+                WHERE kd.karton_id = ?
+            ");
+            $stmt->execute([$dashboard_data['aktivan_karton']['id']]);
+            $dijagnoze_result = $stmt->fetchColumn();
+            $dashboard_data['aktivan_karton']['dijagnoze_lista'] = $dijagnoze_result ?: 'Nema dodanih dijagnoza';
+        }
+        
+        // Poslednji tretmani - ISTA LOGIKA
         $stmt = $pdo->prepare("
             SELECT t.*, 
-                   CONCAT(ter.ime, ' ', ter.prezime) as terapeut_ime
+                   CONCAT(ter.ime, ' ', ter.prezime) as terapeut_ime,
+                   DATE_FORMAT(t.datum, '%d.%m.%Y') as datum_format
             FROM tretmani t
             LEFT JOIN users ter ON t.terapeut_id = ter.id
             WHERE EXISTS (
@@ -416,7 +439,8 @@ try {
         // Moji nalazi
         $stmt = $pdo->prepare("
             SELECT n.*, 
-                   CONCAT(d.ime, ' ', d.prezime) as dodao_ime
+                   CONCAT(d.ime, ' ', d.prezime) as dodao_ime,
+                   DATE_FORMAT(n.datum_upload, '%d.%m.%Y') as datum_upload_format
             FROM nalazi n
             LEFT JOIN users d ON n.dodao_id = d.id
             WHERE n.pacijent_id = ?
@@ -426,7 +450,7 @@ try {
         $stmt->execute([$user['id']]);
         $dashboard_data['moji_nalazi'] = $stmt->fetchAll();
         
-        // Statistike
+        // Statistike - ISTE KAO ORIGINALNO
         $stmt = $pdo->prepare("SELECT COUNT(*) FROM termini WHERE pacijent_id = ? AND status = 'obavljen'");
         $stmt->execute([$user['id']]);
         $dashboard_data['ukupno_tretmana'] = $stmt->fetchColumn();
@@ -438,6 +462,27 @@ try {
         $stmt = $pdo->prepare("SELECT COUNT(*) FROM nalazi WHERE pacijent_id = ?");
         $stmt->execute([$user['id']]);
         $dashboard_data['broj_nalaza'] = $stmt->fetchColumn();
+        
+        // DODATNE STATISTIKE za bolji prikaz
+        // Zadnji termin - kad sam bio zadnji put
+        $stmt = $pdo->prepare("
+            SELECT MAX(t.datum_vrijeme) as zadnji_termin
+            FROM termini t
+            WHERE t.pacijent_id = ? AND t.status = 'obavljen'
+        ");
+        $stmt->execute([$user['id']]);
+        $zadnji_termin = $stmt->fetchColumn();
+        $dashboard_data['zadnji_termin'] = $zadnji_termin ? date('d.m.Y', strtotime($zadnji_termin)) : null;
+        
+        // Sljedeći termin - kad idem sljedeći put
+        $stmt = $pdo->prepare("
+            SELECT MIN(t.datum_vrijeme) as sljedeci_termin
+            FROM termini t
+            WHERE t.pacijent_id = ? AND t.datum_vrijeme >= NOW() AND t.status = 'zakazan'
+        ");
+        $stmt->execute([$user['id']]);
+        $sljedeci_termin = $stmt->fetchColumn();
+        $dashboard_data['sljedeci_termin'] = $sljedeci_termin ? date('d.m.Y H:i', strtotime($sljedeci_termin)) : null;
     }
     
 } catch (PDOException $e) {

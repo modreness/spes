@@ -159,10 +159,10 @@
                         <label>Datum otvaranja:</label>
                         <span><?= $dashboard_data['aktivan_karton']['datum_otvaranja_format'] ?></span>
                     </div>
-                    <?php if ($dashboard_data['aktivan_karton']['dijagnoza']): ?>
+                    <?php if ($dashboard_data['aktivan_karton']['dijagnoze_lista'] && $dashboard_data['aktivan_karton']['dijagnoze_lista'] !== 'Nema dodanih dijagnoza'): ?>
                     <div class="pacijent-info-item">
                         <label>Dijagnoza:</label>
-                        <span><?= htmlspecialchars($dashboard_data['aktivan_karton']['dijagnoza']) ?></span>
+                        <span><?= htmlspecialchars($dashboard_data['aktivan_karton']['dijagnoze_lista']) ?></span>
                     </div>
                     <?php endif; ?>
                 </div>
