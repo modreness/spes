@@ -1,26 +1,53 @@
 <div class="naslov-dugme">
 <h2><?= htmlspecialchars($title) ?></h2>
-<a href="/kartoni/lista" class="btn btn-secondary">
+<?php if ($user['uloga'] === 'pacijent'): ?>
+    <a href="/dashboard" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i> Povratak na dashboard
+    </a>
+<?php else: ?>
+    <a href="/kartoni/lista" class="btn btn-secondary">
         <i class="fa-solid fa-arrow-left"></i> Povratak
     </a>
+<?php endif; ?>
 </div>
+
 <?php if (isset($_GET['msg']) && $_GET['msg'] === 'ureden'): ?>
     <div class="alert alert-success">✅ Karton je uspješno ažuriran.</div>
-  <?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'greska'): ?>
+<?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'greska'): ?>
     <div class="alert alert-danger">❌ Greška pri ažuriranju kartona.</div>
-  <?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'jmbg_postoji'): ?>
+<?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'jmbg_postoji'): ?>
     <div class="alert alert-warning">⚠️ JMBG već postoji u sistemu!</div>
-  <?php endif; ?>
+<?php endif; ?>
+
 <div class="main-content-fw">
   <div class="card-wrapper">
-    <div class="card-head"><h3><i class="fa fa-user"></i> Pacijent: <?= htmlspecialchars($karton['ime'] ?? '') ?> <?= htmlspecialchars($karton['prezime'] ?? '') ?></h3>
+    <div class="card-head">
+        <h3><i class="fa fa-user"></i> Pacijent: <?= htmlspecialchars($karton['ime'] ?? '') ?> <?= htmlspecialchars($karton['prezime'] ?? '') ?></h3>
         <div>
-        <a href="/kartoni/uredi?id=<?= $karton['id'] ?>" class="btn btn-edit-yellow">Uredi podatke</a>
-        <a href="/kartoni/tretmani?id=<?= $karton['id'] ?>" class="btn btn-sm btn-add">Tretmani pacijenta</a>
-        <a href="/kartoni/nalazi?id=<?= $karton['id'] ?>" class="btn btn-sm btn-add">Nalazi pacijenta</a>
-        <a href="/kartoni/print-karton?id=<?= $karton['id'] ?>" class="btn btn-print" target="_blank"><i class="fa-solid fa-print"></i> Print/PDF</a>
+            <?php if ($user['uloga'] !== 'pacijent'): ?>
+                <a href="/kartoni/uredi?id=<?= $karton['id'] ?>" class="btn btn-edit-yellow">Uredi podatke</a>
+            <?php endif; ?>
+            
+            <?php if ($user['uloga'] === 'pacijent' && hasPermission($user, 'pregled_vlastiti_tretmani')): ?>
+                <a href="/kartoni/tretmani?id=<?= $karton['id'] ?>" class="btn btn-sm btn-add">Moji tretmani</a>
+            <?php elseif ($user['uloga'] !== 'pacijent'): ?>
+                <a href="/kartoni/tretmani?id=<?= $karton['id'] ?>" class="btn btn-sm btn-add">Tretmani pacijenta</a>
+            <?php endif; ?>
+            
+            <?php if ($user['uloga'] === 'pacijent' && hasPermission($user, 'pregled_vlastiti_nalazi')): ?>
+                <a href="/kartoni/nalazi?id=<?= $karton['id'] ?>" class="btn btn-sm btn-add">Moji nalazi</a>
+            <?php elseif ($user['uloga'] !== 'pacijent'): ?>
+                <a href="/kartoni/nalazi?id=<?= $karton['id'] ?>" class="btn btn-sm btn-add">Nalazi pacijenta</a>
+            <?php endif; ?>
+            
+            <?php if (hasPermission($user, 'print_vlastiti_podaci') || in_array($user['uloga'], ['admin', 'recepcioner', 'terapeut'])): ?>
+                <a href="/kartoni/print-karton?id=<?= $karton['id'] ?>" class="btn btn-print" target="_blank">
+                    <i class="fa-solid fa-print"></i> Print/PDF
+                </a>
+            <?php endif; ?>
         </div>
     </div>
+    
     <div class="card-block">
         <label>Ime i prezime</label> 
         <div class="card-info"><?= htmlspecialchars($karton['ime'] ?? '') ?> <?= htmlspecialchars($karton['prezime']  ?? '') ?></div>
@@ -68,7 +95,7 @@
         </div>
     </div>
     <div class="card-block cb-top">
-        <label>Dijagonoza:</label>
+        <label>Dijagnoza:</label>
         <div class="card-info-fw">
             <?php
             // Dohvati dijagnoze povezane s ovim kartonom
@@ -101,6 +128,8 @@
             <?= htmlspecialchars($karton['pocetna_procjena'] ?? '') ?>
         </div>
     </div>
+    
+    <?php if ($user['uloga'] !== 'pacijent'): ?>
     <div class="card-block cb-top">
         <label>Bilješke:</label>
         <div class="card-info-fw">
@@ -113,13 +142,19 @@
             <?= htmlspecialchars($karton['napomena'] ?? '') ?>
         </div>
     </div>
-    <!-- Dodaj još polja ako želiš -->
+    <?php endif; ?>
   </div>
     
-    
+  <?php if ($user['uloga'] === 'pacijent'): ?>
   <div class="bottom-foot"> 
-  <a href="/kartoni/tretmani?id=<?= $karton['id'] ?>" class="btn btn-sm btn-add">Pogledaj karton pacijenta</a>
-    </div> 
+    <a href="/kartoni/tretmani?id=<?= $karton['id'] ?>" class="btn btn-sm btn-add">Pogledaj moje tretmane</a>
+    <a href="/kartoni/nalazi?id=<?= $karton['id'] ?>" class="btn btn-sm btn-add">Pogledaj moje nalaze</a>
+  </div>
+  <?php else: ?>
+  <div class="bottom-foot"> 
+    <a href="/kartoni/tretmani?id=<?= $karton['id'] ?>" class="btn btn-sm btn-add">Pogledaj tretmane pacijenta</a>
+  </div>
+  <?php endif; ?>
 </div>
 
 <script>
