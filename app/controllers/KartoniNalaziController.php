@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../helpers/load.php';
+require_once __DIR__ . '/../helpers/permissions.php';
 require_login();
 
 $pdo = db();
@@ -26,12 +27,43 @@ if (!$karton) {
     exit;
 }
 
+// **PROVJERI PRISTUP OVISNO O ULOZI**
+if ($user['uloga'] === 'pacijent') {
+    // Pacijent može vidjeti samo svoje nalaze
+    if (!hasPermission($user, 'pregled_vlastiti_nalazi')) {
+        header('Location: /dashboard?error=no_permission');
+        exit;
+    }
+    
+    if ($karton['pacijent_id'] != $user['id']) {
+        header('Location: /dashboard?error=not_your_record');
+        exit;
+    }
+} elseif ($user['uloga'] === 'terapeut') {
+    // Terapeut može vidjeti nalaze svojih pacijenata
+    $stmt = $pdo->prepare("
+        SELECT 1 FROM termini 
+        WHERE pacijent_id = ? AND terapeut_id = ? 
+        LIMIT 1
+    ");
+    $stmt->execute([$karton['pacijent_id'], $user['id']]);
+    if (!$stmt->fetch()) {
+        header('Location: /dashboard?error=not_your_patient');
+        exit;
+    }
+} elseif (!in_array($user['uloga'], ['admin', 'recepcioner'])) {
+    // Ostale uloge nemaju pristup
+    header('Location: /dashboard?error=no_access');
+    exit;
+}
+
 // Dohvati nalaze za ovog pacijenta
 $stmt = $pdo->prepare("
     SELECT n.*, 
            CONCAT(d.ime, ' ', d.prezime) as dodao_ime,
            d.ime as dodao_ime_kratko,
-           d.prezime as dodao_prezime
+           d.prezime as dodao_prezime,
+           DATE_FORMAT(n.datum_upload, '%d.%m.%Y %H:%i') as datum_upload_format
     FROM nalazi n
     LEFT JOIN users d ON n.dodao_id = d.id
     WHERE n.pacijent_id = ?
@@ -40,8 +72,18 @@ $stmt = $pdo->prepare("
 $stmt->execute([$karton['pacijent_id']]);
 $nalazi = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Handle POST requests za upload, edit, delete
+// Handle POST requests - samo admin/recepcioner mogu upload/edit/delete
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if ($user['uloga'] === 'pacijent') {
+        header("Location: /kartoni/nalazi?id=$karton_id&msg=no-permission");
+        exit;
+    }
+    
+    if (!hasPermission($user, 'upload_nalazi')) {
+        header("Location: /kartoni/nalazi?id=$karton_id&msg=no-permission");
+        exit;
+    }
+    
     $action = $_POST['action'] ?? '';
     
     switch ($action) {
