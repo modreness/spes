@@ -18,7 +18,7 @@ $poruka = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $ime = $_POST['ime'] ?? '';
     $prezime = $_POST['prezime'] ?? '';
-    $email = $_POST['email'] ?? '';
+    $email = $_POST['email'] ?: null;
     $username = $_POST['username'] ?? '';
     $rola = $_POST['uloga'] ?? '';
     $lozinka = $_POST['lozinka'] ?? '';
