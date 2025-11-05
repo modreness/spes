@@ -23,8 +23,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $rola = $_POST['uloga'] ?? '';
     $lozinka = $_POST['lozinka'] ?? '';
 
-    if (!$ime || !$prezime || !$email || !$rola || !$lozinka) {
-        $poruka = "Sva polja su obavezna.";
+    if (!$ime || !$prezime || !$rola || !$lozinka) {
+        $poruka = "Sva polja su osim e-mail adrese obavezna.";
     } else {
         $hash = password_hash($lozinka, PASSWORD_DEFAULT);
 
