@@ -3,6 +3,10 @@ require_once __DIR__ . '/../helpers/load.php';
 require_login();  
 
 $user = current_user(); 
+if ($user['uloga'] === 'pacijent') {
+    require __DIR__ . '/PacijentDashboardController.php';
+    exit;
+}
 $title = "Dashboard";  
 
 // Dohvati podatke specifične po ulogama
