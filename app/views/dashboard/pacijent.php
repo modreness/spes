@@ -43,7 +43,7 @@
         <?php if ($dashboard_data['zadnji_termin']): ?>
         <div class="pacijent-stat-card pacijent-stat-orange">
             <div class="pacijent-stat-content">
-                <div class="pacijent-stat-number" style="font-size: 0.9em;"><?= $dashboard_data['zadnji_termin'] ?></div>
+                <div class="pacijent-stat-number"><?= $dashboard_data['zadnji_termin'] ?></div>
                 <div class="pacijent-stat-label">Zadnji posjet</div>
                 <div class="pacijent-stat-icon"><i class="fa-solid fa-clock"></i></div>
             </div>
@@ -56,8 +56,8 @@
         <?php if ($dashboard_data['aktivan_karton'] && hasPermission($user, 'pregled_vlastiti_karton')): ?>
         <div class="pacijent-action-card">
             <h3>Moj karton</h3>
-            <p>Pregled osnovnih podataka i historie tretmana</p>
-            <a href="/kartoni/pregled?id=<?= $dashboard_data['aktivan_karton']['id'] ?>" class="pacijent-btn pacijent-btn-primary">
+            <p>Pregled osnovnih podataka kartona</p>
+            <a href="/kartoni/pregled?id=<?= $dashboard_data['aktivan_karton']['id'] ?>" class="pacijent-btn pacijent-btn-primary pacijent-btn-sm">
                 <i class="fa-solid fa-folder-open"></i> Otvori karton
             </a>
         </div>
@@ -65,9 +65,9 @@
         
         <div class="pacijent-action-card">
             <h3>Moji nalazi</h3>
-            <p>Pregled uploadovanih nalaza i dokumenata</p>
+            <p>Pregled uploadovanih nalaza</p>
             <?php if ($dashboard_data['aktivan_karton'] && hasPermission($user, 'pregled_vlastiti_nalazi')): ?>
-            <a href="/kartoni/nalazi?id=<?= $dashboard_data['aktivan_karton']['id'] ?>" class="pacijent-btn pacijent-btn-success">
+            <a href="/kartoni/nalazi?id=<?= $dashboard_data['aktivan_karton']['id'] ?>" class="pacijent-btn pacijent-btn-primary pacijent-btn-sm">
                 <i class="fa-solid fa-file-medical"></i> Pogledaj nalaze
             </a>
             <?php else: ?>
@@ -77,9 +77,9 @@
         
         <div class="pacijent-action-card">
             <h3>Moji tretmani</h3>
-            <p>Historija svih provedenih tretmana</p>
+            <p>Historija provedenih tretmana</p>
             <?php if ($dashboard_data['aktivan_karton'] && hasPermission($user, 'pregled_vlastiti_tretmani')): ?>
-            <a href="/kartoni/tretmani?id=<?= $dashboard_data['aktivan_karton']['id'] ?>" class="pacijent-btn pacijent-btn-info">
+            <a href="/kartoni/tretmani?id=<?= $dashboard_data['aktivan_karton']['id'] ?>" class="pacijent-btn pacijent-btn-primary pacijent-btn-sm">
                 <i class="fa-solid fa-notes-medical"></i> Pogledaj tretmane
             </a>
             <?php else: ?>
@@ -87,13 +87,7 @@
             <?php endif; ?>
         </div>
         
-        <div class="pacijent-action-card">
-            <h3>Kontakt</h3>
-            <p>Potrebne su Vam dodatne informacije?</p>
-            <a href="/kontakt" class="pacijent-btn pacijent-btn-info">
-                <i class="fa-solid fa-phone"></i> Kontaktirajte nas
-            </a>
-        </div>
+        
     </div>
 
     <!-- Glavni sadržaj -->

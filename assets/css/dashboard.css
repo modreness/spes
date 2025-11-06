@@ -3102,12 +3102,12 @@ margin-bottom:20px;
 }
 
 .pacijent-btn-primary {
-    background: #74b9ff;
+    background: linear-gradient(135deg, #255AA5, #289CC6);
     color: white;
 }
 
 .pacijent-btn-primary:hover {
-    background: #0984e3;
+    background: #289CC6;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(116, 185, 255, 0.3);
 }
