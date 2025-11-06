@@ -29,15 +29,15 @@
             <?php endif; ?>
             
             <?php if ($user['uloga'] === 'pacijent' && hasPermission($user, 'pregled_vlastiti_tretmani')): ?>
-                <a href="/kartoni/tretmani?id=<?= $karton['id'] ?>" class="btn btn-sm btn-add">Moji tretmani</a>
+                <a href="/kartoni/tretmani?id=<?= $karton['id'] ?>" class="btn btn btn-add">Moji tretmani</a>
             <?php elseif ($user['uloga'] !== 'pacijent'): ?>
-                <a href="/kartoni/tretmani?id=<?= $karton['id'] ?>" class="btn btn-sm btn-add">Tretmani pacijenta</a>
+                <a href="/kartoni/tretmani?id=<?= $karton['id'] ?>" class="btn btn btn-add">Tretmani pacijenta</a>
             <?php endif; ?>
             
             <?php if ($user['uloga'] === 'pacijent' && hasPermission($user, 'pregled_vlastiti_nalazi')): ?>
-                <a href="/kartoni/nalazi?id=<?= $karton['id'] ?>" class="btn btn-sm btn-add">Moji nalazi</a>
+                <a href="/kartoni/nalazi?id=<?= $karton['id'] ?>" class="btn btn btn-add">Moji nalazi</a>
             <?php elseif ($user['uloga'] !== 'pacijent'): ?>
-                <a href="/kartoni/nalazi?id=<?= $karton['id'] ?>" class="btn btn-sm btn-add">Nalazi pacijenta</a>
+                <a href="/kartoni/nalazi?id=<?= $karton['id'] ?>" class="btn btn btn-add">Nalazi pacijenta</a>
             <?php endif; ?>
             
             <?php if (hasPermission($user, 'print_vlastiti_podaci') || in_array($user['uloga'], ['admin', 'recepcioner', 'terapeut'])): ?>
@@ -147,12 +147,12 @@
     
   <?php if ($user['uloga'] === 'pacijent'): ?>
   <div class="bottom-foot"> 
-    <a href="/kartoni/tretmani?id=<?= $karton['id'] ?>" class="btn btn-sm btn-add">Pogledaj moje tretmane</a>
-    <a href="/kartoni/nalazi?id=<?= $karton['id'] ?>" class="btn btn-sm btn-add">Pogledaj moje nalaze</a>
+    <a href="/kartoni/tretmani?id=<?= $karton['id'] ?>" class="btn btn btn-add">Pogledaj moje tretmane</a>
+    <a href="/kartoni/nalazi?id=<?= $karton['id'] ?>" class="btn btn btn-add">Pogledaj moje nalaze</a>
   </div>
   <?php else: ?>
   <div class="bottom-foot"> 
-    <a href="/kartoni/tretmani?id=<?= $karton['id'] ?>" class="btn btn-sm btn-add">Pogledaj tretmane pacijenta</a>
+    <a href="/kartoni/tretmani?id=<?= $karton['id'] ?>" class="btn btn btn-add">Pogledaj tretmane pacijenta</a>
   </div>
   <?php endif; ?>
 </div>
