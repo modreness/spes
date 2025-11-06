@@ -18,8 +18,8 @@
             <h3>Novi nalazi (30 dana)</h3>
             <div class="stat-number"><?= $novi_nalazi_30_dana ?></div>
         </div>
-        <div class="stat-card" style="background: linear-gradient(135deg, #f39c12, #e67e22);">
-            <h3>Prosek po pacijentu</h3>
+        <div class="stat-card" style="background: linear-gradient(135deg, #289CC6, #289CC6)">
+            <h3>Prosjek po pacijentu</h3>
             <div class="stat-number"><?= $pacijenti_sa_nalazima > 0 ? round($ukupno_nalaza / $pacijenti_sa_nalazima, 1) : 0 ?></div>
         </div>
     </div>
@@ -78,11 +78,11 @@
             </div>
             <div class="form-group">
                 <label for="datum_od">Datum od</label>
-                <input type="date" name="datum_od" id="datum_od" value="<?= $datum_od ?>">
+                <input type="date" name="datum_od" id="datum_od" value="<?= $datum_od ?>" style="padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
             </div>
             <div class="form-group">
                 <label for="datum_do">Datum do</label>
-                <input type="date" name="datum_do" id="datum_do" value="<?= $datum_do ?>">
+                <input type="date" name="datum_do" id="datum_do" value="<?= $datum_do ?>" style="padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
             </div>
             <button type="submit" class="btn btn-search">
                 <i class="fa-solid fa-search"></i> Filtriraj
@@ -269,32 +269,7 @@
     </div>
     <?php endif; ?>
 
-    <!-- Brze akcije -->
-    <div class="action-cards" style="margin-top: 30px;">
-        <div class="action-card">
-            <h3>Moji pacijenti</h3>
-            <p>Lista pacijenata sa kojima radim</p>
-            <a href="/kartoni/moji" class="btn btn-add">
-                <i class="fa-solid fa-users"></i> Pregled pacijenata
-            </a>
-        </div>
-        
-        <div class="action-card">
-            <h3>Moji tretmani</h3>
-            <p>História tretmana koje sam radio</p>
-            <a href="/tretmani/moji" class="btn btn-add">
-                <i class="fa-solid fa-notes-medical"></i> Pregled tretmana
-            </a>
-        </div>
-        
-        <div class="action-card">
-            <h3>Statistike</h3>
-            <p>Detaljni izvještaji i analiza</p>
-            <a href="/izvjestaji/terapeut" class="btn btn-add">
-                <i class="fa-solid fa-chart-line"></i> Moje statistike
-            </a>
-        </div>
-    </div>
+    
 
     <!-- Legenda -->
     <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin-top: 25px;">
@@ -302,9 +277,9 @@
             <i class="fa-solid fa-info-circle"></i> Napomene
         </h4>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; color: #7f8c8d;">
-            <div><i class="fa-solid fa-download" style="color: #255AA5;"></i> Preuzmi/Otvori nalaz</div>
-            <div><i class="fa-solid fa-folder-open" style="color: #27ae60;"></i> Karton pacijenta</div>
-            <div><i class="fa-solid fa-eye" style="color: #f39c12;"></i> Detaljno o nalazu</div>
+            <div><i class="fa-solid fa-download" style="color: #289cc6;"></i> Preuzmi/Otvori nalaz</div>
+            <div><i class="fa-solid fa-folder-open" style="color: #289cc6;"></i> Karton pacijenta</div>
+            <div><i class="fa-solid fa-eye" style="color: #289cc6;"></i> Detaljno o nalazu</div>
         </div>
         <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #e9ecef;">
             <small style="color: #7f8c8d;">
@@ -355,7 +330,7 @@ function prikaziNalaz(nalaz) {
     
     modalBody.innerHTML = `
         <div class="tretman-view">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+            <div style="display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 20px;">
                 <div>
                     <p><strong>Pacijent:</strong> ${nalaz.pacijent_ime}</p>
                     <p><strong>Karton:</strong> ${nalaz.broj_upisa}</p>
