@@ -136,7 +136,7 @@
                     <div class="admin-empty-state">
                         <i class="fa-solid fa-calendar-xmark"></i>
                         <p>Nema termina za danas</p>
-                        <a href="/termini/novi" class="admin-btn admin-btn-primary admin-btn-sm">Zakaži prvi termin</a>
+                        <a href="/termini/kreiraj" style="margin-top:10px;" class="admin-btn admin-btn-primary admin-btn-sm">Zakaži prvi termin</a>
                     </div>
                 <?php else: ?>
                     <div class="admin-timeline">
