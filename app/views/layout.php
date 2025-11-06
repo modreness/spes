@@ -90,7 +90,7 @@ $user = current_user();
           <li><a href="/izvjestaji/terapeut" class="<?= $current_path === '/izvjestaji/terapeut' ? 'active' : '' ?>"><i class="fa-solid fa-chart-line"></i> Izvještaji</a></li>
         </ul>
         
-        <?php if ($user['uloga'] === 'pacijent'): ?>
+        <?php elseif ($user['uloga'] === 'pacijent'): ?>
           <ul class="menu-list">
             <?php $karton_id = get_user_karton_id($user['id']); ?>
             <li><a href="/kartoni/pregled?id=<?= $karton_id ?>"><i class="fa-solid fa-folder-open"></i> Moj karton</a></li>
