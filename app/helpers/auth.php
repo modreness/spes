@@ -44,3 +44,10 @@ function get_user_by_id($id) {
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
+
+function get_user_karton_id($user_id) {
+    global $pdo;
+    $stmt = $pdo->prepare("SELECT id FROM kartoni WHERE pacijent_id = ? ORDER BY datum_otvaranja DESC LIMIT 1");
+    $stmt->execute([$user_id]);
+    return $stmt->fetchColumn();
+}

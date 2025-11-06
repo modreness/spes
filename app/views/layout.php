@@ -89,11 +89,13 @@ $user = current_user();
           <li><a href="/termini/lista" class="<?= $current_path === '/termini/lista' ? 'active' : '' ?>"><i class="fa-solid fa-calendar-check"></i> Moji termini</a></li>
           <li><a href="/izvjestaji/terapeut" class="<?= $current_path === '/izvjestaji/terapeut' ? 'active' : '' ?>"><i class="fa-solid fa-chart-line"></i> Izvještaji</a></li>
         </ul>
-        </ul>
-        <?php elseif ($user['uloga'] === 'pacijent'): ?>
-        <ul class="menu-list">
-          <li><a href="/dashboard" class="<?= $current_path === '/dashboard' ? 'active' : '' ?>"><i class="fa-solid fa-house"></i> Moj Dashboard</a></li>
-          <li><a href="/moj-karton" class="<?= $current_path === '/moj-karton' ? 'active' : '' ?>"><i class="fa-solid fa-folder-open"></i> Moj karton</a></li>
+        
+        <?php if ($user['uloga'] === 'pacijent'): ?>
+          <ul class="menu-list">
+            <?php $karton_id = get_user_karton_id($user['id']); ?>
+            <li><a href="/kartoni/pregled?id=<?= $karton_id ?>"><i class="fa-solid fa-folder-open"></i> Moj karton</a></li>
+            <li><a href="/kartoni/tretmani?id=<?= $karton_id ?>"><i class="fa-solid fa-notes-medical"></i> Moji tretmani</a></li>
+            <li><a href="/kartoni/nalazi?id=<?= $karton_id ?>"><i class="fa-solid fa-file-medical"></i> Moji nalazi</a></li>
         </ul>
         <?php endif; ?>
       
