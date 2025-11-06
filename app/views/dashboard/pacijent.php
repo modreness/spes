@@ -7,8 +7,8 @@
         <p>Dobro došli, <?= htmlspecialchars($user['ime'] . ' ' . $user['prezime']) ?> - Pregled Vaših termina i tretmana</p>
         
         <?php if ($dashboard_data['sljedeci_termin']): ?>
-        <div style="background: #e7f3ff; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #4e73df;">
-            <div style="font-weight: 600; color: #4e73df; font-size: 0.9em;">SLJEDEĆI TERMIN</div>
+        <div style="background: #fff; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #255aa5;">
+            <div style="font-weight: 600; color: #255aa5; font-size: 0.9em;">SLJEDEĆI TERMIN</div>
             <div style="font-size: 1.1em; color: #2c3e50;"><?= $dashboard_data['sljedeci_termin'] ?></div>
         </div>
         <?php endif; ?>
