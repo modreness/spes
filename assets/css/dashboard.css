@@ -3058,7 +3058,7 @@ margin-bottom:20px;
     padding: 25px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     text-align: center;
-    border-top: 4px solid #74b9ff;
+    border-left: 4px solid #255aa5;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -3136,12 +3136,12 @@ margin-bottom:20px;
 
 .pacijent-btn-outline {
     background: transparent;
-    color: #74b9ff;
-    border-color: #74b9ff;
+    color: #255aa5;
+    border-color: #255aa5;
 }
 
 .pacijent-btn-outline:hover {
-    background: #74b9ff;
+    background: #255aa5;
     color: white;
     transform: translateY(-2px);
 }
