@@ -3213,7 +3213,7 @@ margin-bottom:20px;
     display: flex;
     align-items: flex-start;
     gap: 20px;
-    padding: 20px;
+    padding: 10px;
     border-radius: 12px;
     background: linear-gradient(135deg, rgba(116, 185, 255, 0.05), rgba(9, 132, 227, 0.02));
     border: 1px solid rgba(116, 185, 255, 0.1);
@@ -3227,7 +3227,7 @@ margin-bottom:20px;
 }
 
 .pacijent-timeline-date {
-    background: #74b9ff;
+    background: #289cc6;
     color: white;
     border-radius: 8px;
     padding: 12px;
@@ -3260,7 +3260,7 @@ margin-bottom:20px;
 
 .pacijent-timeline-service {
     font-size: 1.1rem;
-    color: #74b9ff;
+    color: #289cc6;
     font-weight: 600;
     margin-bottom: 5px;
 }
