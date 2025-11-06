@@ -265,7 +265,7 @@
                     <i class="fa-solid fa-location-dot"></i>
                     <div>
                         <strong>Adresa</strong>
-                        <span>Mostar, BiH</span>
+                        <span>Sarajevo, BiH</span>
                     </div>
                 </div>
             </div>

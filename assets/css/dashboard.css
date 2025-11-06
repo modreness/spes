@@ -3003,15 +3003,18 @@ margin-bottom:20px;
 }
 
 .pacijent-stat-blue {
-    background: linear-gradient(135deg, #74b9ff, #0984e3);
+    background: linear-gradient(135deg, #255AA5, #255AA5);
 }
 
 .pacijent-stat-green {
-    background: linear-gradient(135deg, #00b894, #00cec9);
+    background: linear-gradient(135deg, #255AA5, #289CC6);
 }
 
 .pacijent-stat-purple {
-    background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+    background: linear-gradient(135deg, #289CC6, #289CC6);
+}
+.pacijent-stat-orange {
+    background:linear-gradient(135deg, #289CC6, #289CC6);
 }
 
 .pacijent-stat-content {
