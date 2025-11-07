@@ -24,6 +24,12 @@ if (!$korisnik) {
     exit;
 }
 
+// OGRANIČI PRISTUP: recepcioner ne može editirati admin/recepcioner profile
+if ($logovani['uloga'] === 'recepcioner' && in_array($korisnik['uloga'], ['admin', 'recepcioner'])) {
+    require __DIR__ . '/../views/errors/403.php';
+    exit;
+}
+
 //RESET MAIL ZA LOZINKU
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['posalji_reset']) && $logovani['uloga'] === 'admin') {
     $email = $korisnik['email'] ?? '';
