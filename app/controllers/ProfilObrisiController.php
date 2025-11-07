@@ -36,6 +36,12 @@ if (!$korisnik) {
     exit;
 }
 
+// OGRANIČI PRISTUP: recepcioner ne može obrisati admin/recepcioner profile
+if ($user['uloga'] === 'recepcioner' && in_array($korisnik['uloga'], ['admin', 'recepcioner'])) {
+    require __DIR__ . '/../views/errors/403.php';
+    exit;
+}
+
 try {
     // Započni transakciju
     $pdo->beginTransaction();
@@ -115,15 +121,38 @@ try {
         $stmt->execute([$id]);
     }
     
-    // OBRIŠI PROFILNU SLIKU ZA SVE ULOGE
-    if (!empty($korisnik['slika']) && $korisnik['slika'] !== 'default.jpg') {
-        $slika_path = 'uploads/profilne/' . $korisnik['slika'];
-        sigurnoBrisanje($slika_path);
+    // TERAPEUT - zamrzni podatke svugdje, čuvaj historiju
+    if ($uloga === 'terapeut') {
+        
+        // 1. Zamrzni ime i prezime u tretmanima
+        $stmt = $pdo->prepare("
+            UPDATE tretmani 
+            SET terapeut_ime = ?, terapeut_prezime = ?
+            WHERE terapeut_id = ? AND (terapeut_ime IS NULL OR terapeut_ime = '')
+        ");
+        $stmt->execute([$korisnik['ime'], $korisnik['prezime'], $id]);
+        
+        // 2. Zamrzni ime i prezime u terminima
+        $stmt = $pdo->prepare("
+            UPDATE termini 
+            SET terapeut_ime = ?, terapeut_prezime = ?
+            WHERE terapeut_id = ? AND (terapeut_ime IS NULL OR terapeut_ime = '')
+        ");
+        $stmt->execute([$korisnik['ime'], $korisnik['prezime'], $id]);
+        
+        // 3. Obriši rasporede (ne čuvaju se istorijski)
+        $stmt = $pdo->prepare("DELETE FROM rasporedi_sedmicni WHERE terapeut_id = ?");
+        $stmt->execute([$id]);
+        
+        // 4. Obriši iz dodatnih raspored tabela ako postoje
+        try {
+            $stmt = $pdo->prepare("DELETE FROM raspored WHERE terapeut_id = ?");
+            $stmt->execute([$id]);
+        } catch (PDOException $e) {
+            // Tabela možda ne postoji
+        }
     }
     
-    // RECEPCIONER/ADMIN - obriši/nullificiraj povezane zapise
-    if (in_array($uloga, ['recepcioner', 'admin'])) {
-        
     // RECEPCIONER/ADMIN - zamrzni imena u rasporedima i nullificiraj druge reference
     if (in_array($uloga, ['recepcioner', 'admin'])) {
         
@@ -173,42 +202,12 @@ try {
             // Tabela možda ne postoji
         }
     }
-    }
     
-    // TERAPEUT - zamrzni podatke svugdje, čuvaj historiju
-    if ($uloga === 'terapeut') {
-        
-        // 1. Zamrzni ime i prezime u tretmanima
-        $stmt = $pdo->prepare("
-            UPDATE tretmani 
-            SET terapeut_ime = ?, terapeut_prezime = ?
-            WHERE terapeut_id = ? AND (terapeut_ime IS NULL OR terapeut_ime = '')
-        ");
-        $stmt->execute([$korisnik['ime'], $korisnik['prezime'], $id]);
-        
-        // 2. Zamrzni ime i prezime u terminima
-        $stmt = $pdo->prepare("
-            UPDATE termini 
-            SET terapeut_ime = ?, terapeut_prezime = ?
-            WHERE terapeut_id = ? AND (terapeut_ime IS NULL OR terapeut_ime = '')
-        ");
-        $stmt->execute([$korisnik['ime'], $korisnik['prezime'], $id]);
-        
-        // 3. Obriši rasporede (ne čuvaju se istorijski)
-        $stmt = $pdo->prepare("DELETE FROM rasporedi_sedmicni WHERE terapeut_id = ?");
-        $stmt->execute([$id]);
-        
-        // 4. Obriši iz dodatnih raspored tabela ako postoje
-        try {
-            $stmt = $pdo->prepare("DELETE FROM raspored WHERE terapeut_id = ?");
-            $stmt->execute([$id]);
-        } catch (PDOException $e) {
-            // Tabela možda ne postoji
-        }
+    // OBRIŠI PROFILNU SLIKU ZA SVE ULOGE
+    if (!empty($korisnik['slika']) && $korisnik['slika'] !== 'default.jpg') {
+        $slika_path = 'uploads/profilne/' . $korisnik['slika'];
+        sigurnoBrisanje($slika_path);
     }
-    
-    // ADMIN/RECEPCIONER - samo obriši iz users tabele
-    // (nema dodatnih podataka za brisanje)
     
     // Obriši korisnika na kraju
     $stmt = $pdo->prepare("DELETE FROM users WHERE id = ?");
