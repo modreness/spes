@@ -231,6 +231,9 @@ elseif ($uri === '/izvjestaji/terapeut') {
 elseif ($uri === '/nalazi/moji-pacijenti') {
     require_once __DIR__ . '/../app/controllers/NalaziMojiPacijentiController.php';
 }
+elseif ($uri === '/moji-termini') {
+    require __DIR__ . '/app/controllers/MojiTerminiController.php';
+}
 /*
 else {
     http_response_code(404);
