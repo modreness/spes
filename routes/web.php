@@ -232,7 +232,7 @@ elseif ($uri === '/nalazi/moji-pacijenti') {
     require_once __DIR__ . '/../app/controllers/NalaziMojiPacijentiController.php';
 }
 elseif ($uri === '/moji-termini') {
-    require __DIR__ . '/app/controllers/MojiTerminiController.php';
+    require __DIR__ . '/../app/controllers/MojiTerminiController.php';
 }
 /*
 else {
