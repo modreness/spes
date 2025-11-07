@@ -42,81 +42,134 @@ try {
     
     $uloga = $korisnik['uloga'];
     
+    // Helper funkcija za sigurno brisanje fajla
+    function sigurnoBrisanje($file_path) {
+        if (empty($file_path)) return false;
+        
+        // Provjeri da li je path apsolutan ili relativan
+        if (!is_file($file_path)) {
+            // Pokušaj relativni path od root-a
+            $file_path = __DIR__ . '/../../' . ltrim($file_path, '/');
+        }
+        
+        if (file_exists($file_path) && is_file($file_path)) {
+            $success = unlink($file_path);
+            if ($success) {
+                error_log("Uspješno obrisan fajl: $file_path");
+            } else {
+                error_log("Greška pri brisanju fajla: $file_path");
+            }
+            return $success;
+        }
+        return false;
+    }
+    
     // PACIJENT - obriši sve vezano za pacijenta
     if ($uloga === 'pacijent') {
-        // Obriši kartone
-        $stmt = $pdo->prepare("DELETE FROM kartoni WHERE pacijent_id = ?");
+        
+        // 1. PRVO dohvati sve fajlove nalaza da ih fizički obrišeš
+        $stmt = $pdo->prepare("SELECT file_path FROM nalazi WHERE pacijent_id = ? AND file_path IS NOT NULL");
+        $stmt->execute([$id]);
+        $fajlovi_nalaza = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        
+        // Obriši fizičke fajlove
+        foreach ($fajlovi_nalaza as $file_path) {
+            sigurnoBrisanje($file_path);
+        }
+        
+        // 2. Sada obriši nalaze iz baze
+        $stmt = $pdo->prepare("DELETE FROM nalazi WHERE pacijent_id = ?");
         $stmt->execute([$id]);
         
-        // Obriši tretmane (preko karton_id koji je vezan sa pacijentom)
-        // Ne treba posebno brisati jer kartoni su već obrisani (CASCADE ili manual)
-        // ALI ako nema CASCADE, onda:
-        $stmt = $pdo->prepare("
-            DELETE t FROM tretmani t
-            JOIN kartoni k ON t.karton_id = k.id
-            WHERE k.pacijent_id = ?
-        ");
-        // OVO NEĆE RADITI jer smo već obrisali kartone!
-        // Ispravno: prvo obriši tretmane, PA ONDA kartone
-        
-        // ISPRAVNO:
-        // 1. Prvo nađi sve kartone pacijenta
+        // 3. Nađi sve kartone pacijenta
         $stmtKartoni = $pdo->prepare("SELECT id FROM kartoni WHERE pacijent_id = ?");
         $stmtKartoni->execute([$id]);
         $kartoni = $stmtKartoni->fetchAll(PDO::FETCH_COLUMN);
         
-        // 2. Obriši tretmane za te kartone
         if (!empty($kartoni)) {
             $placeholders = implode(',', array_fill(0, count($kartoni), '?'));
+            
+            // 4. Dohvati i obriši fajlove nalaza povezanih preko kartona
+            $stmt = $pdo->prepare("SELECT file_path FROM nalazi WHERE karton_id IN ($placeholders) AND file_path IS NOT NULL");
+            $stmt->execute($kartoni);
+            $fajlovi_karton_nalaza = $stmt->fetchAll(PDO::FETCH_COLUMN);
+            
+            foreach ($fajlovi_karton_nalaza as $file_path) {
+                sigurnoBrisanje($file_path);
+            }
+            
+            // 5. Obriši karton_dijagnoze za sve kartone
+            $stmt = $pdo->prepare("DELETE FROM karton_dijagnoze WHERE karton_id IN ($placeholders)");
+            $stmt->execute($kartoni);
+            
+            // 6. Obriši tretmane za te kartone
             $stmt = $pdo->prepare("DELETE FROM tretmani WHERE karton_id IN ($placeholders)");
+            $stmt->execute($kartoni);
+            
+            // 7. Obriši nalaze povezane preko kartona
+            $stmt = $pdo->prepare("DELETE FROM nalazi WHERE karton_id IN ($placeholders)");
             $stmt->execute($kartoni);
         }
         
-        // 3. Obriši kartone
-        $stmt = $pdo->prepare("DELETE FROM kartoni WHERE pacijent_id = ?");
-        $stmt->execute([$id]);
-        
-        // 4. Obriši termine
+        // 8. Obriši termine direktno vezane za pacijenta
         $stmt = $pdo->prepare("DELETE FROM termini WHERE pacijent_id = ?");
         $stmt->execute([$id]);
+        
+        // 9. Obriši kupljene pakete (ako postoje)
+        try {
+            $stmt = $pdo->prepare("DELETE FROM kupljeni_paketi WHERE pacijent_id = ?");
+            $stmt->execute([$id]);
+        } catch (PDOException $e) {
+            // Tabela možda ne postoji, ignoriši grešku
+        }
+        
+        // 10. Obriši kartone
+        $stmt = $pdo->prepare("DELETE FROM kartoni WHERE pacijent_id = ?");
+        $stmt->execute([$id]);
+    }
+    
+    // OBRIŠI PROFILNU SLIKU ZA SVE ULOGE
+    if (!empty($korisnik['slika']) && $korisnik['slika'] !== 'default.jpg') {
+        $slika_path = 'uploads/profilne/' . $korisnik['slika'];
+        sigurnoBrisanje($slika_path);
     }
     
     // TERAPEUT - zamrzni podatke svugdje, čuvaj historiju
     if ($uloga === 'terapeut') {
-        // 1. Zamrzni ime i prezime u rasporedu
-        $stmtRasporedi = $pdo->prepare("SELECT id FROM rasporedi_sedmicni WHERE terapeut_id = ?");
-        $stmtRasporedi->execute([$id]);
-        $rasporedi = $stmtRasporedi->fetchAll(PDO::FETCH_ASSOC);
-
-        if ($rasporedi) {
-            $stmtZamrzni = $pdo->prepare("
-                UPDATE rasporedi_sedmicni 
-                SET terapeut_ime = ?, terapeut_prezime = ?, terapeut_id = NULL 
-                WHERE id = ?
-            ");
-            foreach ($rasporedi as $r) {
-                $stmtZamrzni->execute([$korisnik['ime'], $korisnik['prezime'], $r['id']]);
-            }
-        }
         
-        // 2. Zamrzni ime i prezime u tretmanima
-        $stmtTretmani = $pdo->prepare("
+        // 1. Zamrzni ime i prezime u tretmanima
+        $stmt = $pdo->prepare("
             UPDATE tretmani 
-            SET terapeut_ime = ?, terapeut_prezime = ?, terapeut_id = NULL 
-            WHERE terapeut_id = ?
+            SET terapeut_ime = ?, terapeut_prezime = ?
+            WHERE terapeut_id = ? AND (terapeut_ime IS NULL OR terapeut_ime = '')
         ");
-        $stmtTretmani->execute([$korisnik['ime'], $korisnik['prezime'], $id]);
+        $stmt->execute([$korisnik['ime'], $korisnik['prezime'], $id]);
         
-        // 3. Zamrzni ime i prezime u terminima (historia termina)
-        $stmtTermini = $pdo->prepare("
+        // 2. Zamrzni ime i prezime u terminima
+        $stmt = $pdo->prepare("
             UPDATE termini 
-            SET terapeut_ime = ?, terapeut_prezime = ?, terapeut_id = NULL 
-            WHERE terapeut_id = ?
+            SET terapeut_ime = ?, terapeut_prezime = ?
+            WHERE terapeut_id = ? AND (terapeut_ime IS NULL OR terapeut_ime = '')
         ");
-        $stmtTermini->execute([$korisnik['ime'], $korisnik['prezime'], $id]);
+        $stmt->execute([$korisnik['ime'], $korisnik['prezime'], $id]);
+        
+        // 3. Obriši rasporede (ne čuvaju se istorijski)
+        $stmt = $pdo->prepare("DELETE FROM rasporedi_sedmicni WHERE terapeut_id = ?");
+        $stmt->execute([$id]);
+        
+        // 4. Obriši iz dodatnih raspored tabela ako postoje
+        try {
+            $stmt = $pdo->prepare("DELETE FROM raspored WHERE terapeut_id = ?");
+            $stmt->execute([$id]);
+        } catch (PDOException $e) {
+            // Tabela možda ne postoji
+        }
     }
     
-    // Obriši korisnika
+    // ADMIN/RECEPCIONER - samo obriši iz users tabele
+    // (nema dodatnih podataka za brisanje)
+    
+    // Obriši korisnika na kraju
     $stmt = $pdo->prepare("DELETE FROM users WHERE id = ?");
     $stmt->execute([$id]);
     
@@ -128,6 +181,11 @@ try {
 } catch (Exception $e) {
     // Poništi transakciju u slučaju greške
     $pdo->rollBack();
+    
+    // Logiraj detaljnu grešku
+    error_log("Greška pri brisanju korisnika ID $id: " . $e->getMessage());
+    error_log("Stack trace: " . $e->getTraceAsString());
+    
     $_SESSION['error_message'] = "Greška pri brisanju: " . $e->getMessage();
 }
 
