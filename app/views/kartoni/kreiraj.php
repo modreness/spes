@@ -22,7 +22,7 @@
       <select name="pacijent_id" id="pacijent_id" class="select2">
         <option value="">-- Odaberi --</option>
         <?php foreach ($pacijenti as $p): ?>
-          <option value="<?= $p['id'] ?>"><?= htmlspecialchars($p['ime']) ?> <?= htmlspecialchars($p['prezime']) ?> (<?= htmlspecialchars($p['email']) ?>)</option>
+          <option value="<?= $p['id'] ?>"><?= htmlspecialchars($p['ime']) ?> <?= htmlspecialchars($p['prezime']) ?> (<?= htmlspecialchars($p['email'] ?? 'Nema email') ?>)</option>
         <?php endforeach; ?>
       </select>
       <span id="pacijent-status" style="font-size: 13px; display: none;"></span>
