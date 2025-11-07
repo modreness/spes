@@ -74,9 +74,35 @@ $user = current_user();
          
         <?php elseif ($user['uloga'] === 'recepcioner'): ?>
         <ul class="menu-list">
-          <li><a href="/dashboard" class="<?= $current_path === '/dashboard' ? 'active' : '' ?>"><i class="fa-solid fa-house"></i> Dashboard</a></li>
-          <li><a href="/dodavanje-rasporeda" class="<?= $current_path === '/dodavanje-rasporeda' ? 'active' : '' ?>"><i class="fa-solid fa-calendar-plus"></i> Dodavanje rasporeda</a></li>
-          <li><a href="/pregled-rasporeda" class="<?= $current_path === '/pregled-rasporeda' ? 'active' : '' ?>"><i class="fa-solid fa-calendar"></i> Pregled rasporeda</a></li>
+          <li class="dropdown">
+              <a href="#" class="dropdown-toggle">
+                <i class="fa-solid fa-user-pen"></i> Pregled profila
+                <span class="arrow">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </span>
+              </a>
+              <ul class="submenu">
+                <li><a href="/profil/pacijent" class="<?= strpos($current_path, '/profil/pacijent') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-user"></i> Pacijent</a></li>
+                <li><a href="/profil/terapeut" class="<?= strpos($current_path, '/profil/terapeut') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-user-doctor"></i> Terapeut</a></li>
+                <li><a href="/profil/recepcioner" class="<?= strpos($current_path, '/profil/recepcioner') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-user-tie"></i> Recepcioner</a></li>
+                <li><a href="/profil/admin" class="<?= strpos($current_path, '/profil/admin') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-user-shield"></i> Admin</a></li>
+                <li><a href="/profil/kreiraj" class="<?= strpos($current_path, '/profil/kreiraj') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-user-plus"></i> Kreiraj profil</a></li>
+              </ul>
+            </li>
+
+          <li><a href="/kartoni/lista" class="<?= strpos($current_path, '/kartoni') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-folder-open"></i> Kartoni</a></li>
+          <li><a href="/pretraga" class="<?= strpos($current_path, '/pretraga') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-magnifying-glass"></i> Pretraga</a></li>
+          <li><a href="/izvjestaji/operativni" class="<?= strpos($current_path, '/izvjestaji/operativni') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-chart-line"></i> Operativni izvještaj</a></li>
+          <li><a href="/izvjestaji/medicinski" class="<?= strpos($current_path, '/izvjestaji/medicinski') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-chart-line"></i> Medicinski izvještaj</a></li>
+          <li><a href="/kategorije" class="<?= strpos($current_path, '/kategorije') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-tags"></i> Kategorije</a></li>
+          <li><a href="/cjenovnik" class="<?= strpos($current_path, '/cjenovnik') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-dollar-sign"></i> Cjenovnik</a></li>
+          <li><a href="/paketi" class="<?= strpos($current_path, '/paketi') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-box"></i> Paketi</a></li>
+          <li><a href="/dijagnoze" class="<?= strpos($current_path, '/dijagnoze') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-notes-medical"></i> Dijagnoze</a></li>
+          <li><a href="/timetable" class="<?= strpos($current_path, '/timetable') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-clock"></i> Timetable</a></li>
+          <li><a href="/raspored" class="<?= strpos($current_path, '/raspored') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-calendar-days"></i> Raspored terapeuta</a></li>
+          
         </ul>
         <?php elseif ($user['uloga'] === 'terapeut'): ?>
         <ul class="menu-list">
