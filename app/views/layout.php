@@ -110,7 +110,7 @@ $user = current_user();
       <form action="/pretraga" method="GET" class="admin-search">
           <div class="admin-search-input-group">
               <input type="text" name="q" placeholder="Pretraži po imenu, prezimenu, JMBG..." class="admin-search-input">
-              <button type="submit" class="admin-search-btn">
+              <button type="submit" class="btn btn-search">
                   <i class="fa-solid fa-search"></i>
               </button>
           </div>
