@@ -36,7 +36,7 @@ function send_mail($to, $subject, $body) {
         );
 
         // Sender i recipient
-        $mail->setFrom('spes.app@spes.ba', 'SPES aplikacija');
+        $mail->setFrom('admin@spes.ba', 'SPES aplikacija');
         $mail->addAddress($to);
 
         // Sadržaj
