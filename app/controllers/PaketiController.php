@@ -32,7 +32,7 @@ try {
         FROM kupljeni_paketi 
         WHERE ukupno_termina > 0
     ");
-    $prosjecna_iskoristenos = round($stmt->fetchColumn(), 1);
+    $prosjecna_iskoristenos = round($stmt->fetchColumn() ?? 0, 1);
     
 } catch (PDOException $e) {
     error_log("Greška statistike: " . $e->getMessage());
