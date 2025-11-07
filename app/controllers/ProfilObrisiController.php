@@ -89,33 +89,20 @@ try {
         if (!empty($kartoni)) {
             $placeholders = implode(',', array_fill(0, count($kartoni), '?'));
             
-            // 4. Dohvati i obriši fajlove nalaza povezanih preko kartona
-            $stmt = $pdo->prepare("SELECT file_path FROM nalazi WHERE karton_id IN ($placeholders) AND file_path IS NOT NULL");
-            $stmt->execute($kartoni);
-            $fajlovi_karton_nalaza = $stmt->fetchAll(PDO::FETCH_COLUMN);
-            
-            foreach ($fajlovi_karton_nalaza as $file_path) {
-                sigurnoBrisanje($file_path);
-            }
-            
-            // 5. Obriši karton_dijagnoze za sve kartone
+            // 4. Obriši karton_dijagnoze za sve kartone
             $stmt = $pdo->prepare("DELETE FROM karton_dijagnoze WHERE karton_id IN ($placeholders)");
             $stmt->execute($kartoni);
             
-            // 6. Obriši tretmane za te kartone
+            // 5. Obriši tretmane za te kartone
             $stmt = $pdo->prepare("DELETE FROM tretmani WHERE karton_id IN ($placeholders)");
-            $stmt->execute($kartoni);
-            
-            // 7. Obriši nalaze povezane preko kartona
-            $stmt = $pdo->prepare("DELETE FROM nalazi WHERE karton_id IN ($placeholders)");
             $stmt->execute($kartoni);
         }
         
-        // 8. Obriši termine direktno vezane za pacijenta
+        // 6. Obriši termine direktno vezane za pacijenta
         $stmt = $pdo->prepare("DELETE FROM termini WHERE pacijent_id = ?");
         $stmt->execute([$id]);
         
-        // 9. Obriši kupljene pakete (ako postoje)
+        // 7. Obriši kupljene pakete (ako postoje)
         try {
             $stmt = $pdo->prepare("DELETE FROM kupljeni_paketi WHERE pacijent_id = ?");
             $stmt->execute([$id]);
@@ -123,7 +110,7 @@ try {
             // Tabela možda ne postoji, ignoriši grešku
         }
         
-        // 10. Obriši kartone
+        // 8. Obriši kartone
         $stmt = $pdo->prepare("DELETE FROM kartoni WHERE pacijent_id = ?");
         $stmt->execute([$id]);
     }
