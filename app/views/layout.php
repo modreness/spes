@@ -109,7 +109,7 @@ $user = current_user();
     <header class="topbar">
       <form action="/pretraga" method="GET" class="admin-search">
           <div class="admin-search-input-group">
-              <input type="text" name="q" placeholder="Pretraži po imenu, prezimenu, JMBG..." class="admin-search-input">
+              <input type="text" name="q" placeholder="Pretraži..." class="admin-search-input">
               <button type="submit" class="btn btn-search">
                   <i class="fa-solid fa-search"></i>
               </button>
