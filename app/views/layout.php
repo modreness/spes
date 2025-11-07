@@ -85,9 +85,7 @@ $user = current_user();
               </a>
               <ul class="submenu">
                 <li><a href="/profil/pacijent" class="<?= strpos($current_path, '/profil/pacijent') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-user"></i> Pacijent</a></li>
-                <li><a href="/profil/terapeut" class="<?= strpos($current_path, '/profil/terapeut') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-user-doctor"></i> Terapeut</a></li>
-                <li><a href="/profil/recepcioner" class="<?= strpos($current_path, '/profil/recepcioner') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-user-tie"></i> Recepcioner</a></li>
-                <li><a href="/profil/admin" class="<?= strpos($current_path, '/profil/admin') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-user-shield"></i> Admin</a></li>
+                <li><a href="/profil/terapeut" class="<?= strpos($current_path, '/profil/terapeut') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-user-doctor"></i> Terapeut</a></li> 
                 <li><a href="/profil/kreiraj" class="<?= strpos($current_path, '/profil/kreiraj') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-user-plus"></i> Kreiraj profil</a></li>
               </ul>
             </li>
