@@ -27,6 +27,12 @@ if (!$rola) {
     exit;
 }
 
+// OGRANIČI PRISTUP: recepcioner ne može vidjeti admin/recepcioner profile
+if ($user['uloga'] === 'recepcioner' && in_array($rola, ['admin', 'recepcioner'])) {
+    require __DIR__ . '/../views/errors/403.php';
+    exit;
+}
+
 $stmt = $pdo->prepare("SELECT * FROM users WHERE uloga = ?");
 $stmt->execute([$rola]);
 $korisnici = $stmt->fetchAll(PDO::FETCH_ASSOC);
