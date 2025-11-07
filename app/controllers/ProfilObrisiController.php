@@ -121,6 +121,60 @@ try {
         sigurnoBrisanje($slika_path);
     }
     
+    // RECEPCIONER/ADMIN - obriši/nullificiraj povezane zapise
+    if (in_array($uloga, ['recepcioner', 'admin'])) {
+        
+    // RECEPCIONER/ADMIN - zamrzni imena u rasporedima i nullificiraj druge reference
+    if (in_array($uloga, ['recepcioner', 'admin'])) {
+        
+        // Zamrzni ime i prezime u rasporedima (isti princip kao za terapeute)
+        try {
+            $stmt = $pdo->prepare("
+                UPDATE rasporedi_sedmicni 
+                SET unosio_ime = ?, unosio_prezime = ?, unosio_id = NULL 
+                WHERE unosio_id = ?
+            ");
+            $stmt->execute([$korisnik['ime'], $korisnik['prezime'], $id]);
+            error_log("Zamrznuo imena u rasporedima za korisnika: " . $korisnik['ime'] . " " . $korisnik['prezime']);
+        } catch (PDOException $e) {
+            error_log("Greška pri zamrzavanju imena u rasporedima: " . $e->getMessage());
+            
+            // Ako nema unosio_ime/unosio_prezime kolone, samo nullificiraj
+            try {
+                $stmt = $pdo->prepare("UPDATE rasporedi_sedmicni SET unosio_id = NULL WHERE unosio_id = ?");
+                $stmt->execute([$id]);
+                error_log("Fallback: nullificiran unosio_id u rasporedima");
+            } catch (PDOException $e2) {
+                error_log("Kritična greška s rasporedima: " . $e2->getMessage());
+            }
+        }
+        
+        // Nullificiraj otvorio_id u kartonima (ovo možda ne treba zamrzavati jer se prikazuje "otvorio_ime")
+        try {
+            $stmt = $pdo->prepare("UPDATE kartoni SET otvorio_id = NULL WHERE otvorio_id = ?");
+            $stmt->execute([$id]);
+        } catch (PDOException $e) {
+            error_log("Greška pri nullificiranju kartoni.otvorio_id: " . $e->getMessage());
+        }
+        
+        // Nullificiraj dodao_id u nalazima (ovo možda ne treba zamrzavati jer se prikazuje "dodao_ime")
+        try {
+            $stmt = $pdo->prepare("UPDATE nalazi SET dodao_id = NULL WHERE dodao_id = ?");
+            $stmt->execute([$id]);
+        } catch (PDOException $e) {
+            error_log("Greška pri nullificiranju nalazi.dodao_id: " . $e->getMessage());
+        }
+        
+        // Nullificiraj u drugim tabelama ako postoje
+        try {
+            $stmt = $pdo->prepare("UPDATE raspored SET unosio_id = NULL WHERE unosio_id = ?");
+            $stmt->execute([$id]);
+        } catch (PDOException $e) {
+            // Tabela možda ne postoji
+        }
+    }
+    }
+    
     // TERAPEUT - zamrzni podatke svugdje, čuvaj historiju
     if ($uloga === 'terapeut') {
         

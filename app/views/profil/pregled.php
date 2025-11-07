@@ -15,7 +15,7 @@
       <tr>
         <td><?= htmlspecialchars($k['ime']) ?> <?= htmlspecialchars($k['prezime']) ?></td>
         <td><?= htmlspecialchars($k['email'] ?? '') ?></td>
-        <td><?= htmlspecialchars($k['username']) ?></td>
+        <td><?= htmlspecialchars($k['username'] ?? '') ?></td>
         <td><?= $k['last_login'] ? date('d.m.Y. H:i', strtotime($k['last_login'])) : 'Nema podataka'; ?></td>
         <td>
           
