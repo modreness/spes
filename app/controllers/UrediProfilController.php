@@ -9,7 +9,6 @@ $poruka = '';
 // Koga uređujemo
 $id = $_POST['id'] ?? $_GET['id'] ?? $logovani['id'];
 
-
 // Ako pokušava uređivati drugog bez ovlasti
 if ($id != $logovani['id'] && !in_array($logovani['uloga'], ['admin', 'recepcioner'])) {
     require __DIR__ . '/../views/errors/403.php';
@@ -50,7 +49,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['posalji_reset']) && $
         exit;
     }
 }
-
 
 // OBRADA POST ZA UPDATE
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
