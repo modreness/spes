@@ -255,5 +255,6 @@
     padding: 8px 12px;
     border: 1px solid #ddd;
     border-radius: 6px;
+    box-sizing:border-box;
 }
 </style>
