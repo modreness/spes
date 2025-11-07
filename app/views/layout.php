@@ -102,6 +102,11 @@ $user = current_user();
           <li><a href="/raspored" class="<?= strpos($current_path, '/raspored') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-calendar-days"></i> Raspored terapeuta</a></li>
           
         </ul>
+
+        <div class="zakazani-link">
+        <a href="/termini" class="<?= strpos($current_path, '/termini') === 0 ? 'active' : '' ?>"><i class="fa-solid fa-calendar-check"></i> ZAKAZANI TERMINI</a>
+        </div>
+
         <?php elseif ($user['uloga'] === 'terapeut'): ?>
         <ul class="menu-list">
           <li><a href="/dashboard" class="<?= $current_path === '/dashboard' ? 'active' : '' ?>"><i class="fa-solid fa-house"></i> Dashboard</a></li>
@@ -120,6 +125,7 @@ $user = current_user();
             <li><a href="/kartoni/pregled?id=<?= $karton_id ?>"><i class="fa-solid fa-folder-open"></i> Moj karton</a></li>
             <li><a href="/kartoni/tretmani?id=<?= $karton_id ?>"><i class="fa-solid fa-notes-medical"></i> Moji tretmani</a></li>
             <li><a href="/kartoni/nalazi?id=<?= $karton_id ?>"><i class="fa-solid fa-file-medical"></i> Moji nalazi</a></li>
+            <li><a href="/moji-termini"><i class="fa-solid fa-calendar-check"></i> Moji termini</a></li>
         </ul>
         <?php endif; ?>
       
