@@ -35,7 +35,7 @@
             <?= htmlspecialchars($k['ime']) ?> <?= htmlspecialchars($k['prezime']) ?>
           </a>
         </td>
-        <td><?= htmlspecialchars($k['email']) ?></td>
+        <td><?= htmlspecialchars($k['email'] ?? '') ?></td>
         <td><?= $k['jmbg'] ?></td>
         <td><?= date('d.m.Y', strtotime($k['datum_rodjenja'])) ?></td>
         <td><?= $k['broj_upisa'] ?></td>
@@ -149,5 +149,3 @@ function zatvoriModalTretman() {
     setTimeout(() => notif.remove(), 3500);
   }
 </script>
-
-
