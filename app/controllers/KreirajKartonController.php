@@ -14,7 +14,7 @@ $pacijenti = $pdo->query("SELECT id, ime, prezime, email FROM users WHERE uloga 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tip_pacijenta = $_POST['tip_pacijenta'] ?? 'postojeci';
     $pacijent_id = $_POST['pacijent_id'] ?? '';
-    $jmbg = $_POST['jmbg'] ?? '';
+    $jmbg = trim($_POST['jmbg'] ?? '');
 
     // Provjera: ako je postojeći pacijent, da li već ima karton
     if ($tip_pacijenta === 'postojeci' && $pacijent_id !== '') {
@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Provjera: ako je novi pacijent, da li već postoji korisnik s tim email/username i jmbg
+    // Provjera: ako je novi pacijent, da li već postoji korisnik s tim email/username
     if ($tip_pacijenta === 'novi') {
         $ime = trim($_POST['ime'] ?? '');
         $prezime = trim($_POST['prezime'] ?? '');
@@ -34,24 +34,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $username = trim($_POST['username'] ?? '');
         $lozinka = trim($_POST['lozinka'] ?? '');
 
-        $provjera = $pdo->prepare("SELECT id FROM users WHERE email = ? OR username = ?");
-        $provjera->execute([$email, $username]);
-        if ($provjera->fetch()) {
-            header('Location: /kartoni/kreiraj?msg=postoji');
-            exit;
+        // Email je sada opcionalan - proveravaj samo ako nije prazan
+        $email_provjera_uslovi = [];
+        $email_provjera_params = [];
+        
+        if (!empty($email)) {
+            $email_provjera_uslovi[] = "email = ?";
+            $email_provjera_params[] = $email;
+        }
+        
+        // Username uvek mora biti jedinstven
+        $email_provjera_uslovi[] = "username = ?";
+        $email_provjera_params[] = $username;
+        
+        if (!empty($email_provjera_uslovi)) {
+            $email_provjera_sql = "SELECT id FROM users WHERE " . implode(' OR ', $email_provjera_uslovi);
+            $provjera = $pdo->prepare($email_provjera_sql);
+            $provjera->execute($email_provjera_params);
+            if ($provjera->fetch()) {
+                header('Location: /kartoni/kreiraj?msg=postoji');
+                exit;
+            }
         }
 
-        $provjeraJMBG = $pdo->prepare("SELECT id FROM kartoni WHERE jmbg = ?");
-        $provjeraJMBG->execute([$jmbg]);
-        if ($provjeraJMBG->fetch()) {
-            header('Location: /kartoni/kreiraj?msg=jmbg_postoji');
-            exit;
+        // POBOLJŠANA JMBG PROVJERA - samo ako nije prazan
+        if (!empty($jmbg)) {
+            $provjeraJMBG = $pdo->prepare("SELECT id FROM kartoni WHERE jmbg = ? AND jmbg IS NOT NULL");
+            $provjeraJMBG->execute([$jmbg]);
+            if ($provjeraJMBG->fetch()) {
+                header('Location: /kartoni/kreiraj?msg=jmbg_postoji');
+                exit;
+            }
         }
 
+        // Kreiranje novog korisnika - email može biti NULL
         $hash = password_hash($lozinka, PASSWORD_DEFAULT);
+        $email_value = !empty($email) ? $email : null;
+        
         $stmt = $pdo->prepare("INSERT INTO users (ime, prezime, email, username, lozinka, uloga) VALUES (?, ?, ?, ?, ?, 'pacijent')");
-        $stmt->execute([$ime, $prezime, $email, $username, $hash]);
+        $stmt->execute([$ime, $prezime, $email_value, $username, $hash]);
         $pacijent_id = $pdo->lastInsertId();
+    } else {
+        // Za postojeće pacijente, proveravaj JMBG samo ako nije prazan
+        if (!empty($jmbg)) {
+            $provjeraJMBG = $pdo->prepare("SELECT id FROM kartoni WHERE jmbg = ? AND jmbg IS NOT NULL");
+            $provjeraJMBG->execute([$jmbg]);
+            if ($provjeraJMBG->fetch()) {
+                header('Location: /kartoni/kreiraj?msg=jmbg_postoji');
+                exit;
+            }
+        }
     }
 
     // Podaci za unos u karton
@@ -69,6 +101,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Dijagnoze iz checkboxova
     $odabrane_dijagnoze = $_POST['dijagnoze'] ?? [];
 
+    // JMBG može biti NULL ako je prazan
+    $jmbg_value = !empty($jmbg) ? $jmbg : null;
+
     // UKLONILI SMO dijagnoza iz INSERT-a jer je sad u posebnoj tabeli
     $stmt = $pdo->prepare("INSERT INTO kartoni (pacijent_id, datum_otvaranja, datum_rodjenja, adresa, telefon, jmbg, spol, email, broj_upisa, anamneza, rehabilitacija, pocetna_procjena, biljeske, napomena, otvorio_id)
                            VALUES (?, CURDATE(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
@@ -77,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $datum_rodjenja,
         $adresa,
         $telefon,
-        $jmbg,
+        $jmbg_value,
         $spol,
         $email,
         $broj_upisa,

@@ -45,8 +45,9 @@
       </div>
 
       <div class="form-group">
-        <label for="email">Email</label>
-        <input type="email" name="email" id="email">
+        <label for="email">Email (opcionalno)</label>
+        <input type="email" name="email" id="email" placeholder="Potrebno za reset lozinke">
+        <small style="color: #666;">Email adresa nije obavezna, ali je potrebna za funkciju resetovanja lozinke.</small>
       </div>
 
       <div class="form-group">
@@ -98,9 +99,10 @@
     </div>
 
     <div class="form-group">
-      <label for="jmbg">JMBG</label>
-      <input type="text" name="jmbg" id="jmbg" maxlength="13">
+      <label for="jmbg">JMBG (opcionalno)</label>
+      <input type="text" name="jmbg" id="jmbg" maxlength="13" placeholder="Unesite samo ako je dostupan">
       <span id="jmbg-status" style="font-size: 13px; display: none;"></span>
+      <small style="color: #666;">Ako unesete JMBG, mora biti jedinstven u sistemu.</small>
     </div>
 
     <div class="form-group">
@@ -257,7 +259,7 @@ if (window.jQuery) {
       document.getElementById('username').setAttribute('required', 'required');
       document.getElementById('ime').setAttribute('required', 'required');
       document.getElementById('prezime').setAttribute('required', 'required');
-      document.getElementById('email').setAttribute('required', 'required');
+      // EMAIL VIŠE NIJE OBAVEZAN - samo dodajemo helper text
       document.getElementById('lozinka').setAttribute('required', 'required');
     } else {
       noviPacijentFields.style.display = 'none';
@@ -277,17 +279,32 @@ if (window.jQuery) {
   prezimeInput.addEventListener('input', updateUsername);
   usernameInput.addEventListener('input', () => checkUsernameAvailability(usernameInput.value));
 
+  // POBOLJŠANA JMBG VALIDACIJA - proverava samo ako nije prazan
   jmbgInput.addEventListener('input', function () {
-    if (jmbgInput.value.length >= 8) {
-      fetch('/provjeri-username?jmbg=' + encodeURIComponent(jmbgInput.value))
+    const jmbgValue = this.value.trim();
+    
+    if (jmbgValue.length === 0) {
+      // Ako je prazan, sakrij status - dozvoli prazan JMBG
+      jmbgStatus.style.display = 'none';
+      return;
+    }
+    
+    if (jmbgValue.length >= 8) {
+      fetch('/provjeri-username?jmbg=' + encodeURIComponent(jmbgValue))
         .then(res => res.json())
         .then(data => {
           jmbgStatus.style.display = 'inline';
           jmbgStatus.textContent = data.postoji ? '❌ Ovaj JMBG već postoji!' : '✅ JMBG je slobodan';
           jmbgStatus.style.color = data.postoji ? 'red' : 'green';
         });
+    } else if (jmbgValue.length > 0) {
+      // Ako je počeo kucati ali nije završio
+      jmbgStatus.style.display = 'inline';
+      jmbgStatus.textContent = '⏳ Kucajte najmanje 8 cifara';
+      jmbgStatus.style.color = '#666';
     }
   });
+  
   jmbgInput.addEventListener('input', function () {
       // Ukloni sve što nije broj
       this.value = this.value.replace(/\D/g, '');
