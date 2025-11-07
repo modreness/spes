@@ -22,18 +22,11 @@ function send_mail($to, $subject, $body) {
         $mail->Host = 'smtp.gmail.com';              // <-- SMTP host
         $mail->SMTPAuth = true;
         $mail->Username = 'admin@spes.ba';      // <-- SMTP username
-        $mail->Password = 'galoperiNABudozelju23!!';           // <-- SMTP password
+        $mail->Password = 'dnqibkrmbwcrcrcf';           // <-- SMTP password
         $mail->SMTPSecure = 'tls';                 // 'ssl' ili 'tls'
         $mail->Port = 587;                         // 465 za SSL, 587 za TLS
 
-        // SSL opcije za shared hosting - FIX ZA CERTIFIKAT PROBLEM
-        $mail->SMTPOptions = array(
-            'ssl' => array(
-                'verify_peer' => false,
-                'verify_peer_name' => false,
-                'allow_self_signed' => true
-            )
-        );
+        
 
         // Sender i recipient
         $mail->setFrom('admin@spes.ba', 'SPES aplikacija');
