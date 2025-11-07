@@ -9,7 +9,8 @@ if (!is_logged_in()) {
 
 $user = current_user();
 
-if (!in_array($user['uloga'], ['admin', 'recepcioner'])) {
+//if (!in_array($user['uloga'], ['admin', 'recepcioner'])) {
+if (!in_array($user['uloga'], ['admin'])) {
     header('Location: /dashboard');
     exit;
 }
