@@ -19,13 +19,14 @@ function send_mail($to, $subject, $body) {
     try {
         // SMTP konfiguracija
         $mail->isSMTP();
-        $mail->Host = 'smtp.google.com';              // <-- SMTP host
+        $mail->Host = 'mail.spes.ba';              // <-- SMTP host
         $mail->SMTPAuth = true;
-        $mail->Username = 'admin@spes.ba';      // <-- SMTP username
-        $mail->Password = 'ganeatzltvwynocy';           // <-- SMTP password
-        $mail->SMTPSecure = 'tls';                 // 'ssl' ili 'tls'
-        $mail->Port = 587;                         // 465 za SSL, 587 za TLS
+        $mail->Username = 'web@spes.ba';      // <-- SMTP username
+        $mail->Password = 'uS+[^G]QeWLll;^!';           // <-- SMTP password
+        $mail->SMTPSecure = 'ssl';                 // 'ssl' ili 'tls'
+        $mail->Port = 465;                         // 465 za SSL, 587 za TLS
 
+        /*
         // SSL opcije za shared hosting - FIX ZA CERTIFIKAT PROBLEM
         $mail->SMTPOptions = array(
             'ssl' => array(
@@ -34,7 +35,8 @@ function send_mail($to, $subject, $body) {
                 'allow_self_signed' => true
             )
         );
-
+        */
+        
         // Sender i recipient
         $mail->setFrom('admin@spes.ba', 'SPES aplikacija');
         $mail->addAddress($to);
