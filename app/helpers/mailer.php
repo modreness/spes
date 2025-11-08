@@ -23,7 +23,7 @@ function send_mail($to, $subject, $body) {
         $mail->SMTPAuth = true;
         $mail->Username = 'admin@spes.ba';      // <-- SMTP username
         $mail->Password = 'dnqibkrmbwcrcrcf';           // <-- SMTP password
-        $mail->SMTPSecure = 'tls';                 // 'ssl' ili 'tls'
+        $mail->SMTPSecure = 'starttls';                 // 'ssl' ili 'tls'
         $mail->Port = 587;                         // 465 za SSL, 587 za TLS
 
         // SSL opcije za shared hosting - FIX ZA CERTIFIKAT PROBLEM
