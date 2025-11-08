@@ -22,7 +22,7 @@ function send_mail($to, $subject, $body) {
         $mail->Host = 'smtp.google.com';              // <-- SMTP host
         $mail->SMTPAuth = true;
         $mail->Username = 'admin@spes.ba';      // <-- SMTP username
-        $mail->Password = 'gane atzl tvwy nocy';           // <-- SMTP password
+        $mail->Password = 'ganeatzltvwynocy';           // <-- SMTP password
         $mail->SMTPSecure = 'tls';                 // 'ssl' ili 'tls'
         $mail->Port = 587;                         // 465 za SSL, 587 za TLS
 
