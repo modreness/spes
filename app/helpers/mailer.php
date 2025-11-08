@@ -19,12 +19,12 @@ function send_mail($to, $subject, $body) {
     try {
         // SMTP konfiguracija
         $mail->isSMTP();
-        $mail->Host = 'smtp.gmail.com';              // <-- SMTP host
+        $mail->Host = 'smtp.google.com';              // <-- SMTP host
         $mail->SMTPAuth = true;
         $mail->Username = 'admin@spes.ba';      // <-- SMTP username
         $mail->Password = 'dnqibkrmbwcrcrcf';           // <-- SMTP password
-        $mail->SMTPSecure = 'ssl';                 // 'ssl' ili 'tls'
-        $mail->Port = 465;                         // 465 za SSL, 587 za TLS
+        $mail->SMTPSecure = 'tls';                 // 'ssl' ili 'tls'
+        $mail->Port = 587;                         // 465 za SSL, 587 za TLS
 
         // SSL opcije za shared hosting - FIX ZA CERTIFIKAT PROBLEM
         $mail->SMTPOptions = array(
