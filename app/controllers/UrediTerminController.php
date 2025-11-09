@@ -26,8 +26,10 @@ if (!$termin_id) {
 try {
     $stmt = $pdo->prepare("
         SELECT t.*, 
-               CONCAT(u_pacijent.ime, ' ', u_pacijent.prezime) as pacijent_ime,
-               CONCAT(u_terapeut.ime, ' ', u_terapeut.prezime) as terapeut_ime,
+               CONCAT(u_pacijent.ime, ' ', u_pacijent.prezime) as pacijent_ime_display,
+               CONCAT(u_terapeut.ime, ' ', u_terapeut.prezime) as terapeut_ime_display,
+               u_pacijent.email as pacijent_email,
+               u_terapeut.email as terapeut_email,
                c.naziv as usluga_naziv
         FROM termini t
         LEFT JOIN users u_pacijent ON t.pacijent_id = u_pacijent.id
@@ -42,6 +44,10 @@ try {
         header('Location: /termini?msg=greska');
         exit;
     }
+    
+    // 👉 Sačuvaj trenutni status za poređenje
+    $old_status = $termin['status'];
+    
 } catch (PDOException $e) {
     error_log("Greška pri dohvaćanju termina: " . $e->getMessage());
     header('Location: /termini?msg=greska');
@@ -50,11 +56,11 @@ try {
 
 // Dohvati podatke za dropdowne
 try {
-    $stmt = $pdo->prepare("SELECT id, ime, prezime FROM users WHERE uloga = 'pacijent' ORDER BY ime, prezime");
+    $stmt = $pdo->prepare("SELECT id, ime, prezime FROM users WHERE uloga = 'pacijent' AND aktivan = 1 ORDER BY ime, prezime");
     $stmt->execute();
     $pacijenti = $stmt->fetchAll();
     
-    $stmt = $pdo->prepare("SELECT id, ime, prezime FROM users WHERE uloga = 'terapeut' ORDER BY ime, prezime");
+    $stmt = $pdo->prepare("SELECT id, ime, prezime FROM users WHERE uloga = 'terapeut' AND aktivan = 1 ORDER BY ime, prezime");
     $stmt->execute();
     $terapeuti = $stmt->fetchAll();
     
@@ -171,8 +177,110 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $termin_id
             ]);
             
+            // ✉️ SLANJE EMAIL NOTIFIKACIJA ZA PROMENU STATUSA
+            if ($old_status !== $status && in_array($status, ['obavljeno', 'otkazano'])) {
+                require_once __DIR__ . '/../helpers/mailer.php';
+                
+                // Dohvati fresh email podatke
+                $stmt = $pdo->prepare("
+                    SELECT 
+                        t.email as terapeut_email, t.ime as terapeut_ime, t.prezime as terapeut_prezime,
+                        p.email as pacijent_email, p.ime as pacijent_ime, p.prezime as pacijent_prezime,
+                        c.naziv as usluga_naziv
+                    FROM users t
+                    CROSS JOIN users p
+                    LEFT JOIN cjenovnik c ON c.id = ?
+                    WHERE t.id = ? AND p.id = ?
+                ");
+                $stmt->execute([$usluga_id, $terapeut_id, $pacijent_id]);
+                $email_data = $stmt->fetch();
+                
+                if ($email_data) {
+                    $datum_format = date('d.m.Y', strtotime($datum));
+                    $vrijeme_format = date('H:i', strtotime($datum . ' ' . $vrijeme));
+                    
+                    // Status labeli
+                    $status_labels = [
+                        'zakazan' => 'Zakazan',
+                        'obavljeno' => 'Obavljeno',
+                        'otkazano' => 'Otkazano',
+                        'nije_dosao' => 'Nije došao'
+                    ];
+                    
+                    $old_status_label = $status_labels[$old_status] ?? $old_status;
+                    $new_status_label = $status_labels[$status] ?? $status;
+                    
+                    // 📧 Email terapeutu
+                    if (!empty($email_data['terapeut_email'])) {
+                        $subject_terapeut = "Status termina promenjen - " . $datum_format;
+                        $body_terapeut = "
+                        <h3>Poštovani dr. {$email_data['terapeut_ime']} {$email_data['terapeut_prezime']},</h3>
+                        
+                        <p>Status termina je promenjen:</p>
+                        
+                        <ul>
+                            <li><strong>Pacijent:</strong> {$email_data['pacijent_ime']} {$email_data['pacijent_prezime']}</li>
+                            <li><strong>Datum:</strong> {$datum_format}</li>
+                            <li><strong>Vrijeme:</strong> {$vrijeme_format}</li>
+                            <li><strong>Usluga:</strong> {$email_data['usluga_naziv']}</li>
+                            <li><strong>Status:</strong> {$old_status_label} → {$new_status_label}</li>
+                            " . (!empty($napomena) ? "<li><strong>Napomena:</strong> " . htmlspecialchars($napomena) . "</li>" : "") . "
+                        </ul>
+                        
+                        <hr>
+                        <small>Ova poruka je automatski generirana iz SPES aplikacije.</small>
+                        ";
+                        
+                        $mail_sent_terapeut = send_mail($email_data['terapeut_email'], $subject_terapeut, $body_terapeut);
+                        if (!$mail_sent_terapeut) {
+                            error_log("Greška pri slanju status email-a terapeutu: " . $email_data['terapeut_email']);
+                        }
+                    }
+                    
+                    // 📧 Email pacijentu (samo ako ima email)
+                    if (!empty($email_data['pacijent_email'])) {
+                        $subject_pacijent = "Status termina: " . $new_status_label;
+                        
+                        // Različite poruke za različite statusse
+                        $status_message = '';
+                        if ($status === 'obavljeno') {
+                            $status_message = "<p><strong>Vaš termin je uspješno obavljeno.</strong> Hvala što ste došli!</p>";
+                        } elseif ($status === 'otkazano') {
+                            $status_message = "<p><strong>Vaš termin je otkazan.</strong> Za nova zakazivanja kontaktirajte recepciju.</p>";
+                        }
+                        
+                        $body_pacijent = "
+                        <h3>Poštovani/a {$email_data['pacijent_ime']} {$email_data['pacijent_prezime']},</h3>
+                        
+                        <p>Obavještavamo vas o promjeni status vašeg termina:</p>
+                        
+                        <ul>
+                            <li><strong>Datum:</strong> {$datum_format}</li>
+                            <li><strong>Vrijeme:</strong> {$vrijeme_format}</li>
+                            <li><strong>Terapeut:</strong> dr. {$email_data['terapeut_ime']} {$email_data['terapeut_prezime']}</li>
+                            <li><strong>Usluga:</strong> {$email_data['usluga_naziv']}</li>
+                            <li><strong>Status:</strong> {$old_status_label} → {$new_status_label}</li>
+                        </ul>
+                        
+                        {$status_message}
+                        
+                        <hr>
+                        <small>Ova poruka je automatski generirana iz SPES aplikacije.</small>
+                        ";
+                        
+                        $mail_sent_pacijent = send_mail($email_data['pacijent_email'], $subject_pacijent, $body_pacijent);
+                        if (!$mail_sent_pacijent) {
+                            error_log("Greška pri slanju status email-a pacijentu: " . $email_data['pacijent_email']);
+                        }
+                    } else {
+                        error_log("Pacijent nema email adresu - preskačem slanje status email-a: " . $email_data['pacijent_ime'] . " " . $email_data['pacijent_prezime']);
+                    }
+                }
+            }
+            
             header('Location: /termini?msg=azuriran');
             exit;
+            
         } catch (PDOException $e) {
             error_log("Greška pri ažuriranju termina: " . $e->getMessage());
             $errors[] = 'Greška pri spremanju promjena.';
