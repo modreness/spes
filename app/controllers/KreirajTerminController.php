@@ -276,7 +276,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         " . (!empty($napomena) ? "<li><strong>Napomena:</strong> " . htmlspecialchars($napomena) . "</li>" : "") . "
                     </ul>
                     
-                    <p>Molimo potvrdite dolazak u aplikaciji.</p>
+                    
                     
                     <div style=\"text-align: center; margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 8px;\">
                         <p style=\"margin: 0 0 10px 0; font-weight: bold; color: #333;\">Dodaj u kalendar:</p>
@@ -306,7 +306,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $end_google = gmdate('Ymd\THis\Z', $end_time);
                     
                     $calendar_title_pacijent = urlencode("Termin - {$email_data['usluga_naziv']}");
-                    $calendar_details_pacijent = urlencode("Terapeut: dr. {$email_data['terapeut_ime']} {$email_data['terapeut_prezime']}");
+                    $calendar_details_pacijent = urlencode("Terapeut: {$email_data['terapeut_ime']} {$email_data['terapeut_prezime']}");
                     $calendar_location = urlencode("SPES Fizioterapija, Sarajevo");
                     
                     $google_calendar_link_pacijent = "https://calendar.google.com/calendar/render?action=TEMPLATE&text={$calendar_title_pacijent}&dates={$start_google}/{$end_google}&details={$calendar_details_pacijent}&location={$calendar_location}&sf=true&output=xml";
