@@ -225,10 +225,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             $pdo->commit();
             
-            // ✉️ SLANJE EMAIL NOTIFIKACIJA SA KALENDAR PODRŠKOM
+            // ✉️ SLANJE EMAIL NOTIFIKACIJA
             require_once __DIR__ . '/../helpers/mailer.php';
             
-            // Dohvati email adrese terapeuta i pacijenta + uslugu
+            // Dohvati email adrese terapeuta i pacijenta
             $stmt = $pdo->prepare("
                 SELECT 
                     t.email as terapeut_email, t.ime as terapeut_ime, t.prezime as terapeut_prezime,
@@ -243,29 +243,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $email_data = $stmt->fetch();
             
             if ($email_data) {
-                // Pripremi termin data za kalendar
-                $termin_data = [
-                    'datum_vrijeme' => $datum_vrijeme,
-                    'datum' => $datum,
-                    'vrijeme' => $vrijeme,
-                    'pacijent_ime' => $pacijent['ime'],
-                    'pacijent_prezime' => $pacijent['prezime'],
-                    'terapeut_ime' => $terapeut['ime'],
-                    'terapeut_prezime' => $terapeut['prezime'],
-                    'usluga_naziv' => $email_data['usluga_naziv'],
-                    'napomena' => $napomena,
-                    'iz_paketa' => $iz_paketa
-                ];
+                $datum_format = date('d.m.Y', strtotime($datum));
+                $vrijeme_format = date('H:i', strtotime($datum . ' ' . $vrijeme));
+                $paket_info = $iz_paketa ? " (plaćen iz paketa)" : "";
                 
                 // 📧 Email terapeutu
                 if (!empty($email_data['terapeut_email'])) {
-                    $terapeut_email_data = [
-                        'email' => $email_data['terapeut_email'],
-                        'ime' => $email_data['terapeut_ime'],
-                        'prezime' => $email_data['terapeut_prezime']
-                    ];
+                    $subject_terapeut = "Novi termin zakazan - " . $datum_format . " u " . $vrijeme_format;
+                    $body_terapeut = "
+                    <h3>Poštovani dr. {$email_data['terapeut_ime']} {$email_data['terapeut_prezime']},</h3>
                     
-                    $mail_sent_terapeut = send_appointment_email($terapeut_email_data, $termin_data, false);
+                    <p>Zakazan je novi termin:</p>
+                    
+                    <ul>
+                        <li><strong>Pacijent:</strong> {$email_data['pacijent_ime']} {$email_data['pacijent_prezime']}</li>
+                        <li><strong>Datum:</strong> {$datum_format}</li>
+                        <li><strong>Vrijeme:</strong> {$vrijeme_format}</li>
+                        <li><strong>Usluga:</strong> {$email_data['usluga_naziv']}{$paket_info}</li>
+                        " . (!empty($napomena) ? "<li><strong>Napomena:</strong> " . htmlspecialchars($napomena) . "</li>" : "") . "
+                    </ul>
+                    
+                    <p>Molimo potvrdite dolazak u aplikaciji.</p>
+                    
+                    <hr>
+                    <small>Ova poruka je automatski generirana iz SPES aplikacije.</small>
+                    ";
+                    
+                    $mail_sent_terapeut = send_mail($email_data['terapeut_email'], $subject_terapeut, $body_terapeut);
                     if (!$mail_sent_terapeut) {
                         error_log("Greška pri slanju maila terapeutu: " . $email_data['terapeut_email']);
                     }
@@ -273,13 +277,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 // 📧 Email pacijentu (samo ako ima email)
                 if (!empty($email_data['pacijent_email'])) {
-                    $pacijent_email_data = [
-                        'email' => $email_data['pacijent_email'],
-                        'ime' => $email_data['pacijent_ime'],
-                        'prezime' => $email_data['pacijent_prezime']
-                    ];
+                    $subject_pacijent = "Potvrda termina - " . $datum_format . " u " . $vrijeme_format;
+                    $body_pacijent = "
+                    <h3>Poštovani/a {$email_data['pacijent_ime']} {$email_data['pacijent_prezime']},</h3>
                     
-                    $mail_sent_pacijent = send_appointment_email($pacijent_email_data, $termin_data, true);
+                    <p>Vaš termin je uspješno zakazan:</p>
+                    
+                    <ul>
+                        <li><strong>Datum:</strong> {$datum_format}</li>
+                        <li><strong>Vrijeme:</strong> {$vrijeme_format}</li>
+                        <li><strong>Terapeut:</strong> dr. {$email_data['terapeut_ime']} {$email_data['terapeut_prezime']}</li>
+                        <li><strong>Usluga:</strong> {$email_data['usluga_naziv']}{$paket_info}</li>
+                        " . (!empty($napomena) ? "<li><strong>Napomena:</strong> " . htmlspecialchars($napomena) . "</li>" : "") . "
+                    </ul>
+                    
+                    <p>Molimo dođite 10 minuta prije termina.</p>
+                    
+                    <p>Za sve izmjene ili otkazivanja kontaktirajte recepciju.</p>
+                    
+                    <hr>
+                    <small>Ova poruka je automatski generirana iz SPES aplikacije.</small>
+                    ";
+                    
+                    $mail_sent_pacijent = send_mail($email_data['pacijent_email'], $subject_pacijent, $body_pacijent);
                     if (!$mail_sent_pacijent) {
                         error_log("Greška pri slanju maila pacijentu: " . $email_data['pacijent_email']);
                     }
