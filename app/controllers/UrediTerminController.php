@@ -178,7 +178,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
             
             // ✉️ SLANJE EMAIL NOTIFIKACIJA ZA PROMENU STATUSA
-            if ($old_status !== $status && in_array($status, ['obavljeno', 'otkazano'])) {
+            if ($old_status !== $status && in_array($status, ['obavljen', 'otkazan'])) {
                 require_once __DIR__ . '/../helpers/mailer.php';
                 
                 // Dohvati fresh email podatke
@@ -202,9 +202,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Status labeli
                     $status_labels = [
                         'zakazan' => 'Zakazan',
-                        'obavljeno' => 'Obavljeno',
-                        'otkazano' => 'Otkazano',
-                        'nije_dosao' => 'Nije došao'
+                        'obavljen' => 'Obavljen',
+                        'otkazan' => 'Otkazan',
+                        'slobodan' => 'Slobodan'
                     ];
                     
                     $old_status_label = $status_labels[$old_status] ?? $old_status;
@@ -243,9 +243,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         
                         // Različite poruke za različite statusse
                         $status_message = '';
-                        if ($status === 'obavljeno') {
-                            $status_message = "<p><strong>Vaš termin je uspješno obavljeno.</strong> Hvala što ste došli!</p>";
-                        } elseif ($status === 'otkazano') {
+                        if ($status === 'obavljen') {
+                            $status_message = "<p><strong>Vaš termin je uspješno obavljen.</strong> Hvala što ste došli!</p>";
+                        } elseif ($status === 'otkazan') {
                             $status_message = "<p><strong>Vaš termin je otkazan.</strong> Za nova zakazivanja kontaktirajte recepciju.</p>";
                         }
                         
