@@ -249,6 +249,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 // 📧 Email terapeutu
                 if (!empty($email_data['terapeut_email'])) {
+                    // Generiraj Google Calendar link za terapeuta
+                    $start_time = strtotime($datum_vrijeme);
+                    $end_time = $start_time + (60 * 60); // +1 sat
+                    
+                    $start_google = gmdate('Ymd\THis\Z', $start_time);
+                    $end_google = gmdate('Ymd\THis\Z', $end_time);
+                    
+                    $calendar_title_terapeut = urlencode("Termin - {$email_data['usluga_naziv']}");
+                    $calendar_details_terapeut = urlencode("Pacijent: {$email_data['pacijent_ime']} {$email_data['pacijent_prezime']}");
+                    $calendar_location = urlencode("SPES Fizioterapija, Sarajevo");
+                    
+                    $google_calendar_link_terapeut = "https://calendar.google.com/calendar/render?action=TEMPLATE&text={$calendar_title_terapeut}&dates={$start_google}/{$end_google}&details={$calendar_details_terapeut}&location={$calendar_location}&sf=true&output=xml";
+                    
                     $subject_terapeut = "Novi termin zakazan - " . $datum_format . " u " . $vrijeme_format;
                     $body_terapeut = "
                     <h3>Poštovani dr. {$email_data['terapeut_ime']} {$email_data['terapeut_prezime']},</h3>
@@ -265,6 +278,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     
                     <p>Molimo potvrdite dolazak u aplikaciji.</p>
                     
+                    <div style=\"text-align: center; margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 8px;\">
+                        <p style=\"margin: 0 0 10px 0; font-weight: bold; color: #333;\">Dodaj u kalendar:</p>
+                        <a href=\"{$google_calendar_link_terapeut}\" target=\"_blank\" 
+                        style=\"display: inline-block; background: #4285f4; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold;\">
+                        Dodaj u Google Calendar
+                        </a>
+                    </div>
+                    
                     <hr>
                     <small>Ova poruka je automatski generirana iz SPES aplikacije.</small>
                     ";
@@ -274,9 +295,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         error_log("Greška pri slanju maila terapeutu: " . $email_data['terapeut_email']);
                     }
                 }
-                
+
                 // 📧 Email pacijentu (samo ako ima email)
                 if (!empty($email_data['pacijent_email'])) {
+                    // Generiraj Google Calendar link za pacijenta
+                    $start_time = strtotime($datum_vrijeme);
+                    $end_time = $start_time + (60 * 60); // +1 sat
+                    
+                    $start_google = gmdate('Ymd\THis\Z', $start_time);
+                    $end_google = gmdate('Ymd\THis\Z', $end_time);
+                    
+                    $calendar_title_pacijent = urlencode("Termin - {$email_data['usluga_naziv']}");
+                    $calendar_details_pacijent = urlencode("Terapeut: dr. {$email_data['terapeut_ime']} {$email_data['terapeut_prezime']}");
+                    $calendar_location = urlencode("SPES Fizioterapija, Sarajevo");
+                    
+                    $google_calendar_link_pacijent = "https://calendar.google.com/calendar/render?action=TEMPLATE&text={$calendar_title_pacijent}&dates={$start_google}/{$end_google}&details={$calendar_details_pacijent}&location={$calendar_location}&sf=true&output=xml";
+                    
                     $subject_pacijent = "Potvrda termina - " . $datum_format . " u " . $vrijeme_format;
                     $body_pacijent = "
                     <h3>Poštovani/a {$email_data['pacijent_ime']} {$email_data['pacijent_prezime']},</h3>
@@ -294,6 +328,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <p>Molimo dođite 10 minuta prije termina.</p>
                     
                     <p>Za sve izmjene ili otkazivanja kontaktirajte recepciju.</p>
+                    
+                    <div style=\"text-align: center; margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 8px;\">
+                        <p style=\"margin: 0 0 10px 0; font-weight: bold; color: #333;\">Dodaj u kalendar:</p>
+                        <a href=\"{$google_calendar_link_pacijent}\" target=\"_blank\" 
+                        style=\"display: inline-block; background: #4285f4; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold;\">
+                        Dodaj u Google Calendar
+                        </a>
+                    </div>
                     
                     <hr>
                     <small>Ova poruka je automatski generirana iz SPES aplikacije.</small>
