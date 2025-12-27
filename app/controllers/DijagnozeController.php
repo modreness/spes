@@ -147,23 +147,21 @@ elseif ($action === 'delete') {
     $id = $_POST['id'] ?? 0;
     
     try {
-        // Provjeri da li se dijagnoza koristi u kartonima
-        $stmt = $pdo->prepare("SELECT COUNT(*) FROM karton_dijagnoze WHERE dijagnoza_id = ?");
+        $pdo->beginTransaction();
+        
+        // Prvo ukloni sve veze sa kartonima
+        $stmt = $pdo->prepare("DELETE FROM karton_dijagnoze WHERE dijagnoza_id = ?");
         $stmt->execute([$id]);
-        $count = $stmt->fetchColumn();
         
-        if ($count > 0) {
-            $_SESSION['error'] = "Dijagnoza se ne može obrisati jer se koristi u $count kartona.";
-            header('Location: /dijagnoze');
-            exit;
-        }
-        
+        // Pa obriši dijagnozu
         $stmt = $pdo->prepare("DELETE FROM dijagnoze WHERE id = ?");
         $stmt->execute([$id]);
         
+        $pdo->commit();
         $_SESSION['message'] = "Dijagnoza uspješno obrisana!";
         
     } catch (PDOException $e) {
+        $pdo->rollBack();
         error_log("Greška pri brisanju dijagnoze: " . $e->getMessage());
         $_SESSION['error'] = "Greška pri brisanju dijagnoze.";
     }
@@ -171,7 +169,22 @@ elseif ($action === 'delete') {
     header('Location: /dijagnoze');
     exit;
 }
-
+// AJAX: Dohvati broj kartona koji koriste dijagnozu
+elseif ($action === 'check_usage') {
+    header('Content-Type: application/json');
+    $id = $_GET['id'] ?? 0;
+    
+    try {
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM karton_dijagnoze WHERE dijagnoza_id = ?");
+        $stmt->execute([$id]);
+        $count = $stmt->fetchColumn();
+        
+        echo json_encode(['success' => true, 'count' => (int)$count]);
+    } catch (PDOException $e) {
+        echo json_encode(['success' => false, 'count' => 0]);
+    }
+    exit;
+}
 else {
     header('Location: /dijagnoze');
     exit;
