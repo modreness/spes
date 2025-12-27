@@ -176,3 +176,95 @@
     </div>
 
 </div>
+
+<!-- Modal overlay -->
+<div id="modal-overlay" class="modal-overlay" style="display: none;"></div>
+
+<!-- Modal za promjenu statusa -->
+<div id="status-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div style="text-align: center; margin-bottom: 20px;">
+            <i class="fa-solid fa-exchange-alt" style="font-size: 48px; color: #3498db;"></i>
+        </div>
+        
+        <h3 style="text-align: center; margin-bottom: 20px;">Promijeni status paketa</h3>
+        
+        <form method="POST" action="/paketi?action=update_status">
+            <input type="hidden" name="id" value="<?= $paket['id'] ?>">
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Novi status:</label>
+                <select name="status" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1em;">
+                    <option value="aktivan" <?= $paket['status'] === 'aktivan' ? 'selected' : '' ?>>Aktivan</option>
+                    <option value="završen" <?= $paket['status'] === 'završen' ? 'selected' : '' ?>>Završen</option>
+                    <option value="istekao" <?= $paket['status'] === 'istekao' ? 'selected' : '' ?>>Istekao</option>
+                    <option value="otkazan" <?= $paket['status'] === 'otkazan' ? 'selected' : '' ?>>Otkazan</option>
+                </select>
+            </div>
+            
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button type="button" class="btn btn-secondary" onclick="zatvoriModal()">Otkaži</button>
+                <button type="submit" class="btn btn-primary">Spremi</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal za brisanje -->
+<div id="brisanje-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div style="text-align: center; margin-bottom: 20px;">
+            <i class="fa-solid fa-exclamation-triangle" style="font-size: 48px; color: #e74c3c;"></i>
+        </div>
+        
+        <h3 style="text-align: center; margin-bottom: 20px; color: #2c3e50;">
+            Da li ste sigurni da želite obrisati ovaj paket?
+        </h3>
+        
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
+            <div style="display: grid; gap: 8px;">
+                <div><strong>Paket:</strong> <?= htmlspecialchars($paket['paket_naziv']) ?></div>
+                <div><strong>Pacijent:</strong> <?= htmlspecialchars($paket['pacijent_ime']) ?></div>
+                <div><strong>Termini:</strong> <?= $paket['iskoristeno_termina'] ?>/<?= $paket['ukupno_termina'] ?> iskorišteno</div>
+            </div>
+        </div>
+        
+        <?php if ($paket['iskoristeno_termina'] > 0): ?>
+        <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 12px; border-radius: 6px; margin-bottom: 20px;">
+            <i class="fa-solid fa-exclamation-triangle" style="color: #856404;"></i>
+            <span style="color: #856404;">
+                Ovaj paket ima <strong><?= $paket['iskoristeno_termina'] ?></strong> iskorištenih termina. 
+                Brisanjem paketa, termini će ostati ali više neće biti povezani s paketom.
+            </span>
+        </div>
+        <?php endif; ?>
+        
+        <form method="POST" action="/paketi?action=delete">
+            <input type="hidden" name="id" value="<?= $paket['id'] ?>">
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button type="button" class="btn btn-secondary" onclick="zatvoriModal()">Otkaži</button>
+                <button type="submit" class="btn btn-danger">Da, obriši</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function otvoriStatusModal() {
+    document.getElementById('status-modal').style.display = 'block';
+    document.getElementById('modal-overlay').style.display = 'block';
+}
+
+function otvoriBrisanjeModal() {
+    document.getElementById('brisanje-modal').style.display = 'block';
+    document.getElementById('modal-overlay').style.display = 'block';
+}
+
+function zatvoriModal() {
+    document.getElementById('status-modal').style.display = 'none';
+    document.getElementById('brisanje-modal').style.display = 'none';
+    document.getElementById('modal-overlay').style.display = 'none';
+}
+
+document.getElementById('modal-overlay').addEventListener('click', zatvoriModal);
+</script>
