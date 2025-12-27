@@ -54,8 +54,20 @@ if ($action === 'delete') {
             $pdo->beginTransaction();
             $transakcija_aktivna = true;
             
-            // Ukloni vezu sa terminima (postavi paket_id na NULL)
-            $stmt = $pdo->prepare("UPDATE termini SET paket_id = NULL WHERE paket_id = ?");
+            // Dohvati termine povezane sa paketom
+            $stmt = $pdo->prepare("SELECT termin_id FROM termini_iz_paketa WHERE paket_id = ?");
+            $stmt->execute([$id]);
+            $termin_ids = $stmt->fetchAll(PDO::FETCH_COLUMN);
+            
+            // Ako ima povezanih termina, resetuj flag placeno_iz_paketa
+            if (!empty($termin_ids)) {
+                $placeholders = implode(',', array_fill(0, count($termin_ids), '?'));
+                $stmt = $pdo->prepare("UPDATE termini SET placeno_iz_paketa = 0 WHERE id IN ($placeholders)");
+                $stmt->execute($termin_ids);
+            }
+            
+            // Obriši veze iz termini_iz_paketa
+            $stmt = $pdo->prepare("DELETE FROM termini_iz_paketa WHERE paket_id = ?");
             $stmt->execute([$id]);
             
             // Obriši paket
