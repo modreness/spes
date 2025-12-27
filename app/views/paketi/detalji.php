@@ -1,8 +1,16 @@
 <div class="naslov-dugme">
     <h2>Detalji paketa #<?= $paket['id'] ?></h2>
-    <a href="/paketi" class="btn btn-secondary">
-        <i class="fa-solid fa-arrow-left"></i> Povratak
-    </a>
+    <div style="display: flex; gap: 10px;">
+        <button type="button" class="btn btn-primary" onclick="otvoriStatusModal()">
+            <i class="fa-solid fa-edit"></i> Promijeni status
+        </button>
+        <button type="button" class="btn btn-danger" onclick="otvoriBrisanjeModal()">
+            <i class="fa-solid fa-trash"></i> Obriši
+        </button>
+        <a href="/paketi" class="btn btn-secondary">
+            <i class="fa-solid fa-arrow-left"></i> Povratak
+        </a>
+    </div>
 </div>
 
 <div class="main-content-fw">
