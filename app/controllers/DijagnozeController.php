@@ -144,7 +144,7 @@ elseif ($action === 'edit') {
 
 // Brisanje dijagnoze
 elseif ($action === 'delete') {
-    $id = $_GET['id'] ?? 0;
+    $id = $_POST['id'] ?? 0;
     
     try {
         // Provjeri da li se dijagnoza koristi u kartonima
