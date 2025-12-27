@@ -24,7 +24,7 @@
                 <?php foreach ($pacijenti as $p): ?>
                     <option value="<?= $p['id'] ?>" <?= ($_POST['pacijent_id'] ?? '') == $p['id'] ? 'selected' : '' ?>>
                         <?= htmlspecialchars($p['ime'] . ' ' . $p['prezime']) ?> 
-                        (<?= htmlspecialchars($p['email']) ?>)
+                        (<?= htmlspecialchars($p['email'] ?? 'Nema email') ?>)
                     </option>
                 <?php endforeach; ?>
             </select>
