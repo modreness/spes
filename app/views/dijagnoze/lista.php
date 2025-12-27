@@ -117,29 +117,69 @@
 
 <script>
 function potvrdiBrisanje(id, naziv, opis) {
-    // Postavi ID u hidden input
-    document.getElementById('id-brisanja').value = id;
-    
-    // Pripremi detalje
-    const detalji = `
-        <div style="display: grid; gap: 10px;">
-            <div style="display: flex; justify-content: space-between;">
-                <strong style="color: #7f8c8d;">Naziv:</strong> 
-                <span style="color: #2c3e50; font-weight: 500;">${naziv}</span>
-            </div>
-            ${opis ? `
-            <div style="display: flex; justify-content: space-between;">
-                <strong style="color: #7f8c8d;">Opis:</strong> 
-                <span style="color: #2c3e50;">${opis}</span>
-            </div>
-            ` : ''}
-        </div>
-    `;
-    document.getElementById('modal-detalji').innerHTML = detalji;
-    
-    // Prikaži modal
-    document.getElementById('brisanje-modal').style.display = 'block';
-    document.getElementById('modal-overlay').style.display = 'block';
+    // Prvo provjeri koliko kartona koristi ovu dijagnozu
+    fetch('/dijagnoze?action=check_usage&id=' + id)
+        .then(response => response.json())
+        .then(data => {
+            // Postavi ID u hidden input
+            document.getElementById('id-brisanja').value = id;
+            
+            // Pripremi upozorenje ako se koristi
+            let upozorenje = '';
+            if (data.success && data.count > 0) {
+                upozorenje = `
+                    <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 12px; border-radius: 6px; margin-bottom: 15px;">
+                        <i class="fa-solid fa-exclamation-triangle" style="color: #856404;"></i>
+                        <strong style="color: #856404;">Pažnja:</strong> 
+                        <span style="color: #856404;">Ova dijagnoza se koristi u <strong>${data.count}</strong> karton(a). Brisanjem će biti uklonjena sa svih.</span>
+                    </div>
+                `;
+            }
+            
+            // Pripremi detalje
+            const detalji = `
+                ${upozorenje}
+                <div style="display: grid; gap: 10px;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <strong style="color: #7f8c8d;">Naziv:</strong> 
+                        <span style="color: #2c3e50; font-weight: 500;">${naziv}</span>
+                    </div>
+                    ${opis ? `
+                    <div style="display: flex; justify-content: space-between;">
+                        <strong style="color: #7f8c8d;">Opis:</strong> 
+                        <span style="color: #2c3e50;">${opis}</span>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+            document.getElementById('modal-detalji').innerHTML = detalji;
+            
+            // Prikaži modal
+            document.getElementById('brisanje-modal').style.display = 'block';
+            document.getElementById('modal-overlay').style.display = 'block';
+        })
+        .catch(error => {
+            console.error('Greška:', error);
+            // Ako AJAX ne radi, ipak prikaži modal bez upozorenja
+            document.getElementById('id-brisanja').value = id;
+            const detalji = `
+                <div style="display: grid; gap: 10px;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <strong style="color: #7f8c8d;">Naziv:</strong> 
+                        <span style="color: #2c3e50; font-weight: 500;">${naziv}</span>
+                    </div>
+                    ${opis ? `
+                    <div style="display: flex; justify-content: space-between;">
+                        <strong style="color: #7f8c8d;">Opis:</strong> 
+                        <span style="color: #2c3e50;">${opis}</span>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+            document.getElementById('modal-detalji').innerHTML = detalji;
+            document.getElementById('brisanje-modal').style.display = 'block';
+            document.getElementById('modal-overlay').style.display = 'block';
+        });
 }
 
 function zatvoriModal() {
