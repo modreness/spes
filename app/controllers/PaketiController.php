@@ -95,11 +95,81 @@ try {
     $paketi = [];
 }
 
+
+
 $title = "Paketi";
 
 ob_start();
 require_once __DIR__ . '/../views/paketi/dashboard.php';
 $content = ob_get_clean();
+
+$action = $_GET['action'] ?? 'index';
+
+// Promjena statusa paketa
+if ($action === 'update_status') {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $id = $_POST['id'] ?? 0;
+        $status = $_POST['status'] ?? '';
+        
+        $dozvoljeni_statusi = ['aktivan', 'završen', 'istekao', 'otkazan'];
+        
+        if (!in_array($status, $dozvoljeni_statusi)) {
+            $_SESSION['error'] = "Nevažeći status.";
+            header("Location: /paketi?action=detalji&id=$id");
+            exit;
+        }
+        
+        try {
+            $stmt = $pdo->prepare("UPDATE kupljeni_paketi SET status = ? WHERE id = ?");
+            $stmt->execute([$status, $id]);
+            
+            $_SESSION['message'] = "Status paketa uspješno promijenjen!";
+        } catch (PDOException $e) {
+            error_log("Greška pri promjeni statusa: " . $e->getMessage());
+            $_SESSION['error'] = "Greška pri promjeni statusa.";
+        }
+        
+        header("Location: /paketi?action=detalji&id=$id");
+        exit;
+    }
+}
+
+// Brisanje paketa
+if ($action === 'delete') {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $id = $_POST['id'] ?? 0;
+        
+        try {
+            // Provjeri ima li iskorištenih termina
+            $stmt = $pdo->prepare("SELECT COUNT(*) FROM termini WHERE paket_id = ?");
+            $stmt->execute([$id]);
+            $broj_termina = $stmt->fetchColumn();
+            
+            $pdo->beginTransaction();
+            
+            // Ukloni vezu sa terminima (postavi paket_id na NULL)
+            $stmt = $pdo->prepare("UPDATE termini SET paket_id = NULL WHERE paket_id = ?");
+            $stmt->execute([$id]);
+            
+            // Obriši paket
+            $stmt = $pdo->prepare("DELETE FROM kupljeni_paketi WHERE id = ?");
+            $stmt->execute([$id]);
+            
+            $pdo->commit();
+            
+            $_SESSION['message'] = "Paket uspješno obrisan!";
+            header("Location: /paketi");
+            exit;
+            
+        } catch (PDOException $e) {
+            $pdo->rollBack();
+            error_log("Greška pri brisanju paketa: " . $e->getMessage());
+            $_SESSION['error'] = "Greška pri brisanju paketa.";
+            header("Location: /paketi?action=detalji&id=$id");
+            exit;
+        }
+    }
+}
 
 require_once __DIR__ . '/../views/layout.php';
 ?>
