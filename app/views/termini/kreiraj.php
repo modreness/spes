@@ -43,7 +43,7 @@
 
         <!-- Prikaz aktivnih paketa pacijenta -->
         <?php if (!empty($aktivni_paketi)): ?>
-        <div style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+        <div style="background: linear-gradient(135deg, #255AA5, #289CC6); color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
             <h4 style="margin: 0 0 15px 0;">
                 <i class="fa-solid fa-box"></i> Pacijent ima aktivne pakete
             </h4>
@@ -51,7 +51,7 @@
                 <label for="koristi_paket" style="color: white; font-weight: 600;">Način plaćanja:</label>
                 <div style="display: grid; gap: 10px; margin-top: 10px;">
                     <?php foreach ($aktivni_paketi as $paket): ?>
-                        <label style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 15px;">
+                        <label style="background: rgba(255,255,255,1); padding: 15px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 15px;">
                             <input type="radio" 
                                    name="koristi_paket" 
                                    value="<?= $paket['id'] ?>" 
@@ -70,7 +70,7 @@
                         </label>
                     <?php endforeach; ?>
                     
-                    <label style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 15px;">
+                    <label style="background: rgba(255,255,255,1); padding: 15px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 15px;">
                         <input type="radio" 
                                name="koristi_paket" 
                                value="ne" 
