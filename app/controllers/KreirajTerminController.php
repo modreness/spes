@@ -264,7 +264,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     
                     $subject_terapeut = "Novi termin zakazan - " . $datum_format . " u " . $vrijeme_format;
                     $body_terapeut = "
-                    <h3>Poštovani dr. {$email_data['terapeut_ime']} {$email_data['terapeut_prezime']},</h3>
+                    <h3>Poštovani  {$email_data['terapeut_ime']} {$email_data['terapeut_prezime']},</h3>
                     
                     <p>Zakazan je novi termin:</p>
                     
