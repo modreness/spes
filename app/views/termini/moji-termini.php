@@ -161,7 +161,7 @@
                         <td>
                             <div style="display: flex; align-items: center; gap: 8px;">
                                 <i class="fa-solid fa-user-doctor" style="color: #4e73df;"></i>
-                                Dr. <?= htmlspecialchars($termin['terapeut_ime']) ?>
+                                 <?= htmlspecialchars($termin['terapeut_ime']) ?>
                             </div>
                         </td>
                         <td>
