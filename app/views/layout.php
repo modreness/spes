@@ -136,7 +136,7 @@ $user = current_user();
   </aside>
 
   <main class="main">
-    <header class="topbar">
+    <header class="topbar"  <?php if ($user['uloga'] != 'pacijent'): ?>style="justify-content:end"<?php endif; ?>>
       <?php if ($user['uloga'] != 'pacijent'): ?>
       <form action="/pretraga" method="GET" class="admin-search">
           <div class="admin-search-input-group">
