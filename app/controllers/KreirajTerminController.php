@@ -320,7 +320,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <ul>
                         <li><strong>Datum:</strong> {$datum_format}</li>
                         <li><strong>Vrijeme:</strong> {$vrijeme_format}</li>
-                        <li><strong>Terapeut:</strong> dr. {$email_data['terapeut_ime']} {$email_data['terapeut_prezime']}</li>
+                        <li><strong>Terapeut:</strong> {$email_data['terapeut_ime']} {$email_data['terapeut_prezime']}</li>
                         <li><strong>Usluga:</strong> {$email_data['usluga_naziv']}{$paket_info}</li>
                         " . (!empty($napomena) ? "<li><strong>Napomena:</strong> " . htmlspecialchars($napomena) . "</li>" : "") . "
                     </ul>
