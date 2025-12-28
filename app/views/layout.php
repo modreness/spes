@@ -137,6 +137,7 @@ $user = current_user();
 
   <main class="main">
     <header class="topbar">
+      <?php if ($user['uloga'] != 'pacijent'): ?>
       <form action="/pretraga" method="GET" class="admin-search">
           <div class="admin-search-input-group">
               <input type="text" name="q" placeholder="Pretraži..." class="admin-search-input">
@@ -145,6 +146,7 @@ $user = current_user();
               </button>
           </div>
       </form>
+      <?php endif; ?>
       <nav class="topbar-nav">
           <a href="/" class="home">Početak</a>
             
