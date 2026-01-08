@@ -45,8 +45,8 @@
             </div>
 
             <div class="form-group">
-                <label for="terapeut_id">Terapeut *</label>
-                <select id="terapeut_id" name="terapeut_id" class="select2" required>
+                <label for="terapeut_id">Terapeut</label>
+                <select id="terapeut_id" name="terapeut_id" class="select2" >
                     <option value="">Odaberite terapeuta</option>
                     <?php foreach ($terapeuti as $t): ?>
                         <option value="<?= $t['id'] ?>" <?= ($_POST['terapeut_id'] ?? $termin['terapeut_id']) == $t['id'] ? 'selected' : '' ?>>
