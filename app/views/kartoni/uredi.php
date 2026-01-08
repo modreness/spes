@@ -58,7 +58,7 @@
 
         <div class="form-group">
           <label for="jmbg">JMBG</label>
-          <input type="text" id="jmbg" name="jmbg" value="<?= htmlspecialchars($karton['jmbg']) ?>" maxlength="13" required>
+          <input type="text" id="jmbg" name="jmbg" value="<?= htmlspecialchars($karton['jmbg']) ?>" maxlength="13" >
           <span id="jmbg-status" style="font-size: 13px; display: none;"></span>
         </div>
 
