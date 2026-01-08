@@ -89,6 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $vrijeme = $_POST['vrijeme'] ?? '';
     $status = $_POST['status'] ?? '';
     $napomena = trim($_POST['napomena'] ?? '');
+    $placeno = isset($_POST['placeno']) ? 1 : 0;
     
     // Validacija
     if (empty($pacijent_id)) {
@@ -149,6 +150,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pacijent = $stmt->fetch();
             
             // Ažuriraj sa zamrznutim podacima
+            
             $stmt = $pdo->prepare("
                 UPDATE termini 
                 SET pacijent_id = ?, 
@@ -160,20 +162,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     usluga_id = ?, 
                     datum_vrijeme = ?, 
                     status = ?, 
-                    napomena = ?
+                    napomena = ?,
+                    placeno = ?
                 WHERE id = ?
             ");
             $stmt->execute([
                 $pacijent_id,
-                $pacijent['ime'],           // 👈 Ažuriraj zamrznuto ime pacijenta
-                $pacijent['prezime'],       // 👈 Ažuriraj zamrznuto prezime pacijenta
-                $terapeut_id,
-                $terapeut['ime'],           // 👈 Ažuriraj zamrznuto ime terapeuta
-                $terapeut['prezime'],       // 👈 Ažuriraj zamrznuto prezime terapeuta
+                $pacijent['ime'] ?? null,
+                $pacijent['prezime'] ?? null,
+                $terapeut_id ?: null,
+                $terapeut['ime'] ?? null,
+                $terapeut['prezime'] ?? null,
                 $usluga_id, 
                 $datum_vrijeme, 
                 $status, 
-                $napomena, 
+                $napomena,
+                $placeno,
                 $termin_id
             ]);
             
