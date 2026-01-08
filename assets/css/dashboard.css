@@ -3529,3 +3529,489 @@ margin-bottom:20px;
 }
 
 
+/* ============================================
+   MOBILE RESPONSIVE - SPES
+   ============================================ */
+
+/* Mobile menu button */
+.mobile-menu-btn {
+    display: none;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1001;
+    background: linear-gradient(135deg, #255AA5, #289CC6);
+    border: none;
+    border-radius: 10px;
+    width: 45px;
+    height: 45px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(37, 90, 165, 0.3);
+    color: white;
+    font-size: 20px;
+    transition: all 0.3s ease;
+}
+
+.mobile-menu-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(37, 90, 165, 0.4);
+}
+
+/* Sidebar overlay */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar-overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+/* ============================================
+   TABLET (max 1024px)
+   ============================================ */
+@media screen and (max-width: 1024px) {
+    .admin-stats-grid,
+    .terapeut-stats-grid,
+    .recepcioner-stats-grid,
+    .pacijent-stats-grid,
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 15px !important;
+    }
+    
+    .admin-action-cards,
+    .terapeut-action-cards,
+    .recepcioner-action-cards,
+    .pacijent-action-cards,
+    .action-cards {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 15px !important;
+    }
+    
+    .admin-activity-grid,
+    .terapeut-main-content,
+    .recepcioner-main-content,
+    .pacijent-main-content {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* ============================================
+   MOBILE (max 768px)
+   ============================================ */
+@media screen and (max-width: 768px) {
+    /* Show mobile menu button */
+    .mobile-menu-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Sidebar - hidden by default on mobile */
+    .sidebar {
+        position: fixed !important;
+        left: -280px !important;
+        top: 0 !important;
+        width: 260px !important;
+        height: 100vh !important;
+        z-index: 999 !important;
+        transition: left 0.3s ease !important;
+        overflow-y: auto !important;
+        box-shadow: 4px 0 25px rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    .sidebar.active {
+        left: 0 !important;
+    }
+    
+    /* Main content - full width */
+    .main {
+        margin-left: 0 !important;
+        padding: 15px !important;
+        padding-top: 70px !important;
+        width: 100% !important;
+    }
+    
+    .dashboard {
+        flex-direction: column;
+    }
+    
+    /* Topbar adjustments */
+    .topbar {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px !important;
+        padding-left: 60px !important;
+        margin-bottom: 20px !important;
+    }
+    
+    .topbar-nav {
+        width: 100%;
+        justify-content: flex-end;
+    }
+    
+    .admin-search,
+    .admin-search-input-group {
+        width: 100%;
+    }
+    
+    .admin-search-input {
+        width: 100% !important;
+    }
+    
+    .topbar input[type="text"] {
+        width: 100% !important;
+    }
+    
+    /* Headers */
+    .admin-header h2,
+    .terapeut-header h2,
+    .recepcioner-header h2,
+    .pacijent-header h2 {
+        font-size: 1.5rem !important;
+    }
+    
+    .admin-header p,
+    .terapeut-header p,
+    .recepcioner-header p,
+    .pacijent-header p {
+        font-size: 0.9rem !important;
+    }
+    
+    /* Stats grid - 2 columns on mobile */
+    .admin-stats-grid,
+    .terapeut-stats-grid,
+    .recepcioner-stats-grid,
+    .pacijent-stats-grid,
+    .stats-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 12px !important;
+    }
+    
+    .admin-stat-card,
+    .terapeut-stat-card,
+    .recepcioner-stat-card,
+    .pacijent-stat-card,
+    .stat-card {
+        padding: 15px !important;
+    }
+    
+    .admin-stat-number,
+    .terapeut-stat-number,
+    .recepcioner-stat-number,
+    .pacijent-stat-number,
+    .stat-number {
+        font-size: 1.8rem !important;
+    }
+    
+    .admin-stat-label,
+    .terapeut-stat-label,
+    .recepcioner-stat-label,
+    .pacijent-stat-label {
+        font-size: 0.8rem !important;
+    }
+    
+    .admin-stat-icon,
+    .terapeut-stat-icon,
+    .recepcioner-stat-icon,
+    .pacijent-stat-icon {
+        font-size: 1.2rem !important;
+        top: 10px !important;
+        right: 10px !important;
+    }
+    
+    /* Action cards - 1 column */
+    .admin-action-cards,
+    .terapeut-action-cards,
+    .recepcioner-action-cards,
+    .pacijent-action-cards,
+    .action-cards {
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+    }
+    
+    .admin-action-card,
+    .terapeut-action-card,
+    .recepcioner-action-card,
+    .pacijent-action-card,
+    .action-card {
+        padding: 20px !important;
+    }
+    
+    .admin-action-card h3,
+    .terapeut-action-card h3,
+    .recepcioner-action-card h3,
+    .pacijent-action-card h3,
+    .action-card h3 {
+        font-size: 1.1rem !important;
+    }
+    
+    /* Action buttons */
+    .admin-action-buttons,
+    .terapeut-action-buttons,
+    .recepcioner-action-buttons {
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+    
+    .admin-btn,
+    .terapeut-btn,
+    .recepcioner-btn,
+    .pacijent-btn {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+    
+    /* Activity grid */
+    .admin-activity-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+    
+    /* Monthly overview */
+    .admin-monthly-stats {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+    }
+    
+    .admin-monthly-number {
+        font-size: 1.4rem !important;
+    }
+    
+    /* Quick nav */
+    .admin-quick-nav-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+    }
+    
+    .admin-quick-link {
+        padding: 12px !important;
+        font-size: 0.85rem !important;
+    }
+    
+    .admin-quick-link i {
+        font-size: 1rem !important;
+    }
+    
+    /* Timeline items */
+    .admin-timeline-item,
+    .terapeut-timeline-item,
+    .recepcioner-timeline-item,
+    .pacijent-timeline-item {
+        flex-direction: column !important;
+        gap: 10px !important;
+        padding: 12px !important;
+    }
+    
+    .admin-timeline-time,
+    .terapeut-timeline-time,
+    .recepcioner-timeline-time {
+        min-width: auto !important;
+        font-size: 1rem !important;
+    }
+    
+    /* Tables */
+    .main-content-fw {
+        padding: 15px !important;
+        overflow-x: auto !important;
+    }
+    
+    .table-standard {
+        min-width: 600px !important;
+    }
+    
+    /* Naslov dugme */
+    .naslov-dugme {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 15px !important;
+    }
+    
+    .naslov-dugme .btn,
+    .naslov-dugme .btn-novo,
+    .naslov-dugme a {
+        width: 100% !important;
+        text-align: center !important;
+        justify-content: center !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Forms */
+    .main-content {
+        flex-direction: column !important;
+        width: 100% !important;
+        padding: 20px 15px !important;
+    }
+    
+    .left-content,
+    .right-content {
+        width: 100% !important;
+        padding: 0 !important;
+    }
+    
+    .main-content .form-group select {
+        width: 100% !important;
+    }
+    
+    .password-wrapper {
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+    
+    .lozinka-wrap,
+    .generator {
+        width: 100% !important;
+    }
+    
+    /* Card blocks */
+    .card-block {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+    }
+    
+    .card-block label,
+    .card-block p {
+        width: 100% !important;
+    }
+    
+    .card-info,
+    .card-info-fw {
+        width: 100% !important;
+        min-width: auto !important;
+    }
+    
+    /* Modals */
+    .modal {
+        width: 95% !important;
+        max-width: none !important;
+        padding: 20px !important;
+    }
+    
+    .modal-content .form-group select {
+        width: 100% !important;
+    }
+    
+    /* User dropdown */
+    .user-menu {
+        right: -50px !important;
+    }
+    
+    /* Hide home link on very small screens */
+    .home {
+        display: none;
+    }
+    
+    /* Help box */
+    .help-box {
+        flex-direction: column !important;
+        text-align: center;
+    }
+}
+
+/* ============================================
+   SMALL MOBILE (max 480px)
+   ============================================ */
+@media screen and (max-width: 480px) {
+    /* Stats - can stay 2 columns but smaller */
+    .admin-stat-number,
+    .terapeut-stat-number,
+    .recepcioner-stat-number,
+    .pacijent-stat-number,
+    .stat-number {
+        font-size: 1.5rem !important;
+    }
+    
+    .admin-stat-label,
+    .terapeut-stat-label,
+    .recepcioner-stat-label,
+    .pacijent-stat-label {
+        font-size: 0.7rem !important;
+    }
+    
+    .admin-stat-card,
+    .terapeut-stat-card,
+    .recepcioner-stat-card,
+    .pacijent-stat-card,
+    .stat-card {
+        padding: 12px !important;
+    }
+    
+    /* Smaller padding */
+    .main {
+        padding: 10px !important;
+        padding-top: 65px !important;
+    }
+    
+    .topbar {
+        padding: 10px !important;
+        padding-left: 55px !important;
+    }
+    
+    /* Quick nav - 1 column */
+    .admin-quick-nav-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    /* Buttons */
+    .btn,
+    .btn-novo,
+    .submit-button {
+        padding: 10px 15px !important;
+        font-size: 0.85rem !important;
+    }
+    
+    /* Monthly stats - 1 column */
+    .admin-monthly-stats {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* ============================================
+   LANDSCAPE MOBILE
+   ============================================ */
+@media screen and (max-width: 768px) and (orientation: landscape) {
+    .admin-stats-grid,
+    .terapeut-stats-grid,
+    .recepcioner-stats-grid,
+    .pacijent-stats-grid,
+    .stats-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+    
+    .admin-action-cards,
+    .terapeut-action-cards,
+    .recepcioner-action-cards,
+    .pacijent-action-cards,
+    .action-cards {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    
+    .main {
+        padding-top: 60px !important;
+    }
+}
+
+/* Fix for iOS input zoom */
+@media screen and (max-width: 768px) {
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="date"],
+    input[type="time"],
+    input[type="number"],
+    select,
+    textarea {
+        font-size: 16px !important;
+    }
+}

@@ -21,6 +21,13 @@ $user = current_user();
 
 </head>
 <body>
+<!-- Mobile Menu Button -->
+<button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">
+    <i class="fa-solid fa-bars"></i>
+</button>
+<div class="sidebar-overlay" onclick="toggleMobileMenu()"></div>
+
+<div class="dashboard">
 <div class="dashboard">
 
   <aside class="sidebar">
@@ -320,6 +327,55 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 </script>
+<script>
+// Mobile menu toggle
+function toggleMobileMenu() {
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.querySelector('.sidebar-overlay');
+    const btn = document.querySelector('.mobile-menu-btn');
+    
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+    
+    // Change icon
+    const icon = btn.querySelector('i');
+    if (sidebar.classList.contains('active')) {
+        icon.classList.remove('fa-bars');
+        icon.classList.add('fa-times');
+        document.body.style.overflow = 'hidden';
+    } else {
+        icon.classList.remove('fa-times');
+        icon.classList.add('fa-bars');
+        document.body.style.overflow = '';
+    }
+}
 
+// Close menu on resize to desktop
+window.addEventListener('resize', function() {
+    if (window.innerWidth > 768) {
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.querySelector('.sidebar-overlay');
+        const btn = document.querySelector('.mobile-menu-btn');
+        
+        if (sidebar) sidebar.classList.remove('active');
+        if (overlay) overlay.classList.remove('active');
+        if (btn) {
+            const icon = btn.querySelector('i');
+            icon.classList.remove('fa-times');
+            icon.classList.add('fa-bars');
+        }
+        document.body.style.overflow = '';
+    }
+});
+
+// Close menu when clicking a link
+document.querySelectorAll('.sidebar-nav a').forEach(link => {
+    link.addEventListener('click', function() {
+        if (window.innerWidth <= 768) {
+            toggleMobileMenu();
+        }
+    });
+});
+</script>
 </body>
 </html>
