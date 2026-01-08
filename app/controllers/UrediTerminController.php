@@ -96,9 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Pacijent je obavezan.';
     }
     
-    if (empty($terapeut_id)) {
-        $errors[] = 'Terapeut je obavezan.';
-    }
+    
     
     if (empty($usluga_id)) {
         $errors[] = 'Usluga je obavezna.';
@@ -140,11 +138,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Ažuriraj termin
     if (empty($errors)) {
         try {
-            // 👉 VAŽNO: Učitaj podatke o terapeutu i pacijentu za zamrzavanje
-            $stmt = $pdo->prepare("SELECT ime, prezime FROM users WHERE id = ?");
-            $stmt->execute([$terapeut_id]);
-            $terapeut = $stmt->fetch();
-            
+            // 👉 VAŽNO: Učitaj podatke o terapeutu (ako postoji) i pacijentu za zamrzavanje
+            $terapeut = null;
+            if (!empty($terapeut_id)) {
+                $stmt = $pdo->prepare("SELECT ime, prezime FROM users WHERE id = ?");
+                $stmt->execute([$terapeut_id]);
+                $terapeut = $stmt->fetch();
+            }
+
             $stmt = $pdo->prepare("SELECT ime, prezime FROM users WHERE id = ?");
             $stmt->execute([$pacijent_id]);
             $pacijent = $stmt->fetch();
