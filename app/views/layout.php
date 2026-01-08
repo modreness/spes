@@ -21,6 +21,15 @@ $user = current_user();
 
 </head>
 <body>
+  <!-- Hamburger Menu Button (mobile only) -->
+<button class="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu">
+    <span></span>
+    <span></span>
+    <span></span>
+</button>
+
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 <div class="dashboard">
 
   <aside class="sidebar">
@@ -319,6 +328,35 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
   });
+</script>
+
+<script>
+// Mobile sidebar toggle
+function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar, .navigation, nav.sidebar, aside, .side-menu');
+    const overlay = document.querySelector('.sidebar-overlay');
+    
+    if (sidebar) {
+        sidebar.classList.toggle('active');
+    }
+    if (overlay) {
+        overlay.classList.toggle('active');
+    }
+    
+    // Prevent body scroll when menu is open
+    document.body.style.overflow = sidebar?.classList.contains('active') ? 'hidden' : '';
+}
+
+// Close sidebar on window resize (if going to desktop)
+window.addEventListener('resize', function() {
+    if (window.innerWidth > 768) {
+        const sidebar = document.querySelector('.sidebar, .navigation, nav.sidebar, aside, .side-menu');
+        const overlay = document.querySelector('.sidebar-overlay');
+        if (sidebar) sidebar.classList.remove('active');
+        if (overlay) overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+});
 </script>
 
 </body>
