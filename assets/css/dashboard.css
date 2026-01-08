@@ -3528,7 +3528,10 @@ margin-bottom:20px;
     font-size: 0.85em;
 }
 
-
+/* TEST - obriši poslije */
+body {
+    background: red !important;
+}
 /* ============================================
    MOBILE RESPONSIVE - SPES
    ============================================ */
