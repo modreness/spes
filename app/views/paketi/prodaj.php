@@ -111,7 +111,16 @@
                 Opciono - rok važenja paketa (ako postoji)
             </small>
         </div>
-
+        <!-- Plaćeno checkbox -->
+        <div class="form-group">
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                <input type="checkbox" name="placeno" value="1" 
+                    <?= isset($_POST['placeno']) ? 'checked' : '' ?>
+                    style="width: 20px; height: 20px;">
+                <span style="font-weight: 600;">Plaćeno</span>
+                <span style="color: #7f8c8d; font-weight: normal;">— označi ako je pacijent platio odmah</span>
+            </label>
+        </div>
         <!-- Napomena -->
         <div class="form-group">
             <label for="napomena">Napomena</label>

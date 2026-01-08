@@ -43,6 +43,27 @@ if ($action === 'update_status') {
     }
 }
 
+// Promjena statusa plaćanja
+if ($action === 'update_placeno') {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $id = $_POST['id'] ?? 0;
+        $placeno = isset($_POST['placeno']) ? 1 : 0;
+        
+        try {
+            $stmt = $pdo->prepare("UPDATE kupljeni_paketi SET placeno = ? WHERE id = ?");
+            $stmt->execute([$placeno, $id]);
+            
+            $_SESSION['message'] = $placeno ? "Paket označen kao plaćen!" : "Paket označen kao neplaćen.";
+        } catch (PDOException $e) {
+            error_log("Greška pri promjeni statusa plaćanja: " . $e->getMessage());
+            $_SESSION['error'] = "Greška pri promjeni statusa plaćanja.";
+        }
+        
+        header("Location: /paketi/detalji?id=$id");
+        exit;
+    }
+}
+
 // Brisanje paketa
 if ($action === 'delete') {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {

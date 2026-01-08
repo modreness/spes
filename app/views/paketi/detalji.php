@@ -4,6 +4,10 @@
         <button type="button" class="btn btn-primary" onclick="otvoriStatusModal()">
             <i class="fa-solid fa-edit"></i> Promijeni status
         </button>
+        <button type="button" class="btn <?= $paket['placeno'] ? 'btn-warning' : 'btn-success' ?>" onclick="otvoriPlacenoModal()">
+        <i class="fa-solid fa-<?= $paket['placeno'] ? 'times' : 'check' ?>"></i> 
+        <?= $paket['placeno'] ? 'Označi neplaćeno' : 'Označi plaćeno' ?>
+        </button>
         <button type="button" class="btn btn-danger" onclick="otvoriBrisanjeModal()">
             <i class="fa-solid fa-trash"></i> Obriši
         </button>
@@ -93,7 +97,7 @@
             <h4 style="margin-top: 0;">
                 <i class="fa-solid fa-info-circle"></i> Status
             </h4>
-            <div style="margin-bottom: 20px;">
+            <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
                 <?php
                 $status_boja = [
                     'aktivan' => '#27ae60',
@@ -104,6 +108,10 @@
                 ?>
                 <span style="display: inline-block; padding: 8px 16px; border-radius: 25px; font-size: 1.1em; font-weight: 600; background: <?= $status_boja[$paket['status']] ?>; color: white;">
                     <?= ucfirst($paket['status']) ?>
+                </span>
+                <span style="display: inline-block; padding: 8px 16px; border-radius: 25px; font-size: 1.1em; font-weight: 600; background: <?= $paket['placeno'] ? '#27ae60' : '#e74c3c' ?>; color: white;">
+                    <i class="fa-solid fa-<?= $paket['placeno'] ? 'check' : 'times' ?>"></i>
+                    <?= $paket['placeno'] ? 'Plaćeno' : 'Nije plaćeno' ?>
                 </span>
             </div>
             
@@ -209,7 +217,40 @@
         </form>
     </div>
 </div>
-
+<!-- Modal za promjenu plaćanja -->
+<div id="placeno-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div style="text-align: center; margin-bottom: 20px;">
+            <i class="fa-solid fa-<?= $paket['placeno'] ? 'times-circle' : 'check-circle' ?>" 
+               style="font-size: 48px; color: <?= $paket['placeno'] ? '#e74c3c' : '#27ae60' ?>;"></i>
+        </div>
+        
+        <h3 style="text-align: center; margin-bottom: 20px;">
+            <?= $paket['placeno'] ? 'Označiti paket kao neplaćen?' : 'Označiti paket kao plaćen?' ?>
+        </h3>
+        
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
+            <div style="display: grid; gap: 8px;">
+                <div><strong>Paket:</strong> <?= htmlspecialchars($paket['paket_naziv']) ?></div>
+                <div><strong>Pacijent:</strong> <?= htmlspecialchars($paket['pacijent_ime']) ?></div>
+                <div><strong>Cijena:</strong> <?= number_format($paket['paket_cijena'], 2, ',', '.') ?> KM</div>
+            </div>
+        </div>
+        
+        <form method="POST" action="/paketi?action=update_placeno">
+            <input type="hidden" name="id" value="<?= $paket['id'] ?>">
+            <?php if (!$paket['placeno']): ?>
+                <input type="hidden" name="placeno" value="1">
+            <?php endif; ?>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button type="button" class="btn btn-secondary" onclick="zatvoriModal()">Otkaži</button>
+                <button type="submit" class="btn <?= $paket['placeno'] ? 'btn-warning' : 'btn-success' ?>">
+                    Da, <?= $paket['placeno'] ? 'označi neplaćeno' : 'označi plaćeno' ?>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 <!-- Modal za brisanje -->
 <div id="brisanje-modal" class="modal" style="display: none;">
     <div class="modal-content">
@@ -260,11 +301,16 @@ function otvoriBrisanjeModal() {
     document.getElementById('modal-overlay').style.display = 'block';
 }
 
+function otvoriPlacenoModal() {
+    document.getElementById('placeno-modal').style.display = 'block';
+    document.getElementById('modal-overlay').style.display = 'block';
+}
+
 function zatvoriModal() {
     document.getElementById('status-modal').style.display = 'none';
     document.getElementById('brisanje-modal').style.display = 'none';
+    document.getElementById('placeno-modal').style.display = 'none';
     document.getElementById('modal-overlay').style.display = 'none';
 }
-
 document.getElementById('modal-overlay').addEventListener('click', zatvoriModal);
 </script>

@@ -87,6 +87,7 @@
                     <th>Iskorištenost</th>
                     <th>Datum kupovine</th>
                     <th>Status</th>
+                    <th>Plaćeno</th>
                     <th>Akcije</th>
                 </tr>
             </thead>
@@ -127,6 +128,17 @@
                             <span style="display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.85em; font-weight: 500; background: <?= $status_boja[$p['status']] ?>; color: white;">
                                 <?= ucfirst($p['status']) ?>
                             </span>
+                        </td>
+                        <td>
+                            <?php if ($p['placeno']): ?>
+                                <span style="color: #27ae60;" title="Plaćeno">
+                                    <i class="fa-solid fa-check-circle"></i>
+                                </span>
+                            <?php else: ?>
+                                <span style="color: #e74c3c;" title="Nije plaćeno">
+                                    <i class="fa-solid fa-times-circle"></i>
+                                </span>
+                            <?php endif; ?>
                         </td>
                         <td>
                             <a href="/paketi/detalji?id=<?= $p['id'] ?>" class="btn btn-edit" title="Detalji">

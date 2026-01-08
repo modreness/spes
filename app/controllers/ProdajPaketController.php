@@ -20,6 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $datum_pocetka = $_POST['datum_pocetka'] ?? null;
     $datum_kraja = $_POST['datum_kraja'] ?? null;
     $napomena = trim($_POST['napomena'] ?? '');
+    $placeno = isset($_POST['placeno']) ? 1 : 0;
     
     // Validacija
     if (empty($pacijent_id)) {
@@ -53,10 +54,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $stmt = $pdo->prepare("
                 INSERT INTO kupljeni_paketi 
-                (pacijent_id, usluga_id, ukupno_termina, datum_pocetka, datum_kraja, napomena, kreirao_id, status) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, 'aktivan')
+                (pacijent_id, usluga_id, ukupno_termina, datum_pocetka, datum_kraja, napomena, placeno, kreirao_id, status) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'aktivan')
             ");
-            
+
             $stmt->execute([
                 $pacijent_id,
                 $usluga_id,
@@ -64,6 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 !empty($datum_pocetka) ? $datum_pocetka : null,
                 !empty($datum_kraja) ? $datum_kraja : null,
                 $napomena,
+                $placeno,
                 $user['id']
             ]);
             
