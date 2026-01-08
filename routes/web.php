@@ -234,6 +234,11 @@ elseif ($uri === '/nalazi/moji-pacijenti') {
 elseif ($uri === '/moji-termini') {
     require __DIR__ . '/../app/controllers/MojiTerminiController.php';
 }
+
+/*GENERISANJE RASPOREDA*/ 
+elseif ($uri === '/raspored/generisi') {
+    require __DIR__ . '/../app/controllers/GenerisiRasporedController.php';
+}
 /*
 else {
     http_response_code(404);

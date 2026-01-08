@@ -28,7 +28,26 @@
         <i class="fa-solid fa-exclamation-triangle"></i>
         <strong>Opomena!</strong> Nijedan raspored nije odabran za dodavanje.
     </div>
+    <?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'generisano'): ?>
+    <div class="alert alert-success">
+        <i class="fa-solid fa-check-circle"></i>
+        <strong>Uspješno!</strong> Generisano je <?= (int)($_GET['dodano'] ?? 0) ?> rasporeda za <?= (int)($_GET['sedmica'] ?? 0) ?> sedmica.
+    </div>
+<?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'generisano_djelimicno'): ?>
+    <div class="alert alert-success">
+        <i class="fa-solid fa-exclamation-triangle"></i>
+        <strong>Djelomično uspješno!</strong><br>
+        ✅ Dodano: <?= (int)($_GET['dodano'] ?? 0) ?> rasporeda<br>
+        ⚠️ Preskočeno (već postoji): <?= (int)($_GET['preskoceno'] ?? 0) ?> rasporeda
+    </div>
+<?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'vec_postoji'): ?>
+    <div class="alert alert-warning">
+        <i class="fa-solid fa-info-circle"></i>
+        <strong>Nijedan raspored nije dodan.</strong><br>
+        Svi rasporedi (<?= (int)($_GET['preskoceno'] ?? 0) ?>) već postoje u sistemu.
+    </div>
 <?php endif; ?>
+
 
 <div class="main-content-fw">
     <?php if ($user['uloga'] !== 'terapeut'): ?>
@@ -55,7 +74,14 @@
                 <i class="fa-solid fa-plus"></i> Dodaj raspored
             </a>
         </div>
-        
+        <!-- NOVO: Automatsko generiranje -->
+        <div class="action-card">
+            <h3>Generiši automatski</h3>
+            <p>Automatski kreiraj raspored za više sedmica unaprijed</p>
+            <a href="/raspored/generisi" class="btn btn-add" style="background: linear-gradient(135deg, #289cc6, #255AA5);">
+                <i class="fa-solid fa-magic"></i> Generiši raspored
+            </a>
+        </div>
         <!-- NOVO: Dodano dugme za uređivanje -->
         <div class="action-card">
             <h3>Uredi postojeće rasporede</h3>
