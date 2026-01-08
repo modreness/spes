@@ -7,6 +7,7 @@ $user = current_user();
 <html lang="hr">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?= $title ?? 'Dashboard' ?></title>
   <link rel="stylesheet" href="/assets/css/dashboard.css">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
@@ -27,7 +28,6 @@ $user = current_user();
 </button>
 <div class="sidebar-overlay" onclick="toggleMobileMenu()"></div>
 
-<div class="dashboard">
 <div class="dashboard">
 
   <aside class="sidebar">
