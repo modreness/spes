@@ -128,7 +128,22 @@
             </div>
 
         </div>
+        <!-- Plaćeno checkbox - samo za pojedinačne termine -->
+        <div class="form-group" id="placeno-polje">
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                <input type="checkbox" name="placeno" value="1" 
+                    <?= isset($_POST['placeno']) ? 'checked' : '' ?>
+                    style="width: 20px; height: 20px;">
+                <span style="font-weight: 600;">Plaćeno</span>
+                <span style="color: #7f8c8d; font-weight: normal;">— označi ako je pacijent platio odmah</span>
+            </label>
+        </div>
 
+        <div class="form-group">
+            <label for="napomena">Napomena</label>
+            <textarea id="napomena" name="napomena" rows="3" 
+                    placeholder="Dodatne napomene o terminu..."><?= htmlspecialchars($_POST['napomena'] ?? '') ?></textarea>
+        </div>
         <div class="form-group">
             <label for="napomena">Napomena</label>
             <textarea id="napomena" name="napomena" rows="3" 
@@ -161,10 +176,12 @@ function provjeriPakete() {
 }
 
 // Prikaži/sakrij usluga polje
+// Prikaži/sakrij usluga polje i placeno polje
 function toggleUslugaPolje() {
     const paketRadios = document.querySelectorAll('input[name="koristi_paket"]');
     const uslugaPolje = document.getElementById('usluga-polje');
     const uslugaSelect = document.getElementById('usluga_id');
+    const placenoPolje = document.getElementById('placeno-polje');
     
     let koristiPaket = false;
     paketRadios.forEach(radio => {
@@ -177,9 +194,11 @@ function toggleUslugaPolje() {
         uslugaPolje.style.display = 'none';
         uslugaSelect.removeAttribute('required');
         uslugaSelect.value = '';
+        if (placenoPolje) placenoPolje.style.display = 'none';
     } else {
         uslugaPolje.style.display = 'block';
         uslugaSelect.setAttribute('required', 'required');
+        if (placenoPolje) placenoPolje.style.display = 'block';
     }
 }
 

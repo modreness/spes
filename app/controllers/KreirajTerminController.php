@@ -80,6 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $vrijeme = $_POST['vrijeme'] ?? '';
     $napomena = trim($_POST['napomena'] ?? '');
     $koristi_paket = $_POST['koristi_paket'] ?? '';  // ID paketa ili 'ne'
+    $placeno = isset($_POST['placeno']) ? 1 : 0;
     
     // Validacija
     if (empty($pacijent_id)) {
@@ -193,24 +194,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
        
             // 1. Kreiraj termin SA ZAMRZNUTIM PODACIMA
+         
             $stmt = $pdo->prepare("
                 INSERT INTO termini 
                 (pacijent_id, pacijent_ime, pacijent_prezime, terapeut_id, terapeut_ime, terapeut_prezime, 
-                usluga_id, datum_vrijeme, status, tip_zakazivanja, napomena, placeno_iz_paketa, stvarna_cijena) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'zakazan', 'recepcioner', ?, ?, ?)
+                usluga_id, datum_vrijeme, status, tip_zakazivanja, napomena, placeno_iz_paketa, stvarna_cijena, placeno) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'zakazan', 'recepcioner', ?, ?, ?, ?)
             ");
             $stmt->execute([
                 $pacijent_id,
                 $pacijent['ime'],
                 $pacijent['prezime'],
-                $terapeut_id ?: null,                           // 👈 NULL ako nije odabran
-                $terapeut ? $terapeut['ime'] : null,            // 👈 NULL ako nije odabran
-                $terapeut ? $terapeut['prezime'] : null,        // 👈 NULL ako nije odabran
+                $terapeut_id ?: null,
+                $terapeut ? $terapeut['ime'] : null,
+                $terapeut ? $terapeut['prezime'] : null,
                 $usluga_id, 
                 $datum_vrijeme, 
                 $napomena,
                 $iz_paketa,
-                $iz_paketa ? null : $cijena
+                $iz_paketa ? null : $cijena,
+                $iz_paketa ? 1 : $placeno  // Ako je iz paketa, automatski je plaćeno
             ]);
             $termin_id = $pdo->lastInsertId();
             
