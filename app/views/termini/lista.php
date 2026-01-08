@@ -76,6 +76,7 @@
                 <th>Usluga</th>
                 <th>Cijena</th>
                 <th>Status</th>
+                <th>Plaćeno</th>
                 <th>Akcije</th>
             </tr>
         </thead>
@@ -113,6 +114,21 @@
                         <span style="background: <?= $status_colors[$t['status']] ?? '#95a5a6' ?>; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500;">
                             <?= ucfirst($t['status']) ?>
                         </span>
+                    </td>
+                    <td>
+                        <?php if ($t['placeno_iz_paketa']): ?>
+                            <span style="color: #3498db;" title="Plaćeno iz paketa">
+                                <i class="fa-solid fa-box"></i>
+                            </span>
+                        <?php elseif ($t['placeno']): ?>
+                            <span style="color: #27ae60;" title="Plaćeno">
+                                <i class="fa-solid fa-check-circle"></i>
+                            </span>
+                        <?php else: ?>
+                            <span style="color: #e74c3c;" title="Nije plaćeno">
+                                <i class="fa-solid fa-times-circle"></i>
+                            </span>
+                        <?php endif; ?>
                     </td>
                     <td>
                         <?php if ($user['uloga'] !== 'terapeut'): ?>
