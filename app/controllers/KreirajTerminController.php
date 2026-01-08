@@ -86,9 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Pacijent je obavezan.';
     }
     
-    if (empty($terapeut_id)) {
-        $errors[] = 'Terapeut je obavezan.';
-    }
+   
     
     // Usluga je obavezna samo ako se NE koristi paket
     if (empty($koristi_paket) || $koristi_paket === 'ne') {
@@ -171,9 +169,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pdo->beginTransaction();
             
             // 👉 VAŽNO: Učitaj podatke o terapeutu i pacijentu za zamrzavanje
-            $stmt = $pdo->prepare("SELECT ime, prezime FROM users WHERE id = ?");
-            $stmt->execute([$terapeut_id]);
-            $terapeut = $stmt->fetch();
+            $terapeut = null;
+            if (!empty($terapeut_id)) {
+                $stmt = $pdo->prepare("SELECT ime, prezime FROM users WHERE id = ?");
+                $stmt->execute([$terapeut_id]);
+                $terapeut = $stmt->fetch();
+            }
             
             $stmt = $pdo->prepare("SELECT ime, prezime FROM users WHERE id = ?");
             $stmt->execute([$pacijent_id]);
@@ -190,20 +191,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $cijena = $stmt->fetchColumn();
             }
             
+       
             // 1. Kreiraj termin SA ZAMRZNUTIM PODACIMA
             $stmt = $pdo->prepare("
                 INSERT INTO termini 
                 (pacijent_id, pacijent_ime, pacijent_prezime, terapeut_id, terapeut_ime, terapeut_prezime, 
-                 usluga_id, datum_vrijeme, status, tip_zakazivanja, napomena, placeno_iz_paketa, stvarna_cijena) 
+                usluga_id, datum_vrijeme, status, tip_zakazivanja, napomena, placeno_iz_paketa, stvarna_cijena) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'zakazan', 'recepcioner', ?, ?, ?)
             ");
             $stmt->execute([
                 $pacijent_id,
-                $pacijent['ime'],           // 👈 Zamrzni ime pacijenta
-                $pacijent['prezime'],       // 👈 Zamrzni prezime pacijenta
-                $terapeut_id,
-                $terapeut['ime'],           // 👈 Zamrzni ime terapeuta
-                $terapeut['prezime'],       // 👈 Zamrzni prezime terapeuta
+                $pacijent['ime'],
+                $pacijent['prezime'],
+                $terapeut_id ?: null,                           // 👈 NULL ako nije odabran
+                $terapeut ? $terapeut['ime'] : null,            // 👈 NULL ako nije odabran
+                $terapeut ? $terapeut['prezime'] : null,        // 👈 NULL ako nije odabran
                 $usluga_id, 
                 $datum_vrijeme, 
                 $napomena,
@@ -227,31 +229,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             // ✉️ SLANJE EMAIL NOTIFIKACIJA
             require_once __DIR__ . '/../helpers/mailer.php';
-            
-            // Dohvati email adrese terapeuta i pacijenta
+
+            // Dohvati email adrese terapeuta (ako postoji) i pacijenta
             $stmt = $pdo->prepare("
                 SELECT 
-                    t.email as terapeut_email, t.ime as terapeut_ime, t.prezime as terapeut_prezime,
                     p.email as pacijent_email, p.ime as pacijent_ime, p.prezime as pacijent_prezime,
                     c.naziv as usluga_naziv
-                FROM users t
-                CROSS JOIN users p
+                FROM users p
                 LEFT JOIN cjenovnik c ON c.id = ?
-                WHERE t.id = ? AND p.id = ?
+                WHERE p.id = ?
             ");
-            $stmt->execute([$usluga_id, $terapeut_id, $pacijent_id]);
+            $stmt->execute([$usluga_id, $pacijent_id]);
             $email_data = $stmt->fetch();
-            
+
+            // Dohvati terapeuta ako postoji
+            $terapeut_email_data = null;
+            if (!empty($terapeut_id)) {
+                $stmt = $pdo->prepare("SELECT email, ime, prezime FROM users WHERE id = ?");
+                $stmt->execute([$terapeut_id]);
+                $terapeut_email_data = $stmt->fetch();
+            }
+
             if ($email_data) {
                 $datum_format = date('d.m.Y', strtotime($datum));
                 $vrijeme_format = date('H:i', strtotime($datum . ' ' . $vrijeme));
                 $paket_info = $iz_paketa ? " (plaćen iz paketa)" : "";
                 
-                // 📧 Email terapeutu
-                if (!empty($email_data['terapeut_email'])) {
+                // 📧 Email terapeutu (SAMO ako je odabran)
+                if ($terapeut_email_data && !empty($terapeut_email_data['email'])) {
                     // Generiraj Google Calendar link za terapeuta
                     $start_time = strtotime($datum_vrijeme);
-                    $end_time = $start_time + (60 * 60); // +1 sat
+                    $end_time = $start_time + (60 * 60);
                     
                     $start_google = gmdate('Ymd\THis\Z', $start_time);
                     $end_google = gmdate('Ymd\THis\Z', $end_time);
@@ -264,7 +272,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     
                     $subject_terapeut = "Novi termin zakazan - " . $datum_format . " u " . $vrijeme_format;
                     $body_terapeut = "
-                    <h3>Poštovani  {$email_data['terapeut_ime']} {$email_data['terapeut_prezime']},</h3>
+                    <h3>Poštovani {$terapeut_email_data['ime']} {$terapeut_email_data['prezime']},</h3>
                     
                     <p>Zakazan je novi termin:</p>
                     
@@ -275,8 +283,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <li><strong>Usluga:</strong> {$email_data['usluga_naziv']}{$paket_info}</li>
                         " . (!empty($napomena) ? "<li><strong>Napomena:</strong> " . htmlspecialchars($napomena) . "</li>" : "") . "
                     </ul>
-                    
-                    
                     
                     <div style=\"text-align: center; margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 8px;\">
                         <p style=\"margin: 0 0 10px 0; font-weight: bold; color: #333;\">Dodaj u kalendar:</p>
@@ -290,26 +296,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <small>Ova poruka je automatski generirana iz SPES aplikacije.</small>
                     ";
                     
-                    $mail_sent_terapeut = send_mail($email_data['terapeut_email'], $subject_terapeut, $body_terapeut);
+                    $mail_sent_terapeut = send_mail($terapeut_email_data['email'], $subject_terapeut, $body_terapeut);
                     if (!$mail_sent_terapeut) {
-                        error_log("Greška pri slanju maila terapeutu: " . $email_data['terapeut_email']);
+                        error_log("Greška pri slanju maila terapeutu: " . $terapeut_email_data['email']);
                     }
                 }
 
-                // 📧 Email pacijentu (samo ako ima email)
+                // 📧 Email pacijentu (uvijek, ako ima email)
                 if (!empty($email_data['pacijent_email'])) {
-                    // Generiraj Google Calendar link za pacijenta
                     $start_time = strtotime($datum_vrijeme);
-                    $end_time = $start_time + (60 * 60); // +1 sat
+                    $end_time = $start_time + (60 * 60);
                     
                     $start_google = gmdate('Ymd\THis\Z', $start_time);
                     $end_google = gmdate('Ymd\THis\Z', $end_time);
                     
                     $calendar_title_pacijent = urlencode("Termin - {$email_data['usluga_naziv']}");
-                    $calendar_details_pacijent = urlencode("Terapeut: {$email_data['terapeut_ime']} {$email_data['terapeut_prezime']}");
+                    $calendar_details_pacijent = $terapeut_email_data 
+                        ? urlencode("Terapeut: {$terapeut_email_data['ime']} {$terapeut_email_data['prezime']}")
+                        : urlencode("Terapeut: Bit će dodijeljen");
                     $calendar_location = urlencode("SPES Fizioterapija, Sarajevo");
                     
                     $google_calendar_link_pacijent = "https://calendar.google.com/calendar/render?action=TEMPLATE&text={$calendar_title_pacijent}&dates={$start_google}/{$end_google}&details={$calendar_details_pacijent}&location={$calendar_location}&sf=true&output=xml";
+                    
+                    // Terapeut info za email
+                    $terapeut_line = $terapeut_email_data 
+                        ? "<li><strong>Terapeut:</strong> {$terapeut_email_data['ime']} {$terapeut_email_data['prezime']}</li>"
+                        : "<li><strong>Terapeut:</strong> <em>Bit će dodijeljen</em></li>";
                     
                     $subject_pacijent = "Potvrda termina - " . $datum_format . " u " . $vrijeme_format;
                     $body_pacijent = "
@@ -320,7 +332,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <ul>
                         <li><strong>Datum:</strong> {$datum_format}</li>
                         <li><strong>Vrijeme:</strong> {$vrijeme_format}</li>
-                        <li><strong>Terapeut:</strong> {$email_data['terapeut_ime']} {$email_data['terapeut_prezime']}</li>
+                        {$terapeut_line}
                         <li><strong>Usluga:</strong> {$email_data['usluga_naziv']}{$paket_info}</li>
                         " . (!empty($napomena) ? "<li><strong>Napomena:</strong> " . htmlspecialchars($napomena) . "</li>" : "") . "
                     </ul>
@@ -345,8 +357,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if (!$mail_sent_pacijent) {
                         error_log("Greška pri slanju maila pacijentu: " . $email_data['pacijent_email']);
                     }
-                } else {
-                    error_log("Pacijent nema email adresu - preskačem slanje: " . $email_data['pacijent_ime'] . " " . $email_data['pacijent_prezime']);
                 }
             }
             

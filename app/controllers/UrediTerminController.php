@@ -178,102 +178,179 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
             
             // ✉️ SLANJE EMAIL NOTIFIKACIJA ZA PROMENU STATUSA
-            if ($old_status !== $status && in_array($status, ['obavljen', 'otkazan'])) {
+            // ✉️ SLANJE EMAIL NOTIFIKACIJA
+            // Šalji email ako:
+            // 1. Status je promijenjen na 'obavljen' ili 'otkazan'
+            // 2. ILI terapeut je dodan (bio NULL, sada ima vrijednost)
+
+            $terapeut_dodan = (empty($termin['terapeut_id']) && !empty($terapeut_id));
+
+            if (($old_status !== $status && in_array($status, ['obavljen', 'otkazan'])) || $terapeut_dodan) {
                 require_once __DIR__ . '/../helpers/mailer.php';
                 
                 // Dohvati fresh email podatke
                 $stmt = $pdo->prepare("
                     SELECT 
-                        t.email as terapeut_email, t.ime as terapeut_ime, t.prezime as terapeut_prezime,
                         p.email as pacijent_email, p.ime as pacijent_ime, p.prezime as pacijent_prezime,
                         c.naziv as usluga_naziv
-                    FROM users t
-                    CROSS JOIN users p
+                    FROM users p
                     LEFT JOIN cjenovnik c ON c.id = ?
-                    WHERE t.id = ? AND p.id = ?
+                    WHERE p.id = ?
                 ");
-                $stmt->execute([$usluga_id, $terapeut_id, $pacijent_id]);
+                $stmt->execute([$usluga_id, $pacijent_id]);
                 $email_data = $stmt->fetch();
+                
+                // Dohvati terapeuta ako postoji
+                $terapeut_email_data = null;
+                if (!empty($terapeut_id)) {
+                    $stmt = $pdo->prepare("SELECT email, ime, prezime FROM users WHERE id = ?");
+                    $stmt->execute([$terapeut_id]);
+                    $terapeut_email_data = $stmt->fetch();
+                }
                 
                 if ($email_data) {
                     $datum_format = date('d.m.Y', strtotime($datum));
                     $vrijeme_format = date('H:i', strtotime($datum . ' ' . $vrijeme));
                     
-                    // Status labeli
-                    $status_labels = [
-                        'zakazan' => 'Zakazan',
-                        'obavljen' => 'Obavljen',
-                        'otkazan' => 'Otkazan',
-                        'slobodan' => 'Slobodan'
-                    ];
-                    
-                    $old_status_label = $status_labels[$old_status] ?? $old_status;
-                    $new_status_label = $status_labels[$status] ?? $status;
-                    
-                    // 📧 Email terapeutu
-                    if (!empty($email_data['terapeut_email'])) {
-                        $subject_terapeut = "Status termina promenjen - " . $datum_format;
-                        $body_terapeut = "
-                        <h3>Poštovani dr. {$email_data['terapeut_ime']} {$email_data['terapeut_prezime']},</h3>
+                    // Ako je terapeut dodan (a nije promijenjen status)
+                    if ($terapeut_dodan && $old_status === $status) {
+                        // 📧 Email terapeutu - dodijeljen mu je termin
+                        if ($terapeut_email_data && !empty($terapeut_email_data['email'])) {
+                            $start_time = strtotime($datum_vrijeme);
+                            $end_time = $start_time + (60 * 60);
+                            
+                            $start_google = gmdate('Ymd\THis\Z', $start_time);
+                            $end_google = gmdate('Ymd\THis\Z', $end_time);
+                            
+                            $calendar_title = urlencode("Termin - {$email_data['usluga_naziv']}");
+                            $calendar_details = urlencode("Pacijent: {$email_data['pacijent_ime']} {$email_data['pacijent_prezime']}");
+                            $calendar_location = urlencode("SPES Fizioterapija, Sarajevo");
+                            
+                            $google_calendar_link = "https://calendar.google.com/calendar/render?action=TEMPLATE&text={$calendar_title}&dates={$start_google}/{$end_google}&details={$calendar_details}&location={$calendar_location}&sf=true&output=xml";
+                            
+                            $subject_terapeut = "Dodijeljen vam je termin - " . $datum_format . " u " . $vrijeme_format;
+                            $body_terapeut = "
+                            <h3>Poštovani {$terapeut_email_data['ime']} {$terapeut_email_data['prezime']},</h3>
+                            
+                            <p>Dodijeljen vam je termin:</p>
+                            
+                            <ul>
+                                <li><strong>Pacijent:</strong> {$email_data['pacijent_ime']} {$email_data['pacijent_prezime']}</li>
+                                <li><strong>Datum:</strong> {$datum_format}</li>
+                                <li><strong>Vrijeme:</strong> {$vrijeme_format}</li>
+                                <li><strong>Usluga:</strong> {$email_data['usluga_naziv']}</li>
+                                " . (!empty($napomena) ? "<li><strong>Napomena:</strong> " . htmlspecialchars($napomena) . "</li>" : "") . "
+                            </ul>
+                            
+                            <div style=\"text-align: center; margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 8px;\">
+                                <p style=\"margin: 0 0 10px 0; font-weight: bold; color: #333;\">Dodaj u kalendar:</p>
+                                <a href=\"{$google_calendar_link}\" target=\"_blank\" 
+                                style=\"display: inline-block; background: #4285f4; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold;\">
+                                Dodaj u Google Calendar
+                                </a>
+                            </div>
+                            
+                            <hr>
+                            <small>Ova poruka je automatski generirana iz SPES aplikacije.</small>
+                            ";
+                            
+                            send_mail($terapeut_email_data['email'], $subject_terapeut, $body_terapeut);
+                        }
                         
-                        <p>Status termina je promenjen:</p>
-                        
-                        <ul>
-                            <li><strong>Pacijent:</strong> {$email_data['pacijent_ime']} {$email_data['pacijent_prezime']}</li>
-                            <li><strong>Datum:</strong> {$datum_format}</li>
-                            <li><strong>Vrijeme:</strong> {$vrijeme_format}</li>
-                            <li><strong>Usluga:</strong> {$email_data['usluga_naziv']}</li>
-                            <li><strong>Status:</strong> {$old_status_label} → {$new_status_label}</li>
-                            " . (!empty($napomena) ? "<li><strong>Napomena:</strong> " . htmlspecialchars($napomena) . "</li>" : "") . "
-                        </ul>
-                        
-                        <hr>
-                        <small>Ova poruka je automatski generirana iz SPES aplikacije.</small>
-                        ";
-                        
-                        $mail_sent_terapeut = send_mail($email_data['terapeut_email'], $subject_terapeut, $body_terapeut);
-                        if (!$mail_sent_terapeut) {
-                            error_log("Greška pri slanju status email-a terapeutu: " . $email_data['terapeut_email']);
+                        // 📧 Email pacijentu - dodijeljen mu je terapeut
+                        if (!empty($email_data['pacijent_email']) && $terapeut_email_data) {
+                            $subject_pacijent = "Ažuriranje termina - dodijeljen terapeut";
+                            $body_pacijent = "
+                            <h3>Poštovani/a {$email_data['pacijent_ime']} {$email_data['pacijent_prezime']},</h3>
+                            
+                            <p>Obavještavamo vas da je vašem terminu dodijeljen terapeut:</p>
+                            
+                            <ul>
+                                <li><strong>Datum:</strong> {$datum_format}</li>
+                                <li><strong>Vrijeme:</strong> {$vrijeme_format}</li>
+                                <li><strong>Terapeut:</strong> {$terapeut_email_data['ime']} {$terapeut_email_data['prezime']}</li>
+                                <li><strong>Usluga:</strong> {$email_data['usluga_naziv']}</li>
+                            </ul>
+                            
+                            <p>Molimo dođite 10 minuta prije termina.</p>
+                            
+                            <hr>
+                            <small>Ova poruka je automatski generirana iz SPES aplikacije.</small>
+                            ";
+                            
+                            send_mail($email_data['pacijent_email'], $subject_pacijent, $body_pacijent);
                         }
                     }
-                    
-                    // 📧 Email pacijentu (samo ako ima email)
-                    if (!empty($email_data['pacijent_email'])) {
-                        $subject_pacijent = "Status termina: " . $new_status_label;
+                    // Ako je promijenjen status
+                    else if ($old_status !== $status && in_array($status, ['obavljen', 'otkazan'])) {
+                        $status_labels = [
+                            'zakazan' => 'Zakazan',
+                            'obavljen' => 'Obavljen',
+                            'otkazan' => 'Otkazan',
+                            'slobodan' => 'Slobodan'
+                        ];
                         
-                        // Različite poruke za različite statusse
-                        $status_message = '';
-                        if ($status === 'obavljen') {
-                            $status_message = "<p><strong>Vaš termin je uspješno obavljen.</strong> Hvala što ste došli!</p>";
-                        } elseif ($status === 'otkazan') {
-                            $status_message = "<p><strong>Vaš termin je otkazan.</strong> Za nova zakazivanja kontaktirajte recepciju.</p>";
+                        $old_status_label = $status_labels[$old_status] ?? $old_status;
+                        $new_status_label = $status_labels[$status] ?? $status;
+                        
+                        // 📧 Email terapeutu (ako postoji)
+                        if ($terapeut_email_data && !empty($terapeut_email_data['email'])) {
+                            $subject_terapeut = "Status termina promijenjen - " . $datum_format;
+                            $body_terapeut = "
+                            <h3>Poštovani {$terapeut_email_data['ime']} {$terapeut_email_data['prezime']},</h3>
+                            
+                            <p>Status termina je promijenjen:</p>
+                            
+                            <ul>
+                                <li><strong>Pacijent:</strong> {$email_data['pacijent_ime']} {$email_data['pacijent_prezime']}</li>
+                                <li><strong>Datum:</strong> {$datum_format}</li>
+                                <li><strong>Vrijeme:</strong> {$vrijeme_format}</li>
+                                <li><strong>Usluga:</strong> {$email_data['usluga_naziv']}</li>
+                                <li><strong>Status:</strong> {$old_status_label} → {$new_status_label}</li>
+                            </ul>
+                            
+                            <hr>
+                            <small>Ova poruka je automatski generirana iz SPES aplikacije.</small>
+                            ";
+                            
+                            send_mail($terapeut_email_data['email'], $subject_terapeut, $body_terapeut);
                         }
                         
-                        $body_pacijent = "
-                        <h3>Poštovani/a {$email_data['pacijent_ime']} {$email_data['pacijent_prezime']},</h3>
-                        
-                        <p>Obavještavamo vas o promjeni status vašeg termina:</p>
-                        
-                        <ul>
-                            <li><strong>Datum:</strong> {$datum_format}</li>
-                            <li><strong>Vrijeme:</strong> {$vrijeme_format}</li>
-                            <li><strong>Terapeut:</strong> dr. {$email_data['terapeut_ime']} {$email_data['terapeut_prezime']}</li>
-                            <li><strong>Usluga:</strong> {$email_data['usluga_naziv']}</li>
-                            <li><strong>Status:</strong> {$old_status_label} → {$new_status_label}</li>
-                        </ul>
-                        
-                        {$status_message}
-                        
-                        <hr>
-                        <small>Ova poruka je automatski generirana iz SPES aplikacije.</small>
-                        ";
-                        
-                        $mail_sent_pacijent = send_mail($email_data['pacijent_email'], $subject_pacijent, $body_pacijent);
-                        if (!$mail_sent_pacijent) {
-                            error_log("Greška pri slanju status email-a pacijentu: " . $email_data['pacijent_email']);
+                        // 📧 Email pacijentu
+                        if (!empty($email_data['pacijent_email'])) {
+                            $status_message = '';
+                            if ($status === 'obavljen') {
+                                $status_message = "<p><strong>Vaš termin je uspješno obavljen.</strong> Hvala što ste došli!</p>";
+                            } elseif ($status === 'otkazan') {
+                                $status_message = "<p><strong>Vaš termin je otkazan.</strong> Za nova zakazivanja kontaktirajte recepciju.</p>";
+                            }
+                            
+                            $terapeut_line = $terapeut_email_data 
+                                ? "<li><strong>Terapeut:</strong> {$terapeut_email_data['ime']} {$terapeut_email_data['prezime']}</li>"
+                                : "";
+                            
+                            $subject_pacijent = "Status termina: " . $new_status_label;
+                            $body_pacijent = "
+                            <h3>Poštovani/a {$email_data['pacijent_ime']} {$email_data['pacijent_prezime']},</h3>
+                            
+                            <p>Obavještavamo vas o promjeni statusa vašeg termina:</p>
+                            
+                            <ul>
+                                <li><strong>Datum:</strong> {$datum_format}</li>
+                                <li><strong>Vrijeme:</strong> {$vrijeme_format}</li>
+                                {$terapeut_line}
+                                <li><strong>Usluga:</strong> {$email_data['usluga_naziv']}</li>
+                                <li><strong>Status:</strong> {$old_status_label} → {$new_status_label}</li>
+                            </ul>
+                            
+                            {$status_message}
+                            
+                            <hr>
+                            <small>Ova poruka je automatski generirana iz SPES aplikacije.</small>
+                            ";
+                            
+                            send_mail($email_data['pacijent_email'], $subject_pacijent, $body_pacijent);
                         }
-                    } else {
-                        error_log("Pacijent nema email adresu - preskačem slanje status email-a: " . $email_data['pacijent_ime'] . " " . $email_data['pacijent_prezime']);
                     }
                 }
             }
