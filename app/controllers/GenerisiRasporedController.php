@@ -60,7 +60,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] === 'zadnja_smjena') {
 
 // POST: Generiranje rasporeda
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $terapeut_id = (int)($_POST['terapeut_id'] ?? 0);
+    $terapeut_id = $_POST['terapeut_id'] ?? '';
     $datum_od = $_POST['datum_od'] ?? '';
     $broj_sedmica = (int)($_POST['broj_sedmica'] ?? 26);
     $radni_dani = $_POST['radni_dani'] ?? [];
@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $errors = [];
     
     // Validacija
-    if (!$terapeut_id) {
+    if (empty($terapeut_id)) {
         $errors[] = 'Terapeut je obavezan.';
     }
     if (empty($datum_od)) {
@@ -81,9 +81,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($radni_dani)) {
         $errors[] = 'Odaberite barem jedan radni dan.';
     }
-    if (!in_array($pocetna_smjena, ['jutro', 'vecer'])) {
-        $errors[] = 'Nevažeća smjena.';
-    }
     
     // Provjeri da li je datum ponedjeljak
     if (!empty($datum_od) && date('N', strtotime($datum_od)) != 1) {
@@ -94,95 +91,127 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $pdo->beginTransaction();
             
-            // Dohvati podatke terapeuta za zamrzavanje
-            $stmt = $pdo->prepare("SELECT ime, prezime FROM users WHERE id = ?");
-            $stmt->execute([$terapeut_id]);
-            $terapeut = $stmt->fetch();
-            
-            if (!$terapeut) {
-                throw new Exception('Terapeut nije pronađen.');
-            }
-            
             $unosio_id = $user['id'];
             $unosio_ime = $user['ime'];
             $unosio_prezime = $user['prezime'];
             $datum_unosa = date('Y-m-d H:i:s');
             
-            $dodano = 0;
-            $preskoceno = 0;
-            $trenutna_smjena = $pocetna_smjena;
+            $ukupno_dodano = 0;
+            $ukupno_preskoceno = 0;
             
-            // Loop kroz sedmice
-            for ($sedmica = 0; $sedmica < $broj_sedmica; $sedmica++) {
-                $sedmica_pocetak = date('Y-m-d', strtotime("+$sedmica weeks", strtotime($datum_od)));
-                $sedmica_kraj = date('Y-m-d', strtotime('sunday', strtotime($sedmica_pocetak)));
+            // Odredi listu terapeuta
+            if ($terapeut_id === 'svi') {
+                // Svi aktivni terapeuti
+                $stmt = $pdo->prepare("SELECT id, ime, prezime FROM users WHERE uloga = 'terapeut' AND aktivan = 1");
+                $stmt->execute();
+                $lista_terapeuta = $stmt->fetchAll();
+            } else {
+                // Jedan terapeut
+                $stmt = $pdo->prepare("SELECT id, ime, prezime FROM users WHERE id = ?");
+                $stmt->execute([(int)$terapeut_id]);
+                $lista_terapeuta = $stmt->fetchAll();
+            }
+            
+            if (empty($lista_terapeuta)) {
+                throw new Exception('Nema terapeuta za generiranje rasporeda.');
+            }
+            
+            // Loop kroz terapeute
+            foreach ($lista_terapeuta as $terapeut) {
+                $tid = $terapeut['id'];
                 
-                // Dohvati vremena za smjenu
-                $stmt_smjena = $pdo->prepare("SELECT pocetak, kraj FROM smjene_vremena WHERE smjena = ? AND aktivan = 1");
-                $stmt_smjena->execute([$trenutna_smjena]);
-                $smjena_vremena = $stmt_smjena->fetch();
-                
-                $pocetak = $smjena_vremena ? $smjena_vremena['pocetak'] : null;
-                $kraj = $smjena_vremena ? $smjena_vremena['kraj'] : null;
-                
-                // Loop kroz odabrane dane
-                foreach ($radni_dani as $dan) {
-                    // Izračunaj datum za taj dan
-                    $dan_offset = array_search($dan, array_keys(dani()));
-                    $datum_dan = date('Y-m-d', strtotime("+$dan_offset days", strtotime($sedmica_pocetak)));
-                    
-                    // Provjeri da li već postoji
-                    $check_stmt = $pdo->prepare("
-                        SELECT COUNT(*) FROM rasporedi_sedmicni 
+                // Odredi početnu smjenu za ovog terapeuta
+                if ($terapeut_id === 'svi') {
+                    // Za "svi terapeuti" - automatski odredi na osnovu zadnje smjene
+                    $stmt_zadnja = $pdo->prepare("
+                        SELECT smjena FROM rasporedi_sedmicni 
                         WHERE terapeut_id = ? 
-                        AND datum_od = ?
-                        AND dan = ?
+                        ORDER BY datum_od DESC, FIELD(dan, 'ned','sub','pet','cet','sri','uto','pon') 
+                        LIMIT 1
                     ");
-                    $check_stmt->execute([$terapeut_id, $sedmica_pocetak, $dan]);
+                    $stmt_zadnja->execute([$tid]);
+                    $zadnja = $stmt_zadnja->fetchColumn();
                     
-                    if ($check_stmt->fetchColumn() > 0) {
-                        $preskoceno++;
-                        continue;
+                    if ($zadnja) {
+                        $trenutna_smjena = ($zadnja === 'jutro') ? 'vecer' : 'jutro';
+                    } else {
+                        // Nema prethodnih - koristi odabranu početnu smjenu
+                        $trenutna_smjena = $pocetna_smjena;
                     }
-                    
-                    // Ubaci raspored
-                    $stmt = $pdo->prepare("
-                        INSERT INTO rasporedi_sedmicni 
-                        (terapeut_id, datum_od, datum_do, dan, smjena, pocetak, kraj, 
-                         unosio_id, datum_unosa, terapeut_ime, terapeut_prezime, unosio_ime, unosio_prezime)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    ");
-                    $stmt->execute([
-                        $terapeut_id,
-                        $sedmica_pocetak,
-                        $sedmica_kraj,
-                        $dan,
-                        $trenutna_smjena,
-                        $pocetak,
-                        $kraj,
-                        $unosio_id,
-                        $datum_unosa,
-                        $terapeut['ime'],
-                        $terapeut['prezime'],
-                        $unosio_ime,
-                        $unosio_prezime
-                    ]);
-                    $dodano++;
+                } else {
+                    // Za jednog terapeuta - koristi odabranu smjenu
+                    $trenutna_smjena = $pocetna_smjena;
                 }
                 
-                // Rotiraj smjenu za sljedeću sedmicu
-                $trenutna_smjena = ($trenutna_smjena === 'jutro') ? 'vecer' : 'jutro';
+                // Loop kroz sedmice
+                for ($sedmica = 0; $sedmica < $broj_sedmica; $sedmica++) {
+                    $sedmica_pocetak = date('Y-m-d', strtotime("+$sedmica weeks", strtotime($datum_od)));
+                    $sedmica_kraj = date('Y-m-d', strtotime('sunday', strtotime($sedmica_pocetak)));
+                    
+                    // Dohvati vremena za smjenu
+                    $stmt_smjena = $pdo->prepare("SELECT pocetak, kraj FROM smjene_vremena WHERE smjena = ? AND aktivan = 1");
+                    $stmt_smjena->execute([$trenutna_smjena]);
+                    $smjena_vremena = $stmt_smjena->fetch();
+                    
+                    $pocetak = $smjena_vremena ? $smjena_vremena['pocetak'] : null;
+                    $kraj = $smjena_vremena ? $smjena_vremena['kraj'] : null;
+                    
+                    // Loop kroz odabrane dane
+                    foreach ($radni_dani as $dan) {
+                        // Provjeri da li već postoji
+                        $check_stmt = $pdo->prepare("
+                            SELECT COUNT(*) FROM rasporedi_sedmicni 
+                            WHERE terapeut_id = ? 
+                            AND datum_od = ?
+                            AND dan = ?
+                        ");
+                        $check_stmt->execute([$tid, $sedmica_pocetak, $dan]);
+                        
+                        if ($check_stmt->fetchColumn() > 0) {
+                            $ukupno_preskoceno++;
+                            continue;
+                        }
+                        
+                        // Ubaci raspored
+                        $stmt = $pdo->prepare("
+                            INSERT INTO rasporedi_sedmicni 
+                            (terapeut_id, datum_od, datum_do, dan, smjena, pocetak, kraj, 
+                             unosio_id, datum_unosa, terapeut_ime, terapeut_prezime, unosio_ime, unosio_prezime)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        ");
+                        $stmt->execute([
+                            $tid,
+                            $sedmica_pocetak,
+                            $sedmica_kraj,
+                            $dan,
+                            $trenutna_smjena,
+                            $pocetak,
+                            $kraj,
+                            $unosio_id,
+                            $datum_unosa,
+                            $terapeut['ime'],
+                            $terapeut['prezime'],
+                            $unosio_ime,
+                            $unosio_prezime
+                        ]);
+                        $ukupno_dodano++;
+                    }
+                    
+                    // Rotiraj smjenu za sljedeću sedmicu
+                    $trenutna_smjena = ($trenutna_smjena === 'jutro') ? 'vecer' : 'jutro';
+                }
             }
             
             $pdo->commit();
             
             // Redirect sa porukom
-            if ($dodano > 0 && $preskoceno > 0) {
-                $msg = "generisano_djelimicno&dodano=$dodano&preskoceno=$preskoceno";
-            } elseif ($dodano > 0) {
-                $msg = "generisano&dodano=$dodano&sedmica=$broj_sedmica";
+            $broj_terapeuta = count($lista_terapeuta);
+            if ($ukupno_dodano > 0 && $ukupno_preskoceno > 0) {
+                $msg = "generisano_djelimicno&dodano=$ukupno_dodano&preskoceno=$ukupno_preskoceno&terapeuta=$broj_terapeuta";
+            } elseif ($ukupno_dodano > 0) {
+                $msg = "generisano&dodano=$ukupno_dodano&sedmica=$broj_sedmica&terapeuta=$broj_terapeuta";
             } else {
-                $msg = "vec_postoji&preskoceno=$preskoceno";
+                $msg = "vec_postoji&preskoceno=$ukupno_preskoceno";
             }
             
             header("Location: /raspored?msg=$msg");

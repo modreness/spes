@@ -31,12 +31,15 @@
     <?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'generisano'): ?>
     <div class="alert alert-success">
         <i class="fa-solid fa-check-circle"></i>
-        <strong>Uspješno!</strong> Generisano je <?= (int)($_GET['dodano'] ?? 0) ?> rasporeda za <?= (int)($_GET['sedmica'] ?? 0) ?> sedmica.
+        <strong>Uspješno!</strong> Generisano je <?= (int)($_GET['dodano'] ?? 0) ?> rasporeda 
+        za <?= (int)($_GET['sedmica'] ?? 0) ?> sedmica
+        <?= isset($_GET['terapeuta']) && $_GET['terapeuta'] > 1 ? ' (' . (int)$_GET['terapeuta'] . ' terapeuta)' : '' ?>.
     </div>
 <?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'generisano_djelimicno'): ?>
     <div class="alert alert-success">
         <i class="fa-solid fa-exclamation-triangle"></i>
-        <strong>Djelomično uspješno!</strong><br>
+        <strong>Djelomično uspješno!</strong>
+        <?= isset($_GET['terapeuta']) && $_GET['terapeuta'] > 1 ? '(' . (int)$_GET['terapeuta'] . ' terapeuta)' : '' ?><br>
         ✅ Dodano: <?= (int)($_GET['dodano'] ?? 0) ?> rasporeda<br>
         ⚠️ Preskočeno (već postoji): <?= (int)($_GET['preskoceno'] ?? 0) ?> rasporeda
     </div>

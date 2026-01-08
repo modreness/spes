@@ -29,17 +29,29 @@
                 <label for="terapeut_id"><i class="fa-solid fa-user-doctor"></i> Terapeut *</label>
                 <select id="terapeut_id" name="terapeut_id" class="select2" required onchange="provjeriZadnjuSmjenu()">
                     <option value="">Odaberite terapeuta</option>
-                    <?php foreach ($terapeuti as $t): ?>
-                        <option value="<?= $t['id'] ?>" <?= ($_POST['terapeut_id'] ?? '') == $t['id'] ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($t['ime'] . ' ' . $t['prezime']) ?>
-                        </option>
-                    <?php endforeach; ?>
+                    <option value="svi" <?= ($_POST['terapeut_id'] ?? '') === 'svi' ? 'selected' : '' ?>>
+                        ✨ Svi terapeuti (<?= count($terapeuti) ?>)
+                    </option>
+                    <optgroup label="Pojedinačno">
+                        <?php foreach ($terapeuti as $t): ?>
+                            <option value="<?= $t['id'] ?>" <?= ($_POST['terapeut_id'] ?? '') == $t['id'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($t['ime'] . ' ' . $t['prezime']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </optgroup>
                 </select>
             </div>
-            
+
             <!-- Info o zadnjoj smjeni -->
             <div id="zadnja-smjena-info" style="display: none; background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #289cc6;">
                 <div id="zadnja-smjena-tekst"></div>
+            </div>
+
+            <!-- Info za sve terapeute -->
+            <div id="svi-terapeuti-info" style="display: none; background: #e8f5e9; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #27ae60;">
+                <i class="fa-solid fa-info-circle" style="color: #27ae60;"></i>
+                <strong>Automatska rotacija:</strong> Za svakog terapeuta sistem će automatski odrediti početnu smjenu na osnovu njegove zadnje smjene. 
+                Terapeuti bez prethodnih rasporeda će početi sa odabranom početnom smjenom.
             </div>
 
             <!-- Početni datum -->
@@ -85,7 +97,7 @@
             </div>
 
             <!-- Početna smjena -->
-            <div class="form-group">
+            <div class="form-group" id="pocetna-smjena-wrapper">
                 <label for="pocetna_smjena"><i class="fa-solid fa-sun"></i> Početna smjena *</label>
                 <select id="pocetna_smjena" name="pocetna_smjena" required>
                     <option value="jutro" <?= ($_POST['pocetna_smjena'] ?? 'jutro') == 'jutro' ? 'selected' : '' ?>>
@@ -95,7 +107,7 @@
                         Večer
                     </option>
                 </select>
-                <small style="color: #7f8c8d; display: block; margin-top: 5px;">
+                <small id="pocetna-smjena-hint" style="color: #7f8c8d; display: block; margin-top: 5px;">
                     Prva sedmica će biti ova smjena, sljedeća suprotna, i tako naizmjenično
                 </small>
             </div>
@@ -124,12 +136,29 @@ function provjeriZadnjuSmjenu() {
     const terapeutId = document.getElementById('terapeut_id').value;
     const infoDiv = document.getElementById('zadnja-smjena-info');
     const tekstDiv = document.getElementById('zadnja-smjena-tekst');
+    const sviInfoDiv = document.getElementById('svi-terapeuti-info');
+    const pocetnaWrapper = document.getElementById('pocetna-smjena-wrapper');
+    const pocetnaHint = document.getElementById('pocetna-smjena-hint');
+    
+    // Resetuj
+    infoDiv.style.display = 'none';
+    sviInfoDiv.style.display = 'none';
     
     if (!terapeutId) {
-        infoDiv.style.display = 'none';
+        pocetnaHint.textContent = 'Prva sedmica će biti ova smjena, sljedeća suprotna, i tako naizmjenično';
+        azurirajPreview();
         return;
     }
     
+    // Ako su odabrani svi terapeuti
+    if (terapeutId === 'svi') {
+        sviInfoDiv.style.display = 'block';
+        pocetnaHint.innerHTML = '<strong>Za nove terapeute:</strong> Terapeuti bez prethodnih rasporeda će početi sa ovom smjenom';
+        azurirajPreview();
+        return;
+    }
+    
+    // Pojedinačni terapeut - AJAX
     fetch('/raspored/generisi?ajax=zadnja_smjena&terapeut_id=' + terapeutId)
         .then(response => response.json())
         .then(data => {
@@ -141,7 +170,6 @@ function provjeriZadnjuSmjenu() {
                         (${data.zadnji_datum})<br>
                         <strong>Predložena početna:</strong> <span style="color: #27ae60; font-weight: 600;">${smjenaLabels[data.predlozena_smjena] || data.predlozena_smjena}</span>
                     `;
-                    // Automatski postavi predloženu smjenu
                     document.getElementById('pocetna_smjena').value = data.predlozena_smjena;
                 } else {
                     tekstDiv.innerHTML = `
@@ -150,6 +178,7 @@ function provjeriZadnjuSmjenu() {
                     `;
                 }
                 infoDiv.style.display = 'block';
+                pocetnaHint.textContent = 'Prva sedmica će biti ova smjena, sljedeća suprotna, i tako naizmjenično';
                 azurirajPreview();
             }
         })
@@ -171,15 +200,23 @@ function toggleDanStyle(checkbox) {
 function azurirajPreview() {
     const brojSedmica = parseInt(document.getElementById('broj_sedmica').value) || 26;
     const pocetnaSmjena = document.getElementById('pocetna_smjena').value;
+    const terapeutId = document.getElementById('terapeut_id').value;
     const previewDiv = document.getElementById('rotacija-preview');
     
-    // Prikaži samo prvih 8 sedmica kao preview
     const prikaziSedmica = Math.min(brojSedmica, 8);
     let html = '';
     let trenutnaSmjena = pocetnaSmjena;
     
     const smjenaLabels = {'jutro': 'Jutro', 'vecer': 'Večer'};
     const smjenaBoje = {'jutro': '#289cc6', 'vecer': '#255AA5'};
+    
+    // Ako su svi terapeuti
+    let prefixTekst = '';
+    if (terapeutId === 'svi') {
+        prefixTekst = '<div style="grid-column: 1 / -1; text-align: center; color: #7f8c8d; font-size: 0.9rem; margin-bottom: 10px;"><i class="fa-solid fa-info-circle"></i> Prikazano za terapeute bez prethodnih rasporeda</div>';
+    }
+    
+    html += prefixTekst;
     
     for (let i = 1; i <= prikaziSedmica; i++) {
         html += `
@@ -188,7 +225,6 @@ function azurirajPreview() {
                 <div style="font-weight: 600;">${smjenaLabels[trenutnaSmjena]}</div>
             </div>
         `;
-        // Rotiraj
         trenutnaSmjena = (trenutnaSmjena === 'jutro') ? 'vecer' : 'jutro';
     }
     
@@ -207,11 +243,9 @@ function azurirajPreview() {
 document.getElementById('broj_sedmica').addEventListener('change', azurirajPreview);
 document.getElementById('pocetna_smjena').addEventListener('change', azurirajPreview);
 
-// Inicijalni preview
+// Inicijalno
 document.addEventListener('DOMContentLoaded', function() {
     azurirajPreview();
-    
-    // Ako je terapeut već odabran (POST reload)
     if (document.getElementById('terapeut_id').value) {
         provjeriZadnjuSmjenu();
     }
