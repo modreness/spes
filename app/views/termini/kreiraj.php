@@ -144,11 +144,7 @@
             <textarea id="napomena" name="napomena" rows="3" 
                     placeholder="Dodatne napomene o terminu..."><?= htmlspecialchars($_POST['napomena'] ?? '') ?></textarea>
         </div>
-        <div class="form-group">
-            <label for="napomena">Napomena</label>
-            <textarea id="napomena" name="napomena" rows="3" 
-                      placeholder="Dodatne napomene o terminu..."><?= htmlspecialchars($_POST['napomena'] ?? '') ?></textarea>
-        </div>
+        
 
         <div class="form-actions">
             <button type="submit" class="btn btn-add">
