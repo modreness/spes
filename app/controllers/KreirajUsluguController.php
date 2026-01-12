@@ -40,8 +40,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Naziv usluge je obavezan.';
     }
     
-    if (empty($cijena) || !is_numeric($cijena) || $cijena <= 0) {
-        $errors[] = 'Cijena mora biti pozitivni broj.';
+    if ($cijena === '' || !is_numeric($cijena) || $cijena < 0) {
+    $errors[] = 'Cijena mora biti 0 ili veća.';
     }
     
     if (empty($kategorija_id)) {
