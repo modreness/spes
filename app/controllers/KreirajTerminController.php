@@ -81,13 +81,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $napomena = trim($_POST['napomena'] ?? '');
     $koristi_paket = $_POST['koristi_paket'] ?? '';  // ID paketa ili 'ne'
     $placeno = isset($_POST['placeno']) ? 1 : 0;
+    $besplatno = isset($_POST['besplatno']) ? 1 : 0;
+    $umanjenje_posto = floatval($_POST['umanjenje_posto'] ?? 0);
     
     // Validacija
     if (empty($pacijent_id)) {
         $errors[] = 'Pacijent je obavezan.';
     }
-    
-   
     
     // Usluga je obavezna samo ako se NE koristi paket
     if (empty($koristi_paket) || $koristi_paket === 'ne') {
@@ -104,6 +104,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Vrijeme je obavezno.';
     }
     
+    // Validacija umanjenja
+    if ($umanjenje_posto < 0 || $umanjenje_posto > 100) {
+        $errors[] = 'Umanjenje mora biti između 0 i 100%.';
+    }
+    
     // Kombinuj datum i vrijeme
     $datum_vrijeme = '';
     if (!empty($datum) && !empty($vrijeme)) {
@@ -116,7 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     
     // Provjeri koliziju termina
-    if (empty($errors) && !empty($datum_vrijeme)) {
+    if (empty($errors) && !empty($datum_vrijeme) && !empty($terapeut_id)) {
         $stmt = $pdo->prepare("
             SELECT COUNT(*) FROM termini 
             WHERE terapeut_id = ? 
@@ -184,22 +189,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Odredi cijenu
             $iz_paketa = !empty($paket_id) ? 1 : 0;
             $cijena = 0;
+            $stvarna_cijena = null;
             
             if (!$iz_paketa) {
                 // Dohvati cijenu usluge
                 $stmt = $pdo->prepare("SELECT cijena FROM cjenovnik WHERE id = ?");
                 $stmt->execute([$usluga_id]);
                 $cijena = $stmt->fetchColumn();
+                
+                // Izračunaj stvarnu cijenu
+                if ($besplatno) {
+                    $stvarna_cijena = 0;
+                } elseif ($umanjenje_posto > 0) {
+                    $stvarna_cijena = $cijena * (100 - $umanjenje_posto) / 100;
+                } else {
+                    $stvarna_cijena = $cijena;
+                }
             }
             
-       
             // 1. Kreiraj termin SA ZAMRZNUTIM PODACIMA
-         
             $stmt = $pdo->prepare("
                 INSERT INTO termini 
                 (pacijent_id, pacijent_ime, pacijent_prezime, terapeut_id, terapeut_ime, terapeut_prezime, 
-                usluga_id, datum_vrijeme, status, tip_zakazivanja, napomena, placeno_iz_paketa, stvarna_cijena, placeno) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'zakazan', 'recepcioner', ?, ?, ?, ?)
+                usluga_id, datum_vrijeme, status, tip_zakazivanja, napomena, placeno_iz_paketa, stvarna_cijena, placeno, besplatno, umanjenje_posto) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'zakazan', 'recepcioner', ?, ?, ?, ?, ?, ?)
             ");
             $stmt->execute([
                 $pacijent_id,
@@ -212,8 +225,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $datum_vrijeme, 
                 $napomena,
                 $iz_paketa,
-                $iz_paketa ? null : $cijena,
-                $iz_paketa ? 1 : $placeno  // Ako je iz paketa, automatski je plaćeno
+                $stvarna_cijena,
+                $iz_paketa ? 1 : $placeno,  // Ako je iz paketa, automatski je plaćeno
+                $iz_paketa ? 0 : $besplatno,
+                $iz_paketa ? 0 : $umanjenje_posto
             ]);
             $termin_id = $pdo->lastInsertId();
             

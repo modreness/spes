@@ -30,7 +30,8 @@ try {
                CONCAT(u_terapeut.ime, ' ', u_terapeut.prezime) as terapeut_ime_display,
                u_pacijent.email as pacijent_email,
                u_terapeut.email as terapeut_email,
-               c.naziv as usluga_naziv
+               c.naziv as usluga_naziv,
+               c.cijena as usluga_cijena
         FROM termini t
         LEFT JOIN users u_pacijent ON t.pacijent_id = u_pacijent.id
         LEFT JOIN users u_terapeut ON t.terapeut_id = u_terapeut.id
@@ -90,13 +91,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $status = $_POST['status'] ?? '';
     $napomena = trim($_POST['napomena'] ?? '');
     $placeno = isset($_POST['placeno']) ? 1 : 0;
+    $besplatno = isset($_POST['besplatno']) ? 1 : 0;
+    $umanjenje_posto = floatval($_POST['umanjenje_posto'] ?? 0);
     
     // Validacija
     if (empty($pacijent_id)) {
         $errors[] = 'Pacijent je obavezan.';
     }
-    
-    
     
     if (empty($usluga_id)) {
         $errors[] = 'Usluga je obavezna.';
@@ -114,6 +115,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Status je obavezan.';
     }
     
+    // Validacija umanjenja
+    if ($umanjenje_posto < 0 || $umanjenje_posto > 100) {
+        $errors[] = 'Umanjenje mora biti između 0 i 100%.';
+    }
+    
     // Kombinuj datum i vrijeme
     $datum_vrijeme = '';
     if (!empty($datum) && !empty($vrijeme)) {
@@ -121,7 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     
     // Provjeri koliziju termina (osim trenutnog)
-    if (empty($errors) && !empty($datum_vrijeme)) {
+    if (empty($errors) && !empty($datum_vrijeme) && !empty($terapeut_id)) {
         $stmt = $pdo->prepare("
             SELECT COUNT(*) FROM termini 
             WHERE terapeut_id = ? 
@@ -150,8 +156,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([$pacijent_id]);
             $pacijent = $stmt->fetch();
             
-            // Ažuriraj sa zamrznutim podacima
+            // Izračunaj stvarnu cijenu (samo ako nije iz paketa)
+            $stvarna_cijena = $termin['stvarna_cijena']; // zadrži postojeću ako je iz paketa
             
+            if (!$termin['placeno_iz_paketa']) {
+                // Dohvati cijenu usluge
+                $stmt = $pdo->prepare("SELECT cijena FROM cjenovnik WHERE id = ?");
+                $stmt->execute([$usluga_id]);
+                $cijena = $stmt->fetchColumn();
+                
+                // Izračunaj stvarnu cijenu
+                if ($besplatno) {
+                    $stvarna_cijena = 0;
+                } elseif ($umanjenje_posto > 0) {
+                    $stvarna_cijena = $cijena * (100 - $umanjenje_posto) / 100;
+                } else {
+                    $stvarna_cijena = $cijena;
+                }
+            }
+            
+            // Ažuriraj sa zamrznutim podacima
             $stmt = $pdo->prepare("
                 UPDATE termini 
                 SET pacijent_id = ?, 
@@ -164,7 +188,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     datum_vrijeme = ?, 
                     status = ?, 
                     napomena = ?,
-                    placeno = ?
+                    placeno = ?,
+                    besplatno = ?,
+                    umanjenje_posto = ?,
+                    stvarna_cijena = ?
                 WHERE id = ?
             ");
             $stmt->execute([
@@ -179,15 +206,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $status, 
                 $napomena,
                 $placeno,
+                $termin['placeno_iz_paketa'] ? 0 : $besplatno,
+                $termin['placeno_iz_paketa'] ? 0 : $umanjenje_posto,
+                $stvarna_cijena,
                 $termin_id
             ]);
             
             // ✉️ SLANJE EMAIL NOTIFIKACIJA ZA PROMENU STATUSA
-            // ✉️ SLANJE EMAIL NOTIFIKACIJA
-            // Šalji email ako:
-            // 1. Status je promijenjen na 'obavljen' ili 'otkazan'
-            // 2. ILI terapeut je dodan (bio NULL, sada ima vrijednost)
-
             $terapeut_dodan = (empty($termin['terapeut_id']) && !empty($terapeut_id));
 
             if (($old_status !== $status && in_array($status, ['obavljen', 'otkazan'])) || $terapeut_dodan) {
