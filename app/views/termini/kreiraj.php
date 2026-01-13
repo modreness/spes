@@ -243,7 +243,7 @@
                     <label for="umanjenje_posto" style="font-weight: 600;">Procenat umanjenja</label>
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <input type="number" id="umanjenje_posto" name="umanjenje_posto" 
-                               min="1" max="100" step="5"
+                               min="1" max="100" step="1"
                                value="<?= htmlspecialchars($_POST['umanjenje_posto'] ?? '50') ?>"
                                onchange="izracunajCijenu()"
                                oninput="izracunajCijenu()"
