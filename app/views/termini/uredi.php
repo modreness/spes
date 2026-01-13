@@ -26,40 +26,52 @@
             </div>
             <?php if ($termin['placeno_iz_paketa']): ?>
             <div><strong>Plaćanje:</strong> 
-                <span style="background: #3498db; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px;">Iz paketa</span>
+                <span style="background: #3498db; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px;">
+                    Iz paketa
+                </span>
             </div>
             <?php elseif (!empty($termin['poklon_bon'])): ?>
             <div><strong>Plaćanje:</strong> 
-                <span style="background: #9b59b6; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px;"><i class="fa-solid fa-gift"></i> Poklon bon</span>
+                <span style="background: #9b59b6; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px;">
+                    <i class="fa-solid fa-gift"></i> Poklon bon
+                </span>
             </div>
             <?php endif; ?>
             <?php if (!empty($termin['tip_termina']) && $termin['tip_termina'] === 'grupni'): ?>
             <div><strong>Tip:</strong> 
-                <span style="background: #9b59b6; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px;"><i class="fa-solid fa-users"></i> Grupni</span>
+                <span style="background: #9b59b6; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px;">
+                    <i class="fa-solid fa-users"></i> Grupni termin
+                </span>
             </div>
             <?php endif; ?>
             <?php if (!empty($termin['dozvoli_pridruzivanje'])): ?>
             <div><strong>Pridruživanje:</strong> 
-                <span style="background: #17a2b8; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px;"><i class="fa-solid fa-user-plus"></i> Dozvoljeno</span>
+                <span style="background: #17a2b8; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px;">
+                    <i class="fa-solid fa-user-plus"></i> Dozvoljeno
+                </span>
             </div>
             <?php endif; ?>
         </div>
     </div>
     
-    <!-- Prikaz članova grupe -->
+    <!-- Prikaz članova grupe ako je grupni termin -->
     <?php if (!empty($grupa_clanovi)): ?>
     <div style="background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
-        <h4 style="margin: 0 0 15px 0;"><i class="fa-solid fa-users"></i> Ostali pacijenti u grupi (<?= count($grupa_clanovi) ?>)</h4>
+        <h4 style="margin: 0 0 15px 0;">
+            <i class="fa-solid fa-users"></i> Ostali pacijenti u grupi (<?= count($grupa_clanovi) ?>)
+        </h4>
         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px;">
             <?php foreach ($grupa_clanovi as $clan): ?>
             <div style="background: rgba(255,255,255,0.15); padding: 12px 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
                 <div>
                     <strong><?= htmlspecialchars($clan['pacijent_ime']) ?></strong>
                     <div style="font-size: 0.85em; opacity: 0.9;">
-                        Status: <?= ucfirst($clan['status']) ?><?= $clan['placeno'] ? ' • Plaćeno ✓' : '' ?>
+                        Status: <?= ucfirst($clan['status']) ?>
+                        <?= $clan['placeno'] ? ' • Plaćeno ✓' : '' ?>
                     </div>
                 </div>
-                <a href="/termini/uredi?id=<?= $clan['id'] ?>" style="background: rgba(255,255,255,0.2); color: white; padding: 5px 12px; border-radius: 5px; text-decoration: none; font-size: 0.85em;">
+                <a href="/termini/uredi?id=<?= $clan['id'] ?>" 
+                   style="background: rgba(255,255,255,0.2); color: white; padding: 5px 12px; border-radius: 5px; text-decoration: none; font-size: 0.85em;">
                     <i class="fa-solid fa-edit"></i> Uredi
                 </a>
             </div>
@@ -72,6 +84,7 @@
         <input type="hidden" name="id" value="<?= $termin['id'] ?>">
         
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+            
             <div class="form-group">
                 <label for="pacijent_id">Pacijent *</label>
                 <select id="pacijent_id" name="pacijent_id" class="select2" required>
@@ -86,7 +99,7 @@
 
             <div class="form-group">
                 <label for="terapeut_id">Terapeut</label>
-                <select id="terapeut_id" name="terapeut_id" class="select2">
+                <select id="terapeut_id" name="terapeut_id" class="select2" >
                     <option value="">Odaberite terapeuta</option>
                     <?php foreach ($terapeuti as $t): ?>
                         <option value="<?= $t['id'] ?>" <?= ($_POST['terapeut_id'] ?? $termin['terapeut_id']) == $t['id'] ? 'selected' : '' ?>>
@@ -95,6 +108,7 @@
                     <?php endforeach; ?>
                 </select>
             </div>
+
         </div>
 
         <div class="form-group">
@@ -110,7 +124,8 @@
                         echo '<optgroup label="' . htmlspecialchars($trenutna_kategorija) . '">';
                     endif;
                 ?>
-                    <option value="<?= $u['id'] ?>" data-cijena="<?= $u['cijena'] ?>"
+                    <option value="<?= $u['id'] ?>" 
+                            data-cijena="<?= $u['cijena'] ?>"
                             <?= ($_POST['usluga_id'] ?? $termin['usluga_id']) == $u['id'] ? 'selected' : '' ?>>
                         <?= htmlspecialchars($u['naziv']) ?> - <?= number_format($u['cijena'], 2) ?> KM
                     </option>
@@ -120,6 +135,7 @@
         </div>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+            
             <div class="form-group">
                 <label for="datum">Datum *</label>
                 <input type="date" id="datum" name="datum" required 
@@ -142,6 +158,7 @@
                     <option value="slobodan" <?= ($_POST['status'] ?? $termin['status']) == 'slobodan' ? 'selected' : '' ?>>Slobodan</option>
                 </select>
             </div>
+
         </div>
 
         <!-- Dozvoli pridruživanje -->
@@ -166,7 +183,7 @@
                 <i class="fa-solid fa-money-bill-wave"></i> Plaćanje i popusti
             </h4>
             
-            <!-- Tip plaćanja -->
+            <!-- Tip plaćanja - Radio buttons -->
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;">
                 <label class="tip-placanja-label" id="label-puna-cijena" style="display: flex; flex-direction: column; align-items: center; padding: 15px; background: white; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; text-align: center;">
                     <input type="radio" name="tip_placanja" value="puna_cijena" 
@@ -202,6 +219,7 @@
             </div>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start;">
+                <!-- Plaćeno checkbox -->
                 <div class="form-group" style="margin: 0;">
                     <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
                         <input type="checkbox" name="placeno" id="placeno" value="1" 
@@ -212,19 +230,23 @@
                     <small style="color: #7f8c8d; display: block; margin-top: 5px;">Pacijent je platio</small>
                 </div>
                 
+                <!-- Umanjenje posto -->
                 <div class="form-group" style="margin: 0; display: none;" id="umanjenje-polje">
                     <label for="umanjenje_posto" style="font-weight: 600;">Procenat umanjenja</label>
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <input type="number" id="umanjenje_posto" name="umanjenje_posto" 
                                min="0" max="100" step="1" disabled
                                value="<?= htmlspecialchars($_POST['umanjenje_posto'] ?? $termin['umanjenje_posto'] ?? '50') ?>"
-                               onchange="izracunajCijenu()" oninput="izracunajCijenu()"
+                               onchange="izracunajCijenu()"
+                               oninput="izracunajCijenu()"
                                style="width: 80px;">
                         <span>%</span>
                     </div>
+                    <small style="color: #7f8c8d; display: block; margin-top: 5px;">Npr. 50% za pola termina</small>
                 </div>
             </div>
             
+            <!-- Prikaz izračunate cijene -->
             <div id="cijena-prikaz" style="margin-top: 15px; padding: 15px; background: white; border-radius: 8px;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
@@ -239,21 +261,27 @@
             </div>
         </div>
         <?php else: ?>
+        <!-- Poruka za termine iz paketa -->
         <div style="background: linear-gradient(135deg, #3498db, #2980b9); color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-            <h4 style="margin: 0 0 10px 0;"><i class="fa-solid fa-box"></i> Termin iz paketa</h4>
-            <p style="margin: 0; opacity: 0.9;">Ovaj termin je plaćen iz paketa. Opcije za plaćanje nisu dostupne.</p>
+            <h4 style="margin: 0 0 10px 0;">
+                <i class="fa-solid fa-box"></i> Termin iz paketa
+            </h4>
+            <p style="margin: 0; opacity: 0.9;">
+                Ovaj termin je plaćen iz paketa. Opcije za plaćanje i popuste nisu dostupne.
+            </p>
         </div>
         <?php endif; ?>
         
-        <!-- Ažuriranje grupe -->
+        <!-- Opcija za ažuriranje cijele grupe -->
         <?php if (!empty($grupa_clanovi)): ?>
         <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
             <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                <input type="checkbox" name="azuriraj_grupu" id="azuriraj_grupu" value="1" style="width: 20px; height: 20px;">
+                <input type="checkbox" name="azuriraj_grupu" id="azuriraj_grupu" value="1" 
+                    style="width: 20px; height: 20px;">
                 <div>
                     <strong style="color: #856404;"><i class="fa-solid fa-users"></i> Ažuriraj cijelu grupu</strong>
                     <div style="color: #856404; font-size: 0.9em;">
-                        Promjene će se primijeniti na sve pacijente u grupi
+                        Promjene terapeuta, usluge, datuma/vremena, statusa i popusta će se primijeniti na sve pacijente u grupi
                     </div>
                 </div>
             </label>
@@ -262,7 +290,8 @@
 
         <div class="form-group">
             <label for="napomena">Napomena</label>
-            <textarea id="napomena" name="napomena" rows="3"><?= htmlspecialchars($_POST['napomena'] ?? $termin['napomena']) ?></textarea>
+            <textarea id="napomena" name="napomena" rows="3" 
+                    placeholder="Dodatne napomene o terminu..."><?= htmlspecialchars($_POST['napomena'] ?? $termin['napomena']) ?></textarea>
         </div>
 
         <div class="form-actions">
@@ -276,36 +305,54 @@
 
 <?php if (!$termin['placeno_iz_paketa']): ?>
 <script>
+// Toggle tip plaćanja
 function toggleTipPlacanja() {
     const tipPlacanja = document.querySelector('input[name="tip_placanja"]:checked')?.value || 'puna_cijena';
     const umanjenjePolje = document.getElementById('umanjenje-polje');
     const umanjenjeInput = document.getElementById('umanjenje_posto');
     
+    // Reset svih labela
     document.querySelectorAll('.tip-placanja-label').forEach(label => {
         label.style.borderColor = '#e0e0e0';
         label.style.background = 'white';
     });
     
-    const colors = { 'puna_cijena': '#27ae60', 'besplatno': '#e74c3c', 'poklon_bon': '#9b59b6', 'umanjenje': '#f39c12' };
+    // Označi odabrani
+    const colors = {
+        'puna_cijena': '#27ae60',
+        'besplatno': '#e74c3c',
+        'poklon_bon': '#9b59b6',
+        'umanjenje': '#f39c12'
+    };
+    
     const selectedLabel = document.getElementById('label-' + tipPlacanja.replace('_', '-'));
     if (selectedLabel) {
         selectedLabel.style.borderColor = colors[tipPlacanja];
         selectedLabel.style.background = colors[tipPlacanja] + '10';
     }
     
+    // Prikaži/sakrij polje za umanjenje i DISABLE kad je skriveno
     if (tipPlacanja === 'umanjenje') {
         umanjenjePolje.style.display = 'block';
         umanjenjeInput.disabled = false;
-        if (parseFloat(umanjenjeInput.value) === 0) umanjenjeInput.value = '50';
+        // Postavi default ako je 0
+        if (parseFloat(umanjenjeInput.value) === 0) {
+            umanjenjeInput.value = '50';
+        }
     } else {
         umanjenjePolje.style.display = 'none';
         umanjenjeInput.disabled = true;
     }
+    
     izracunajCijenu();
 }
 
-function azurirajCijenu() { izracunajCijenu(); }
+// Ažuriraj cijenu kada se promijeni usluga
+function azurirajCijenu() {
+    izracunajCijenu();
+}
 
+// Izračunaj i prikaži konačnu cijenu
 function izracunajCijenu() {
     const uslugaSelect = document.getElementById('usluga_id');
     const tipPlacanja = document.querySelector('input[name="tip_placanja"]:checked')?.value || 'puna_cijena';
@@ -323,6 +370,7 @@ function izracunajCijenu() {
         originalnaEl.textContent = cijena.toFixed(2).replace('.', ',') + ' KM';
         
         let konacnaCijena = cijena;
+        
         if (tipPlacanja === 'besplatno' || tipPlacanja === 'poklon_bon') {
             konacnaCijena = 0;
             konacnaEl.style.color = tipPlacanja === 'besplatno' ? '#e74c3c' : '#9b59b6';
@@ -334,12 +382,19 @@ function izracunajCijenu() {
         }
         
         konacnaEl.textContent = konacnaCijena.toFixed(2).replace('.', ',') + ' KM';
-        originalnaEl.style.display = tipPlacanja !== 'puna_cijena' ? 'inline' : 'none';
+        
+        // Prikaži/sakrij originalnu cijenu
+        if (tipPlacanja !== 'puna_cijena') {
+            originalnaEl.style.display = 'inline';
+        } else {
+            originalnaEl.style.display = 'none';
+        }
     } else {
         cijenaPrikaz.style.display = 'none';
     }
 }
 
+// Pozovi na load
 document.addEventListener('DOMContentLoaded', function() {
     toggleTipPlacanja();
     izracunajCijenu();

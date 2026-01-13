@@ -86,7 +86,7 @@
 
         </div>
 
-        <!-- Prikaz aktivnih paketa pacijenta -->
+        <!-- Prikaz aktivnih paketa pacijenta - SAMO ZA POJEDINAČNE -->
         <div id="paketi-sekcija">
             <?php if (!empty($aktivni_paketi)): ?>
             <div style="background: linear-gradient(135deg, #255AA5, #289CC6); color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
@@ -98,23 +98,36 @@
                     <div style="display: grid; gap: 10px; margin-top: 10px;">
                         <?php foreach ($aktivni_paketi as $paket): ?>
                             <label style="background: rgba(255,255,255,1); padding: 15px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 15px;">
-                                <input type="radio" name="koristi_paket" value="<?= $paket['id'] ?>" 
-                                       onchange="toggleUslugaPolje()" style="width: 20px; height: 20px;">
+                                <input type="radio" 
+                                       name="koristi_paket" 
+                                       value="<?= $paket['id'] ?>" 
+                                       onchange="toggleUslugaPolje()"
+                                       style="width: 20px; height: 20px;">
                                 <div style="flex: 1;">
                                     <strong style="font-size: 1.1em;"><?= htmlspecialchars($paket['paket_naziv']) ?></strong>
                                     <div style="opacity: 0.9; font-size: 0.9em; margin-top: 5px;">
                                         Preostalo: <strong><?= $paket['ukupno_termina'] - $paket['iskoristeno_termina'] ?></strong> termina
+                                        | Iskorišteno: <?= $paket['iskoristeno_termina'] ?>/<?= $paket['ukupno_termina'] ?>
                                     </div>
                                 </div>
-                                <div style="background: rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 20px; font-weight: 600;">BESPLATNO</div>
+                                <div style="background: rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 20px; font-weight: 600;">
+                                    BESPLATNO
+                                </div>
                             </label>
                         <?php endforeach; ?>
                         
                         <label style="background: rgba(255,255,255,1); padding: 15px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 15px;">
-                            <input type="radio" name="koristi_paket" value="ne" checked onchange="toggleUslugaPolje()" style="width: 20px; height: 20px;">
+                            <input type="radio" 
+                                   name="koristi_paket" 
+                                   value="ne" 
+                                   checked 
+                                   onchange="toggleUslugaPolje()"
+                                   style="width: 20px; height: 20px;">
                             <div style="flex: 1;">
                                 <strong style="font-size: 1.1em;">Plati pojedinačno</strong>
-                                <div style="opacity: 0.9; font-size: 0.9em; margin-top: 5px;">Ne koristi paket</div>
+                                <div style="opacity: 0.9; font-size: 0.9em; margin-top: 5px;">
+                                    Ne koristi paket - naplati punu cijenu
+                                </div>
                             </div>
                         </label>
                     </div>
@@ -138,7 +151,8 @@
                         echo '<optgroup label="' . htmlspecialchars($trenutna_kategorija) . '">';
                     endif;
                 ?>
-                    <option value="<?= $u['id'] ?>" data-cijena="<?= $u['cijena'] ?>"
+                    <option value="<?= $u['id'] ?>" 
+                            data-cijena="<?= $u['cijena'] ?>"
                             <?= ($_POST['usluga_id'] ?? '') == $u['id'] ? 'selected' : '' ?>>
                         <?= htmlspecialchars($u['naziv']) ?> - <?= number_format($u['cijena'], 2) ?> KM
                     </option>
@@ -148,6 +162,7 @@
         </div>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+            
             <div class="form-group">
                 <label for="datum">Datum *</label>
                 <input type="date" id="datum" name="datum" required 
@@ -161,6 +176,7 @@
                        value="<?= htmlspecialchars($_POST['vrijeme'] ?? '') ?>"
                        onchange="provjeriDatum()">
             </div>
+
         </div>
         
         <!-- Upozorenje za retroaktivni termin -->
@@ -169,7 +185,7 @@
                 <i class="fa-solid fa-clock-rotate-left" style="font-size: 1.5em;"></i>
                 <div>
                     <strong>Retroaktivni unos</strong>
-                    <div style="font-size: 0.9em;">Status će biti "Obavljen", email neće biti poslan.</div>
+                    <div style="font-size: 0.9em;">Termin je u prošlosti. Status će automatski biti postavljen na "Obavljen" i email notifikacije neće biti poslane.</div>
                 </div>
             </div>
         </div>
@@ -198,7 +214,7 @@
                 </span>
             </h4>
             
-            <!-- Tip plaćanja -->
+            <!-- Tip plaćanja - Radio buttons -->
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;">
                 <label class="tip-placanja-label" id="label-puna-cijena" style="display: flex; flex-direction: column; align-items: center; padding: 15px; background: white; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; text-align: center;">
                     <input type="radio" name="tip_placanja" value="puna_cijena" checked onchange="toggleTipPlacanja()" style="margin-bottom: 8px;">
@@ -226,6 +242,7 @@
             </div>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start;">
+                <!-- Plaćeno checkbox -->
                 <div class="form-group" style="margin: 0;">
                     <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
                         <input type="checkbox" name="placeno" id="placeno" value="1" 
@@ -233,22 +250,26 @@
                             style="width: 20px; height: 20px;">
                         <span style="font-weight: 600;">Plaćeno</span>
                     </label>
-                    <small style="color: #7f8c8d; display: block; margin-top: 5px;">Pacijent platio odmah</small>
+                    <small style="color: #7f8c8d; display: block; margin-top: 5px;">Pacijent(i) platio odmah</small>
                 </div>
                 
+                <!-- Umanjenje posto - prikaži samo ako je odabrano umanjenje -->
                 <div class="form-group" style="margin: 0; display: none;" id="umanjenje-polje">
                     <label for="umanjenje_posto" style="font-weight: 600;">Procenat umanjenja</label>
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <input type="number" id="umanjenje_posto" name="umanjenje_posto" 
                                min="0" max="100" step="1" disabled
                                value="<?= htmlspecialchars($_POST['umanjenje_posto'] ?? '50') ?>"
-                               onchange="izracunajCijenu()" oninput="izracunajCijenu()"
+                               onchange="izracunajCijenu()"
+                               oninput="izracunajCijenu()"
                                style="width: 80px;">
                         <span>%</span>
                     </div>
+                    <small style="color: #7f8c8d; display: block; margin-top: 5px;">Npr. 50% za pola termina</small>
                 </div>
             </div>
             
+            <!-- Prikaz izračunate cijene -->
             <div id="cijena-prikaz" style="margin-top: 15px; padding: 15px; background: white; border-radius: 8px; display: none;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
@@ -266,8 +287,9 @@
         <div class="form-group">
             <label for="napomena">Napomena</label>
             <textarea id="napomena" name="napomena" rows="3" 
-                    placeholder="Dodatne napomene..."><?= htmlspecialchars($_POST['napomena'] ?? '') ?></textarea>
+                    placeholder="Dodatne napomene o terminu..."><?= htmlspecialchars($_POST['napomena'] ?? '') ?></textarea>
         </div>
+        
 
         <div class="form-actions">
             <button type="submit" class="btn btn-add">
@@ -279,6 +301,7 @@
 </div>
 
 <script>
+// Provjeri da li je datum u prošlosti
 function provjeriDatum() {
     const datum = document.getElementById('datum').value;
     const vrijeme = document.getElementById('vrijeme').value;
@@ -287,15 +310,26 @@ function provjeriDatum() {
     if (datum && vrijeme) {
         const odabraniDatum = new Date(datum + 'T' + vrijeme);
         const sada = new Date();
-        upozorenje.style.display = odabraniDatum <= sada ? 'block' : 'none';
+        
+        if (odabraniDatum <= sada) {
+            upozorenje.style.display = 'block';
+        } else {
+            upozorenje.style.display = 'none';
+        }
     } else if (datum) {
         const odabraniDatum = new Date(datum);
         const danas = new Date();
         danas.setHours(0, 0, 0, 0);
-        upozorenje.style.display = odabraniDatum < danas ? 'block' : 'none';
+        
+        if (odabraniDatum < danas) {
+            upozorenje.style.display = 'block';
+        } else {
+            upozorenje.style.display = 'none';
+        }
     }
 }
 
+// Toggle tip termina
 function toggleTipTermina() {
     const tipPojedinacni = document.querySelector('input[name="tip_termina"][value="pojedinacni"]').checked;
     const pacijentPojedinacni = document.getElementById('pacijent-pojedinacni');
@@ -316,10 +350,18 @@ function toggleTipTermina() {
         grupniNapomena.style.display = 'none';
         poPacijentu.style.display = 'none';
         btnTekst.textContent = 'Kreiraj termin';
+        
         labelPojedinacni.style.borderColor = '#255AA5';
         labelPojedinacni.style.background = '#f0f7ff';
         labelGrupni.style.borderColor = '#e0e0e0';
         labelGrupni.style.background = 'white';
+        
+        if (typeof $ !== 'undefined' && $('#pacijent_id').data('select2')) {
+            $('#pacijent_id').select2('destroy').select2({
+                placeholder: 'Odaberite pacijenta',
+                allowClear: true
+            });
+        }
     } else {
         pacijentPojedinacni.style.display = 'none';
         pacijentiGrupni.style.display = 'block';
@@ -328,42 +370,66 @@ function toggleTipTermina() {
         grupniNapomena.style.display = 'inline';
         poPacijentu.style.display = 'inline';
         btnTekst.textContent = 'Kreiraj grupni termin';
+        
         labelGrupni.style.borderColor = '#255AA5';
         labelGrupni.style.background = '#f0f7ff';
         labelPojedinacni.style.borderColor = '#e0e0e0';
         labelPojedinacni.style.background = 'white';
+        
+        if (typeof $ !== 'undefined') {
+            $('#pacijenti_ids').select2({
+                placeholder: 'Odaberite pacijente (min. 2)',
+                allowClear: true
+            });
+        }
     }
+    
     toggleUslugaPolje();
 }
 
+// Toggle tip plaćanja
 function toggleTipPlacanja() {
-    const tipPlacanja = document.querySelector('input[name="tip_placanja"]:checked')?.value || 'puna_cijena';
+    const tipPlacanja = document.querySelector('input[name="tip_placanja"]:checked').value;
     const umanjenjePolje = document.getElementById('umanjenje-polje');
     const umanjenjeInput = document.getElementById('umanjenje_posto');
     
+    // Reset svih labela
     document.querySelectorAll('.tip-placanja-label').forEach(label => {
         label.style.borderColor = '#e0e0e0';
         label.style.background = 'white';
     });
     
-    const colors = { 'puna_cijena': '#27ae60', 'besplatno': '#e74c3c', 'poklon_bon': '#9b59b6', 'umanjenje': '#f39c12' };
+    // Označi odabrani
+    const colors = {
+        'puna_cijena': '#27ae60',
+        'besplatno': '#e74c3c',
+        'poklon_bon': '#9b59b6',
+        'umanjenje': '#f39c12'
+    };
+    
     const selectedLabel = document.getElementById('label-' + tipPlacanja.replace('_', '-'));
     if (selectedLabel) {
         selectedLabel.style.borderColor = colors[tipPlacanja];
         selectedLabel.style.background = colors[tipPlacanja] + '10';
     }
     
+    // Prikaži/sakrij polje za umanjenje i DISABLE kad je skriveno
     if (tipPlacanja === 'umanjenje') {
         umanjenjePolje.style.display = 'block';
         umanjenjeInput.disabled = false;
-        if (parseFloat(umanjenjeInput.value) === 0) umanjenjeInput.value = '50';
+        // Postavi default ako je 0
+        if (parseFloat(umanjenjeInput.value) === 0) {
+            umanjenjeInput.value = '50';
+        }
     } else {
         umanjenjePolje.style.display = 'none';
         umanjenjeInput.disabled = true;
     }
+    
     izracunajCijenu();
 }
 
+// Proveri pakete kada se odabere pacijent
 function provjeriPakete() {
     const pacijentId = document.getElementById('pacijent_id').value;
     const terapeutId = document.getElementById('terapeut_id').value;
@@ -371,11 +437,14 @@ function provjeriPakete() {
     
     if (pacijentId && tipTermina === 'pojedinacni') {
         let url = '/termini/kreiraj?pacijent_id=' + pacijentId + '&tip_termina=pojedinacni';
-        if (terapeutId) url += '&terapeut_id=' + terapeutId;
+        if (terapeutId) {
+            url += '&terapeut_id=' + terapeutId;
+        }
         window.location.href = url;
     }
 }
 
+// Prikaži/sakrij usluga polje i plaćanje sekciju
 function toggleUslugaPolje() {
     const tipPojedinacni = document.querySelector('input[name="tip_termina"][value="pojedinacni"]').checked;
     const paketRadios = document.querySelectorAll('input[name="koristi_paket"]');
@@ -384,26 +453,35 @@ function toggleUslugaPolje() {
     const placanjeSekcija = document.getElementById('placanje-sekcija');
     
     let koristiPaket = false;
+    
     if (tipPojedinacni) {
         paketRadios.forEach(radio => {
-            if (radio.checked && radio.value !== 'ne') koristiPaket = true;
+            if (radio.checked && radio.value !== 'ne') {
+                koristiPaket = true;
+            }
         });
     }
     
     if (koristiPaket) {
         uslugaPolje.style.display = 'none';
         uslugaSelect.removeAttribute('required');
+        uslugaSelect.value = '';
         if (placanjeSekcija) placanjeSekcija.style.display = 'none';
     } else {
         uslugaPolje.style.display = 'block';
         uslugaSelect.setAttribute('required', 'required');
         if (placanjeSekcija) placanjeSekcija.style.display = 'block';
     }
+    
     izracunajCijenu();
 }
 
-function azurirajCijenu() { izracunajCijenu(); }
+// Ažuriraj cijenu kada se promijeni usluga
+function azurirajCijenu() {
+    izracunajCijenu();
+}
 
+// Izračunaj i prikaži konačnu cijenu
 function izracunajCijenu() {
     const uslugaSelect = document.getElementById('usluga_id');
     const tipPlacanja = document.querySelector('input[name="tip_placanja"]:checked')?.value || 'puna_cijena';
@@ -421,6 +499,7 @@ function izracunajCijenu() {
         originalnaEl.textContent = cijena.toFixed(2).replace('.', ',') + ' KM';
         
         let konacnaCijena = cijena;
+        
         if (tipPlacanja === 'besplatno' || tipPlacanja === 'poklon_bon') {
             konacnaCijena = 0;
             konacnaEl.style.color = tipPlacanja === 'besplatno' ? '#e74c3c' : '#9b59b6';
@@ -432,12 +511,19 @@ function izracunajCijenu() {
         }
         
         konacnaEl.textContent = konacnaCijena.toFixed(2).replace('.', ',') + ' KM';
-        originalnaEl.style.display = tipPlacanja !== 'puna_cijena' ? 'inline' : 'none';
+        
+        // Prikaži/sakrij originalnu cijenu
+        if (tipPlacanja !== 'puna_cijena') {
+            originalnaEl.style.display = 'inline';
+        } else {
+            originalnaEl.style.display = 'none';
+        }
     } else {
         cijenaPrikaz.style.display = 'none';
     }
 }
 
+// Pozovi na load
 document.addEventListener('DOMContentLoaded', function() {
     toggleTipTermina();
     toggleTipPlacanja();
