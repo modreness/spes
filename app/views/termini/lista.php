@@ -236,7 +236,7 @@ $(document).ready(function() {
     
     // Reinicijaliziraj sa sortiranjem po datumu
     $('#tabela').DataTable({
-        "order": [[1, "asc"]],
+        "order": [[2, "asc"]],
         "responsive": true,
         "language": {
             "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/hr.json"
