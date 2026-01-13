@@ -47,9 +47,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Dijagnoze iz checkboxova
     $odabrane_dijagnoze = $_POST['dijagnoze'] ?? [];
     
-    // Validacija JMBG - provjeri da li JMBG postoji kod DRUGOG kartona
-    if ($jmbg !== $postojeci_karton['jmbg']) {
-        $stmt = $pdo->prepare("SELECT id FROM kartoni WHERE jmbg = ? AND id != ?");
+    // Validacija JMBG - provjeri da li JMBG postoji kod DRUGOG kartona (samo ako nije prazan)
+    if (!empty($jmbg) && $jmbg !== $postojeci_karton['jmbg']) {
+        $stmt = $pdo->prepare("SELECT id FROM kartoni WHERE jmbg = ? AND jmbg IS NOT NULL AND id != ?");
         $stmt->execute([$jmbg, $karton_id]);
         if ($stmt->fetch()) {
             $_SESSION['error'] = "JMBG već postoji u sistemu!";
@@ -57,6 +57,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
     }
+
+    // JMBG može biti NULL ako je prazan
+    $jmbg_value = !empty($jmbg) ? $jmbg : null;
 
     // Ažuriraj karton (UKLONILI SMO ime, prezime i dijagnoza)
     $stmt = $pdo->prepare("UPDATE kartoni SET
@@ -66,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ");
 
     $success = $stmt->execute([
-        $datum_rodjenja, $spol, $adresa, $telefon, $email, $jmbg, $broj_upisa,
+        $datum_rodjenja, $spol, $adresa, $telefon, $email, $jmbg_value, $broj_upisa,
         $anamneza, $rehabilitacija, $pocetna_procjena, $biljeske, $napomena,
         $karton_id
     ]);
