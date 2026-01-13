@@ -285,8 +285,9 @@
 <script>
 // Toggle tip plaćanja
 function toggleTipPlacanja() {
-    const tipPlacanja = document.querySelector('input[name="tip_placanja"]:checked').value;
+    const tipPlacanja = document.querySelector('input[name="tip_placanja"]:checked')?.value || 'puna_cijena';
     const umanjenjePolje = document.getElementById('umanjenje-polje');
+    const umanjenjeInput = document.getElementById('umanjenje_posto');
     
     // Reset svih labela
     document.querySelectorAll('.tip-placanja-label').forEach(label => {
@@ -308,11 +309,17 @@ function toggleTipPlacanja() {
         selectedLabel.style.background = colors[tipPlacanja] + '10';
     }
     
-    // Prikaži/sakrij polje za umanjenje
+    // Prikaži/sakrij polje za umanjenje i DISABLE kad je skriveno
     if (tipPlacanja === 'umanjenje') {
         umanjenjePolje.style.display = 'block';
+        umanjenjeInput.disabled = false;
+        // Postavi default ako je 0
+        if (parseFloat(umanjenjeInput.value) === 0) {
+            umanjenjeInput.value = '50';
+        }
     } else {
         umanjenjePolje.style.display = 'none';
+        umanjenjeInput.disabled = true;
     }
     
     izracunajCijenu();
@@ -327,7 +334,8 @@ function azurirajCijenu() {
 function izracunajCijenu() {
     const uslugaSelect = document.getElementById('usluga_id');
     const tipPlacanja = document.querySelector('input[name="tip_placanja"]:checked')?.value || 'puna_cijena';
-    const umanjenje = parseFloat(document.getElementById('umanjenje_posto').value) || 0;
+    const umanjenjeInput = document.getElementById('umanjenje_posto');
+    const umanjenje = umanjenjeInput && !umanjenjeInput.disabled ? (parseFloat(umanjenjeInput.value) || 0) : 0;
     const cijenaPrikaz = document.getElementById('cijena-prikaz');
     const originalnaEl = document.getElementById('originalna-cijena');
     const konacnaEl = document.getElementById('konacna-cijena');
