@@ -151,8 +151,10 @@
                                 
                                 <?php if ($termin['status'] === 'obavljen' && $termin['karton_id'] && hasPermission($user, 'unos_tretmana')): ?>
                                 <button type="button" 
-                                        class="admin-btn admin-btn-success admin-btn-xs"  data-terapeut-id="<?= $termin['terapeut_id'] ?? '' ?>"
+                                        class="admin-btn admin-btn-success admin-btn-xs"  
+                                        data-terapeut-id="<?= $termin['terapeut_id'] ?? '' ?>"
                                         data-terapeut-ime="<?= htmlspecialchars($termin['terapeut_ime'] ?? '') ?>"
+                                        data-datum="<?= $termin['datum'] ?>"
                                         onclick="otvoriModalTretman(<?= $termin['id'] ?>, '<?= htmlspecialchars($termin['pacijent_ime']) ?>', <?= $termin['karton_id'] ?>)">
                                     <i class="fa-solid fa-notes-medical"></i>
                                 </button>
@@ -341,6 +343,7 @@
         <form method="post" action="/kartoni/dodaj-tretman">
             <input type="hidden" name="karton_id" id="modal-karton-id">
             <input type="hidden" name="termin_id" id="modal-termin-id">
+            <input type="hidden" name="datum_tretmana" id="modal-datum-tretmana">
 
             <div class="form-group">
                 <label for="terapeut_id">Terapeut</label>
@@ -384,14 +387,22 @@
 
 <?php if (hasPermission($user, 'unos_tretmana')): ?>
 function otvoriModalTretman(terminId, imePrezime, kartonId) {
-    // Dohvati terapeut_id iz data atributa dugmeta
+    // Dohvati terapeut_id i datum iz data atributa dugmeta
     const dugme = event.target.closest('button');
     const terapeutId = dugme.getAttribute('data-terapeut-id');
+    const datumTermina = dugme.getAttribute('data-datum');
 
     document.getElementById('modal-karton-id').value = kartonId;
     document.getElementById('modal-termin-id').value = terminId;
     document.getElementById('modal-ime').textContent = imePrezime;
     document.getElementById('modal-karton-id-display').textContent = kartonId;
+    
+    // Postavi datum tretmana
+    if (datumTermina) {
+        document.getElementById('modal-datum-tretmana').value = datumTermina;
+    } else {
+        document.getElementById('modal-datum-tretmana').value = new Date().toISOString().split('T')[0];
+    }
 
     // Postavi odabranog terapeuta u select
     const terapeutSelect = document.getElementById('modal-terapeut-select');

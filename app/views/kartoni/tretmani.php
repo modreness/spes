@@ -20,7 +20,7 @@
     <p><strong>JMBG:</strong> <?= htmlspecialchars($karton['jmbg'] ?? '') ?></p>
   </div>
 
-  <?php if (in_array($user['uloga'], ['admin', 'recepcioner'])): ?>
+  <?php if (in_array($user['uloga'], ['admin', 'recepcioner']) || hasPermission($user, 'unos_tretmana')): ?>
     <button class="btn btn-sm btn-add btn-no-margin"
       onclick="otvoriModalTretman(<?= $karton['id'] ?>, '<?= htmlspecialchars($karton['ime'] . ' ' . $karton['prezime']) ?>', '<?= htmlspecialchars($karton['broj_upisa']) ?>')">
       <i class="fa-solid fa-add"></i>
@@ -61,7 +61,7 @@
   <i class="fa-solid fa-eye"></i>
 </button>
 
-              <?php if (in_array($user['uloga'], ['admin', 'recepcioner'])): ?>
+              <?php if (in_array($user['uloga'], ['admin', 'recepcioner']) || hasPermission($user, 'unos_tretmana')): ?>
                 <button class="btn btn-sm btn-edit"
   onclick='otvoriUrediTretman(
     <?= json_encode($t["id"]) ?>,
@@ -73,6 +73,8 @@
   )'>
                   <i class="fa-solid fa-edit"></i>
                 </button>
+                <?php endif; ?>
+                <?php if (in_array($user['uloga'], ['admin', 'recepcioner'])): ?>
                 <button class="btn btn-sm btn-danger" onclick="potvrdiBrisanje(<?= $t['id'] ?>)"><i class="fa-solid fa-trash"></i></button>
               <?php endif; ?>
             </td>
@@ -108,6 +110,7 @@
 </div>
 
 <!-- Modal za dodavanje tretmana -->
+<?php if (in_array($user['uloga'], ['admin', 'recepcioner']) || hasPermission($user, 'unos_tretmana')): ?>
 <div id="tretman-modal" class="modal" style="display: none;">
   <div class="modal-content">
     <h3>Dodaj tretman</h3>
@@ -124,8 +127,15 @@
       <option value="<?= $terapeut['id'] ?>"><?= htmlspecialchars($terapeut['ime'] . ' ' . $terapeut['prezime']) ?></option>
     <?php endforeach; ?>
   </select>
-</div><hr>
+</div>
+        <div class="form-group" id="datum-tretmana-polje">
+            <label for="datum_tretmana">Datum tretmana</label>
+            <input type="date" name="datum_tretmana" id="modal-datum-tretmana" value="<?= date('Y-m-d') ?>" required>
+            <small style="color: #7f8c8d;">Datum kada je tretman izvršen</small>
+        </div>
+<hr>
       <input type="hidden" name="karton_id" id="modal-karton-id-dodaj">
+      <input type="hidden" name="termin_id" id="modal-termin-id-dodaj" value="">
       <div class="form-group">
         <label for="stanje_prije">Stanje prije</label>
         <textarea name="stanje_prije" rows="3" required></textarea>
@@ -145,8 +155,10 @@
     </form>
   </div>
 </div>
+<?php endif; ?>
 
 <!-- Modal za uređivanje tretmana -->
+<?php if (in_array($user['uloga'], ['admin', 'recepcioner']) || hasPermission($user, 'unos_tretmana')): ?>
 <div id="tretman-modal-uredi" class="modal" style="display: none;">
   <div class="modal-content">
     <h3>Uredi tretman</h3>
@@ -183,6 +195,7 @@
     </form>
   </div>
 </div>
+<?php endif; ?>
 
 <!-- Modal za pregled pojedinačnog tretmana -->
 <div id="tretman-modal-view" class="modal" style="display: none;">
@@ -262,10 +275,24 @@ function zatvoriModal() {
   document.getElementById('modal-overlay').style.display = 'none';
 }
 
-function otvoriModalTretman(kartonId, imePrezime, brojKartona) {
+function otvoriModalTretman(kartonId, imePrezime, brojKartona, terminId, datumTermina, terapeutId) {
   document.getElementById('modal-karton-id-dodaj').value = kartonId;
   document.getElementById('modal-ime').textContent = imePrezime;
   document.getElementById('modal-broj').textContent = brojKartona;
+  
+  // Ako je proslijeđen termin_id, postavi ga i datum
+  if (terminId) {
+    document.getElementById('modal-termin-id-dodaj').value = terminId;
+  } else {
+    document.getElementById('modal-termin-id-dodaj').value = '';
+  }
+  
+  // Postavi datum tretmana
+  if (datumTermina) {
+    document.getElementById('modal-datum-tretmana').value = datumTermina;
+  } else {
+    document.getElementById('modal-datum-tretmana').value = new Date().toISOString().split('T')[0];
+  }
   
   // Re-inicijalizuj Select2 za modal dodavanja
   var selectElement = $('#tretman-modal select.select2');
@@ -277,6 +304,11 @@ function otvoriModalTretman(kartonId, imePrezime, brojKartona) {
       width: '100%',
       placeholder: '-- Odaberi terapeuta --'
   });
+  
+  // Ako je proslijeđen terapeut, odaberi ga
+  if (terapeutId) {
+    selectElement.val(terapeutId).trigger('change');
+  }
   
   document.getElementById('tretman-modal').style.display = 'block';
   document.getElementById('modal-overlay').style.display = 'block';

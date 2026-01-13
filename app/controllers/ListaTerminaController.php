@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../helpers/auth.php';
 require_once __DIR__ . '/../helpers/db.php';
+require_once __DIR__ . '/../helpers/permissions.php';
 
 if (!is_logged_in()) {
     header('Location: /login');
@@ -55,6 +56,8 @@ try {
     // 👉 Dohvati termine - koristi COALESCE za zamrznute podatke
     $stmt = $pdo->prepare("
         SELECT t.*, 
+               t.terapeut_id,
+               k.id as karton_id,
                COALESCE(CONCAT(u_pacijent.ime, ' ', u_pacijent.prezime), 
                         CONCAT(t.pacijent_ime, ' ', t.pacijent_prezime)) as pacijent_ime,
                COALESCE(CONCAT(u_terapeut.ime, ' ', u_terapeut.prezime), 
@@ -67,11 +70,22 @@ try {
         LEFT JOIN users u_pacijent ON t.pacijent_id = u_pacijent.id
         LEFT JOIN users u_terapeut ON t.terapeut_id = u_terapeut.id
         LEFT JOIN cjenovnik c ON t.usluga_id = c.id
+        LEFT JOIN kartoni k ON k.pacijent_id = t.pacijent_id
         WHERE $where_clause
         ORDER BY t.datum_vrijeme ASC
     ");
     $stmt->execute($params);
     $termini = $stmt->fetchAll();
+    
+    // Dohvati sve terapeute za modal (potrebno za dodavanje tretmana)
+    $stmt = $pdo->prepare("SELECT id, ime, prezime FROM users WHERE uloga = 'terapeut' AND aktivan = 1 ORDER BY ime, prezime");
+    $stmt->execute();
+    $terapeuti_za_modal = $stmt->fetchAll();
+    
+    // Ako je terapeut, koristi istu listu za modal
+    if ($user['uloga'] === 'terapeut') {
+        $terapeuti = $terapeuti_za_modal;
+    }
     
 } catch (PDOException $e) {
     error_log("Greška pri dohvaćanju liste termina: " . $e->getMessage());
