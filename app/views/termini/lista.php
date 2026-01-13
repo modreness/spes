@@ -229,10 +229,17 @@ document.getElementById('modal-overlay').addEventListener('click', zatvoriModal)
 </script>
 <script>
 $(document).ready(function() {
+    // Uništi postojeću instancu
+    if ($.fn.DataTable.isDataTable('#tabela')) {
+        $('#tabela').DataTable().destroy();
+    }
+    
+    // Reinicijaliziraj sa sortiranjem po datumu
     $('#tabela').DataTable({
-        "order": [[1, "asc"]], // Sortira po 2. koloni (Datum i vrijeme) - index počinje od 0
+        "order": [[1, "asc"]],
+        "responsive": true,
         "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.13.7/i18n/hr.json"
+            "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/hr.json"
         }
     });
 });
