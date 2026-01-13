@@ -227,21 +227,5 @@ function zatvoriModal() {
 
 document.getElementById('modal-overlay').addEventListener('click', zatvoriModal);
 </script>
-<script>
-$(document).ready(function() {
-    // Uništi postojeću instancu
-    if ($.fn.DataTable.isDataTable('#tabela')) {
-        $('#tabela').DataTable().destroy();
-    }
-    
-    // Reinicijaliziraj sa sortiranjem po datumu
-    $('#tabela').DataTable({
-        "order": [[2, "asc"]],
-        "responsive": true,
-        "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/hr.json"
-        }
-    });
-});
-</script>
+
 <?php endif; ?>

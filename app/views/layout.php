@@ -299,8 +299,16 @@ document.addEventListener("DOMContentLoaded", () => {
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     if (document.querySelector('#tabela')) {
+      // Provjeri da li je stranica sa terminima
+      var orderConfig = [[0, "asc"]]; // Default: po ID-u
+      
+      if (window.location.pathname.includes('/termini/lista')) {
+        orderConfig = [[1, "asc"]]; // Za termine: po datumu
+      }
+      
       $('#tabela').DataTable({
         responsive: true,
+        order: orderConfig,
         language: {
           url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/hr.json"
         }
