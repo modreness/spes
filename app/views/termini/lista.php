@@ -227,4 +227,14 @@ function zatvoriModal() {
 
 document.getElementById('modal-overlay').addEventListener('click', zatvoriModal);
 </script>
+<script>
+$(document).ready(function() {
+    $('#tabela').DataTable({
+        "order": [[1, "asc"]], // Sortira po 2. koloni (Datum i vrijeme) - index počinje od 0
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.13.7/i18n/hr.json"
+        }
+    });
+});
+</script>
 <?php endif; ?>
