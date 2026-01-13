@@ -155,6 +155,15 @@
                                 <i class="fa-solid fa-undo"></i>
                             </button>
                         <?php endif; ?>
+                        
+                        <!-- Dugme za dodavanje tretmana - obavljeni termini sa kartonom -->
+                        <?php if ($t['status'] == 'obavljen' && !empty($t['karton_id']) && (in_array($user['uloga'], ['admin', 'recepcioner']) || hasPermission($user, 'unos_tretmana'))): ?>
+                            <button class="btn btn-sm btn-add" 
+                                    onclick="otvoriModalTretman(<?= $t['karton_id'] ?>, '<?= htmlspecialchars($t['pacijent_ime']) ?>', '<?= $t['id'] ?>', '<?= date('Y-m-d', strtotime($t['datum_vrijeme'])) ?>', <?= $t['terapeut_id'] ?? 'null' ?>)" 
+                                    title="Dodaj tretman">
+                                <i class="fa-solid fa-notes-medical"></i>
+                            </button>
+                        <?php endif; ?>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -225,7 +234,107 @@ function zatvoriModal() {
     document.getElementById('modal-overlay').style.display = 'none';
 }
 
-document.getElementById('modal-overlay').addEventListener('click', zatvoriModal);
+document.getElementById('modal-overlay').addEventListener('click', function() {
+    zatvoriModal();
+    zatvoriModalTretman();
+});
 </script>
 
+<?php else: ?>
+<!-- Overlay za terapeute -->
+<div id="modal-overlay" class="modal-overlay" style="display: none;"></div>
+<script>
+document.getElementById('modal-overlay').addEventListener('click', function() {
+    zatvoriModalTretman();
+});
+</script>
+<?php endif; ?>
+
+<!-- Modal za dodavanje tretmana - dostupan svima sa dozvolom -->
+<?php if (in_array($user['uloga'], ['admin', 'recepcioner']) || hasPermission($user, 'unos_tretmana')): ?>
+<div id="tretman-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h3>Dodaj tretman</h3>
+        <p><strong>Pacijent:</strong> <span id="modal-pacijent-ime"></span></p>
+
+        <form method="post" action="/kartoni/dodaj-tretman">
+            <input type="hidden" name="karton_id" id="modal-karton-id">
+            <input type="hidden" name="termin_id" id="modal-termin-id">
+            
+            <div class="form-group">
+                <label for="terapeut_id">Terapeut</label>
+                <select name="terapeut_id" id="modal-terapeut-select" required>
+                    <option value="">-- Odaberi terapeuta --</option>
+                    <?php foreach ($terapeuti as $terapeut): ?>
+                        <option value="<?= $terapeut['id'] ?>"><?= htmlspecialchars($terapeut['ime'] . ' ' . $terapeut['prezime']) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="datum_tretmana">Datum tretmana</label>
+                <input type="date" name="datum_tretmana" id="modal-datum-tretmana" value="<?= date('Y-m-d') ?>" required>
+                <small style="color: #7f8c8d;">Datum kada je tretman izvršen</small>
+            </div>
+            <hr>
+
+            <div class="form-group">
+                <label for="stanje_prije">Stanje prije tretmana</label>
+                <textarea name="stanje_prije" rows="3" required placeholder="Opišite stanje pacijenta prije početka tretmana..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="terapija">Sprovedena terapija</label>
+                <textarea name="terapija" rows="4" required placeholder="Detaljno opišite sprovedenu terapiju, tehnike, vježbe..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="stanje_poslije">Stanje nakon tretmana</label>
+                <textarea name="stanje_poslije" rows="3" required placeholder="Opišite stanje pacijenta nakon tretmana..."></textarea>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button type="button" class="btn btn-secondary" onclick="zatvoriModalTretman()">Otkaži</button>
+                <button type="submit" class="btn btn-add">
+                    <i class="fa-solid fa-save"></i> Snimi tretman
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function otvoriModalTretman(kartonId, pacijentIme, terminId, datumTermina, terapeutId) {
+    document.getElementById('modal-karton-id').value = kartonId;
+    document.getElementById('modal-pacijent-ime').textContent = pacijentIme;
+    document.getElementById('modal-termin-id').value = terminId || '';
+    document.getElementById('modal-datum-tretmana').value = datumTermina || new Date().toISOString().split('T')[0];
+    
+    // Postavi terapeuta ako je proslijeđen
+    if (terapeutId) {
+        document.getElementById('modal-terapeut-select').value = terapeutId;
+    }
+    
+    document.getElementById('tretman-modal').style.display = 'block';
+    document.getElementById('modal-overlay').style.display = 'block';
+    
+    // Focus na prvo polje
+    setTimeout(() => {
+        document.querySelector('#tretman-modal textarea[name="stanje_prije"]').focus();
+    }, 100);
+}
+
+function zatvoriModalTretman() {
+    document.getElementById('tretman-modal').style.display = 'none';
+    document.getElementById('modal-overlay').style.display = 'none';
+    document.querySelector('#tretman-modal form').reset();
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        zatvoriModalTretman();
+    }
+});
+</script>
 <?php endif; ?>
