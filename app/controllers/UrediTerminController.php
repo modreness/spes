@@ -46,8 +46,34 @@ try {
         exit;
     }
     
-    // 👉 Sačuvaj trenutni status za poređenje
+    // Sačuvaj trenutni status za poređenje
     $old_status = $termin['status'];
+    
+    // Ako je grupni termin, dohvati ostale članove grupe
+    $grupa_clanovi = [];
+    if (!empty($termin['grupa_id'])) {
+        $stmt = $pdo->prepare("
+            SELECT t.id, t.pacijent_id,
+                   COALESCE(CONCAT(u.ime, ' ', u.prezime), CONCAT(t.pacijent_ime, ' ', t.pacijent_prezime)) as pacijent_ime,
+                   t.status, t.placeno
+            FROM termini t
+            LEFT JOIN users u ON t.pacijent_id = u.id
+            WHERE t.grupa_id = ? AND t.id != ?
+            ORDER BY pacijent_ime
+        ");
+        $stmt->execute([$termin['grupa_id'], $termin_id]);
+        $grupa_clanovi = $stmt->fetchAll();
+    }
+    
+    // Odredi trenutni tip plaćanja
+    $trenutni_tip_placanja = 'puna_cijena';
+    if (!empty($termin['poklon_bon'])) {
+        $trenutni_tip_placanja = 'poklon_bon';
+    } elseif (!empty($termin['besplatno'])) {
+        $trenutni_tip_placanja = 'besplatno';
+    } elseif (!empty($termin['umanjenje_posto']) && $termin['umanjenje_posto'] > 0) {
+        $trenutni_tip_placanja = 'umanjenje';
+    }
     
 } catch (PDOException $e) {
     error_log("Greška pri dohvaćanju termina: " . $e->getMessage());
@@ -91,8 +117,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $status = $_POST['status'] ?? '';
     $napomena = trim($_POST['napomena'] ?? '');
     $placeno = isset($_POST['placeno']) ? 1 : 0;
-    $besplatno = isset($_POST['besplatno']) ? 1 : 0;
+    $azuriraj_grupu = isset($_POST['azuriraj_grupu']) ? 1 : 0;
+    
+    // Tip plaćanja
+    $tip_placanja = $_POST['tip_placanja'] ?? 'puna_cijena';
     $umanjenje_posto = floatval($_POST['umanjenje_posto'] ?? 0);
+    
+    // Postavi besplatno i poklon_bon na osnovu tip_placanja
+    $besplatno = ($tip_placanja === 'besplatno') ? 1 : 0;
+    $poklon_bon = ($tip_placanja === 'poklon_bon') ? 1 : 0;
+    if ($tip_placanja !== 'umanjenje') {
+        $umanjenje_posto = 0;
+    }
     
     // Validacija
     if (empty($pacijent_id)) {
@@ -116,8 +152,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     
     // Validacija umanjenja
-    if ($umanjenje_posto < 0 || $umanjenje_posto > 100) {
-        $errors[] = 'Umanjenje mora biti između 0 i 100%.';
+    if ($tip_placanja === 'umanjenje' && ($umanjenje_posto <= 0 || $umanjenje_posto > 100)) {
+        $errors[] = 'Umanjenje mora biti između 1 i 100%.';
     }
     
     // Kombinuj datum i vrijeme
@@ -126,25 +162,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $datum_vrijeme = $datum . ' ' . $vrijeme;
     }
     
-    // Provjeri koliziju termina (osim trenutnog)
-    if (empty($errors) && !empty($datum_vrijeme) && !empty($terapeut_id)) {
-        $stmt = $pdo->prepare("
-            SELECT COUNT(*) FROM termini 
-            WHERE terapeut_id = ? 
-            AND datum_vrijeme = ? 
-            AND status IN ('zakazan', 'slobodan')
-            AND id != ?
-        ");
-        $stmt->execute([$terapeut_id, $datum_vrijeme, $termin_id]);
-        if ($stmt->fetchColumn() > 0) {
-            $errors[] = 'Terapeut već ima zakazan termin u to vrijeme.';
-        }
-    }
-    
     // Ažuriraj termin
     if (empty($errors)) {
         try {
-            // 👉 VAŽNO: Učitaj podatke o terapeutu (ako postoji) i pacijentu za zamrzavanje
+            $pdo->beginTransaction();
+            
+            // Učitaj podatke o terapeutu (ako postoji) i pacijentu za zamrzavanje
             $terapeut = null;
             if (!empty($terapeut_id)) {
                 $stmt = $pdo->prepare("SELECT ime, prezime FROM users WHERE id = ?");
@@ -157,16 +180,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pacijent = $stmt->fetch();
             
             // Izračunaj stvarnu cijenu (samo ako nije iz paketa)
-            $stvarna_cijena = $termin['stvarna_cijena']; // zadrži postojeću ako je iz paketa
+            $stvarna_cijena = $termin['stvarna_cijena'];
             
             if (!$termin['placeno_iz_paketa']) {
-                // Dohvati cijenu usluge
                 $stmt = $pdo->prepare("SELECT cijena FROM cjenovnik WHERE id = ?");
                 $stmt->execute([$usluga_id]);
                 $cijena = $stmt->fetchColumn();
                 
-                // Izračunaj stvarnu cijenu
-                if ($besplatno) {
+                if ($besplatno || $poklon_bon) {
                     $stvarna_cijena = 0;
                 } elseif ($umanjenje_posto > 0) {
                     $stvarna_cijena = $cijena * (100 - $umanjenje_posto) / 100;
@@ -175,7 +196,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
             
-            // Ažuriraj sa zamrznutim podacima
+            // Ažuriraj glavni termin
             $stmt = $pdo->prepare("
                 UPDATE termini 
                 SET pacijent_id = ?, 
@@ -190,6 +211,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     napomena = ?,
                     placeno = ?,
                     besplatno = ?,
+                    poklon_bon = ?,
                     umanjenje_posto = ?,
                     stvarna_cijena = ?
                 WHERE id = ?
@@ -207,12 +229,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $napomena,
                 $placeno,
                 $termin['placeno_iz_paketa'] ? 0 : $besplatno,
+                $termin['placeno_iz_paketa'] ? 0 : $poklon_bon,
                 $termin['placeno_iz_paketa'] ? 0 : $umanjenje_posto,
                 $stvarna_cijena,
                 $termin_id
             ]);
             
-            // ✉️ SLANJE EMAIL NOTIFIKACIJA ZA PROMENU STATUSA
+            // Ako je grupni termin i korisnik želi ažurirati cijelu grupu
+            if (!empty($termin['grupa_id']) && $azuriraj_grupu) {
+                $stmt = $pdo->prepare("
+                    UPDATE termini 
+                    SET terapeut_id = ?, 
+                        terapeut_ime = ?,
+                        terapeut_prezime = ?,
+                        usluga_id = ?, 
+                        datum_vrijeme = ?, 
+                        status = ?, 
+                        napomena = ?,
+                        besplatno = ?,
+                        poklon_bon = ?,
+                        umanjenje_posto = ?,
+                        stvarna_cijena = ?
+                    WHERE grupa_id = ? AND id != ?
+                ");
+                $stmt->execute([
+                    $terapeut_id ?: null,
+                    $terapeut['ime'] ?? null,
+                    $terapeut['prezime'] ?? null,
+                    $usluga_id, 
+                    $datum_vrijeme, 
+                    $status, 
+                    $napomena,
+                    $besplatno,
+                    $poklon_bon,
+                    $umanjenje_posto,
+                    $stvarna_cijena,
+                    $termin['grupa_id'],
+                    $termin_id
+                ]);
+            }
+            
+            $pdo->commit();
+            
+            // SLANJE EMAIL NOTIFIKACIJA ZA PROMENU STATUSA
             $terapeut_dodan = (empty($termin['terapeut_id']) && !empty($terapeut_id));
 
             if (($old_status !== $status && in_array($status, ['obavljen', 'otkazan'])) || $terapeut_dodan) {
@@ -244,7 +303,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     
                     // Ako je terapeut dodan (a nije promijenjen status)
                     if ($terapeut_dodan && $old_status === $status) {
-                        // 📧 Email terapeutu - dodijeljen mu je termin
                         if ($terapeut_email_data && !empty($terapeut_email_data['email'])) {
                             $start_time = strtotime($datum_vrijeme);
                             $end_time = $start_time + (60 * 60);
@@ -287,7 +345,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             send_mail($terapeut_email_data['email'], $subject_terapeut, $body_terapeut);
                         }
                         
-                        // 📧 Email pacijentu - dodijeljen mu je terapeut
                         if (!empty($email_data['pacijent_email']) && $terapeut_email_data) {
                             $subject_pacijent = "Ažuriranje termina - dodijeljen terapeut";
                             $body_pacijent = "
@@ -311,7 +368,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             send_mail($email_data['pacijent_email'], $subject_pacijent, $body_pacijent);
                         }
                     }
-                    // Ako je promijenjen status
                     else if ($old_status !== $status && in_array($status, ['obavljen', 'otkazan'])) {
                         $status_labels = [
                             'zakazan' => 'Zakazan',
@@ -323,7 +379,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $old_status_label = $status_labels[$old_status] ?? $old_status;
                         $new_status_label = $status_labels[$status] ?? $status;
                         
-                        // 📧 Email terapeutu (ako postoji)
                         if ($terapeut_email_data && !empty($terapeut_email_data['email'])) {
                             $subject_terapeut = "Status termina promijenjen - " . $datum_format;
                             $body_terapeut = "
@@ -346,7 +401,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             send_mail($terapeut_email_data['email'], $subject_terapeut, $body_terapeut);
                         }
                         
-                        // 📧 Email pacijentu
                         if (!empty($email_data['pacijent_email'])) {
                             $status_message = '';
                             if ($status === 'obavljen') {
@@ -389,6 +443,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
             
         } catch (PDOException $e) {
+            $pdo->rollBack();
             error_log("Greška pri ažuriranju termina: " . $e->getMessage());
             $errors[] = 'Greška pri spremanju promjena.';
         }

@@ -30,9 +30,48 @@
                     Iz paketa
                 </span>
             </div>
+            <?php elseif (!empty($termin['poklon_bon'])): ?>
+            <div><strong>Plaćanje:</strong> 
+                <span style="background: #9b59b6; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px;">
+                    <i class="fa-solid fa-gift"></i> Poklon bon
+                </span>
+            </div>
+            <?php endif; ?>
+            <?php if (!empty($termin['tip_termina']) && $termin['tip_termina'] === 'grupni'): ?>
+            <div><strong>Tip:</strong> 
+                <span style="background: #9b59b6; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px;">
+                    <i class="fa-solid fa-users"></i> Grupni termin
+                </span>
+            </div>
             <?php endif; ?>
         </div>
     </div>
+    
+    <!-- Prikaz članova grupe ako je grupni termin -->
+    <?php if (!empty($grupa_clanovi)): ?>
+    <div style="background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+        <h4 style="margin: 0 0 15px 0;">
+            <i class="fa-solid fa-users"></i> Ostali pacijenti u grupi (<?= count($grupa_clanovi) ?>)
+        </h4>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px;">
+            <?php foreach ($grupa_clanovi as $clan): ?>
+            <div style="background: rgba(255,255,255,0.15); padding: 12px 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <strong><?= htmlspecialchars($clan['pacijent_ime']) ?></strong>
+                    <div style="font-size: 0.85em; opacity: 0.9;">
+                        Status: <?= ucfirst($clan['status']) ?>
+                        <?= $clan['placeno'] ? ' • Plaćeno ✓' : '' ?>
+                    </div>
+                </div>
+                <a href="/termini/uredi?id=<?= $clan['id'] ?>" 
+                   style="background: rgba(255,255,255,0.2); color: white; padding: 5px 12px; border-radius: 5px; text-decoration: none; font-size: 0.85em;">
+                    <i class="fa-solid fa-edit"></i> Uredi
+                </a>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <?php endif; ?>
 
     <form method="post" action="/termini/uredi">
         <input type="hidden" name="id" value="<?= $termin['id'] ?>">
@@ -122,7 +161,42 @@
                 <i class="fa-solid fa-money-bill-wave"></i> Plaćanje i popusti
             </h4>
             
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; align-items: start;">
+            <!-- Tip plaćanja - Radio buttons -->
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;">
+                <label class="tip-placanja-label" id="label-puna-cijena" style="display: flex; flex-direction: column; align-items: center; padding: 15px; background: white; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; text-align: center;">
+                    <input type="radio" name="tip_placanja" value="puna_cijena" 
+                           <?= ($trenutni_tip_placanja ?? 'puna_cijena') === 'puna_cijena' ? 'checked' : '' ?>
+                           onchange="toggleTipPlacanja()" style="margin-bottom: 8px;">
+                    <i class="fa-solid fa-money-bill" style="font-size: 1.5em; color: #27ae60; margin-bottom: 5px;"></i>
+                    <strong>Puna cijena</strong>
+                </label>
+                
+                <label class="tip-placanja-label" id="label-besplatno" style="display: flex; flex-direction: column; align-items: center; padding: 15px; background: white; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; text-align: center;">
+                    <input type="radio" name="tip_placanja" value="besplatno" 
+                           <?= ($trenutni_tip_placanja ?? '') === 'besplatno' ? 'checked' : '' ?>
+                           onchange="toggleTipPlacanja()" style="margin-bottom: 8px;">
+                    <i class="fa-solid fa-hand-holding-heart" style="font-size: 1.5em; color: #e74c3c; margin-bottom: 5px;"></i>
+                    <strong>Besplatno</strong>
+                </label>
+                
+                <label class="tip-placanja-label" id="label-poklon-bon" style="display: flex; flex-direction: column; align-items: center; padding: 15px; background: white; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; text-align: center;">
+                    <input type="radio" name="tip_placanja" value="poklon_bon" 
+                           <?= ($trenutni_tip_placanja ?? '') === 'poklon_bon' ? 'checked' : '' ?>
+                           onchange="toggleTipPlacanja()" style="margin-bottom: 8px;">
+                    <i class="fa-solid fa-gift" style="font-size: 1.5em; color: #9b59b6; margin-bottom: 5px;"></i>
+                    <strong>Poklon bon</strong>
+                </label>
+                
+                <label class="tip-placanja-label" id="label-umanjenje" style="display: flex; flex-direction: column; align-items: center; padding: 15px; background: white; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; text-align: center;">
+                    <input type="radio" name="tip_placanja" value="umanjenje" 
+                           <?= ($trenutni_tip_placanja ?? '') === 'umanjenje' ? 'checked' : '' ?>
+                           onchange="toggleTipPlacanja()" style="margin-bottom: 8px;">
+                    <i class="fa-solid fa-percent" style="font-size: 1.5em; color: #f39c12; margin-bottom: 5px;"></i>
+                    <strong>Umanjenje %</strong>
+                </label>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start;">
                 <!-- Plaćeno checkbox -->
                 <div class="form-group" style="margin: 0;">
                     <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
@@ -134,25 +208,13 @@
                     <small style="color: #7f8c8d; display: block; margin-top: 5px;">Pacijent je platio</small>
                 </div>
                 
-                <!-- Besplatno checkbox -->
-                <div class="form-group" style="margin: 0;">
-                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                        <input type="checkbox" name="besplatno" id="besplatno" value="1" 
-                            <?= ($_POST['besplatno'] ?? $termin['besplatno'] ?? 0) ? 'checked' : '' ?>
-                            onchange="toggleBesplatno()"
-                            style="width: 20px; height: 20px;">
-                        <span style="font-weight: 600;">Besplatno</span>
-                    </label>
-                    <small style="color: #7f8c8d; display: block; margin-top: 5px;">Termin bez naplate</small>
-                </div>
-                
                 <!-- Umanjenje posto -->
-                <div class="form-group" style="margin: 0;" id="umanjenje-polje">
-                    <label for="umanjenje_posto" style="font-weight: 600;">Umanjenje (%)</label>
+                <div class="form-group" style="margin: 0; display: none;" id="umanjenje-polje">
+                    <label for="umanjenje_posto" style="font-weight: 600;">Procenat umanjenja</label>
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <input type="number" id="umanjenje_posto" name="umanjenje_posto" 
-                               min="0" max="100" step="5"
-                               value="<?= htmlspecialchars($_POST['umanjenje_posto'] ?? $termin['umanjenje_posto'] ?? '0') ?>"
+                               min="1" max="100" step="5"
+                               value="<?= htmlspecialchars($_POST['umanjenje_posto'] ?? $termin['umanjenje_posto'] ?? '50') ?>"
                                onchange="izracunajCijenu()"
                                oninput="izracunajCijenu()"
                                style="width: 80px;">
@@ -187,6 +249,22 @@
             </p>
         </div>
         <?php endif; ?>
+        
+        <!-- Opcija za ažuriranje cijele grupe -->
+        <?php if (!empty($grupa_clanovi)): ?>
+        <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                <input type="checkbox" name="azuriraj_grupu" id="azuriraj_grupu" value="1" 
+                    style="width: 20px; height: 20px;">
+                <div>
+                    <strong style="color: #856404;"><i class="fa-solid fa-users"></i> Ažuriraj cijelu grupu</strong>
+                    <div style="color: #856404; font-size: 0.9em;">
+                        Promjene terapeuta, usluge, datuma/vremena, statusa i popusta će se primijeniti na sve pacijente u grupi
+                    </div>
+                </div>
+            </label>
+        </div>
+        <?php endif; ?>
 
         <div class="form-group">
             <label for="napomena">Napomena</label>
@@ -205,19 +283,36 @@
 
 <?php if (!$termin['placeno_iz_paketa']): ?>
 <script>
-// Toggle besplatno - onemogući umanjenje ako je besplatno
-function toggleBesplatno() {
-    const besplatno = document.getElementById('besplatno').checked;
+// Toggle tip plaćanja
+function toggleTipPlacanja() {
+    const tipPlacanja = document.querySelector('input[name="tip_placanja"]:checked').value;
     const umanjenjePolje = document.getElementById('umanjenje-polje');
-    const umanjenjeInput = document.getElementById('umanjenje_posto');
     
-    if (besplatno) {
-        umanjenjePolje.style.opacity = '0.5';
-        umanjenjeInput.disabled = true;
-        umanjenjeInput.value = '0';
+    // Reset svih labela
+    document.querySelectorAll('.tip-placanja-label').forEach(label => {
+        label.style.borderColor = '#e0e0e0';
+        label.style.background = 'white';
+    });
+    
+    // Označi odabrani
+    const colors = {
+        'puna_cijena': '#27ae60',
+        'besplatno': '#e74c3c',
+        'poklon_bon': '#9b59b6',
+        'umanjenje': '#f39c12'
+    };
+    
+    const selectedLabel = document.getElementById('label-' + tipPlacanja.replace('_', '-'));
+    if (selectedLabel) {
+        selectedLabel.style.borderColor = colors[tipPlacanja];
+        selectedLabel.style.background = colors[tipPlacanja] + '10';
+    }
+    
+    // Prikaži/sakrij polje za umanjenje
+    if (tipPlacanja === 'umanjenje') {
+        umanjenjePolje.style.display = 'block';
     } else {
-        umanjenjePolje.style.opacity = '1';
-        umanjenjeInput.disabled = false;
+        umanjenjePolje.style.display = 'none';
     }
     
     izracunajCijenu();
@@ -231,7 +326,7 @@ function azurirajCijenu() {
 // Izračunaj i prikaži konačnu cijenu
 function izracunajCijenu() {
     const uslugaSelect = document.getElementById('usluga_id');
-    const besplatno = document.getElementById('besplatno').checked;
+    const tipPlacanja = document.querySelector('input[name="tip_placanja"]:checked')?.value || 'puna_cijena';
     const umanjenje = parseFloat(document.getElementById('umanjenje_posto').value) || 0;
     const cijenaPrikaz = document.getElementById('cijena-prikaz');
     const originalnaEl = document.getElementById('originalna-cijena');
@@ -246,10 +341,10 @@ function izracunajCijenu() {
         
         let konacnaCijena = cijena;
         
-        if (besplatno) {
+        if (tipPlacanja === 'besplatno' || tipPlacanja === 'poklon_bon') {
             konacnaCijena = 0;
-            konacnaEl.style.color = '#e74c3c';
-        } else if (umanjenje > 0) {
+            konacnaEl.style.color = tipPlacanja === 'besplatno' ? '#e74c3c' : '#9b59b6';
+        } else if (tipPlacanja === 'umanjenje' && umanjenje > 0) {
             konacnaCijena = cijena * (100 - umanjenje) / 100;
             konacnaEl.style.color = '#f39c12';
         } else {
@@ -259,7 +354,7 @@ function izracunajCijenu() {
         konacnaEl.textContent = konacnaCijena.toFixed(2).replace('.', ',') + ' KM';
         
         // Prikaži/sakrij originalnu cijenu
-        if (besplatno || umanjenje > 0) {
+        if (tipPlacanja !== 'puna_cijena') {
             originalnaEl.style.display = 'inline';
         } else {
             originalnaEl.style.display = 'none';
@@ -271,7 +366,7 @@ function izracunajCijenu() {
 
 // Pozovi na load
 document.addEventListener('DOMContentLoaded', function() {
-    toggleBesplatno();
+    toggleTipPlacanja();
     izracunajCijenu();
 });
 </script>

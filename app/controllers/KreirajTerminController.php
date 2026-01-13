@@ -46,12 +46,13 @@ try {
     $usluge = [];
 }
 
-// Proveri da li pacijent ima aktivan paket
+// Proveri da li pacijent ima aktivan paket (samo za pojedinačne termine)
 $aktivni_paketi = [];
 $odabrani_pacijent_id = $_POST['pacijent_id'] ?? $_GET['pacijent_id'] ?? '';
 $odabrani_terapeut_id = $_POST['terapeut_id'] ?? $_GET['terapeut_id'] ?? '';
+$tip_termina = $_POST['tip_termina'] ?? $_GET['tip_termina'] ?? 'pojedinacni';
 
-if (!empty($odabrani_pacijent_id)) {
+if (!empty($odabrani_pacijent_id) && $tip_termina === 'pojedinacni') {
     try {
         $stmt = $pdo->prepare("
             SELECT 
@@ -73,7 +74,9 @@ if (!empty($odabrani_pacijent_id)) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $tip_termina = $_POST['tip_termina'] ?? 'pojedinacni';
     $pacijent_id = $_POST['pacijent_id'] ?? '';
+    $pacijenti_ids = $_POST['pacijenti_ids'] ?? []; // Za grupne termine
     $terapeut_id = $_POST['terapeut_id'] ?? '';
     $usluga_id = $_POST['usluga_id'] ?? '';
     $datum = $_POST['datum'] ?? '';
@@ -81,16 +84,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $napomena = trim($_POST['napomena'] ?? '');
     $koristi_paket = $_POST['koristi_paket'] ?? '';  // ID paketa ili 'ne'
     $placeno = isset($_POST['placeno']) ? 1 : 0;
-    $besplatno = isset($_POST['besplatno']) ? 1 : 0;
+    
+    // Tip plaćanja: puna_cijena, besplatno, poklon_bon, umanjenje
+    $tip_placanja = $_POST['tip_placanja'] ?? 'puna_cijena';
     $umanjenje_posto = floatval($_POST['umanjenje_posto'] ?? 0);
     
+    // Postavi besplatno i poklon_bon na osnovu tip_placanja
+    $besplatno = ($tip_placanja === 'besplatno') ? 1 : 0;
+    $poklon_bon = ($tip_placanja === 'poklon_bon') ? 1 : 0;
+    if ($tip_placanja !== 'umanjenje') {
+        $umanjenje_posto = 0;
+    }
+    
     // Validacija
-    if (empty($pacijent_id)) {
-        $errors[] = 'Pacijent je obavezan.';
+    if ($tip_termina === 'pojedinacni') {
+        if (empty($pacijent_id)) {
+            $errors[] = 'Pacijent je obavezan.';
+        }
+    } else {
+        // Grupni termin
+        if (empty($pacijenti_ids) || count($pacijenti_ids) < 2) {
+            $errors[] = 'Za grupni termin morate odabrati najmanje 2 pacijenta.';
+        }
     }
     
     // Usluga je obavezna samo ako se NE koristi paket
-    if (empty($koristi_paket) || $koristi_paket === 'ne') {
+    if ($tip_termina === 'pojedinacni' && (!empty($koristi_paket) && $koristi_paket !== 'ne')) {
+        // Paket se koristi, usluga nije obavezna
+    } else {
         if (empty($usluga_id)) {
             $errors[] = 'Usluga je obavezna.';
         }
@@ -105,41 +126,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     
     // Validacija umanjenja
-    if ($umanjenje_posto < 0 || $umanjenje_posto > 100) {
-        $errors[] = 'Umanjenje mora biti između 0 i 100%.';
+    if ($tip_placanja === 'umanjenje' && ($umanjenje_posto <= 0 || $umanjenje_posto > 100)) {
+        $errors[] = 'Umanjenje mora biti između 1 i 100%.';
     }
     
     // Kombinuj datum i vrijeme
     $datum_vrijeme = '';
+    $je_retroaktivan = false;
     if (!empty($datum) && !empty($vrijeme)) {
         $datum_vrijeme = $datum . ' ' . $vrijeme;
         
-        // Provjeri da li je u budućnosti
+        // Provjeri da li je retroaktivan (u prošlosti)
         if (strtotime($datum_vrijeme) <= time()) {
-            $errors[] = 'Termin mora biti u budućnosti.';
+            $je_retroaktivan = true;
         }
     }
     
-    // Provjeri koliziju termina
-    if (empty($errors) && !empty($datum_vrijeme) && !empty($terapeut_id)) {
-        $stmt = $pdo->prepare("
-            SELECT COUNT(*) FROM termini 
-            WHERE terapeut_id = ? 
-            AND datum_vrijeme = ? 
-            AND status IN ('zakazan', 'slobodan')
-        ");
-        $stmt->execute([$terapeut_id, $datum_vrijeme]);
-        if ($stmt->fetchColumn() > 0) {
-            $errors[] = 'Terapeut već ima zakazan termin u to vrijeme.';
-        }
-    }
-    
-    // Ako se koristi paket - proveri validnost
+    // Ako se koristi paket - proveri validnost (samo za pojedinačne)
     $paket_id = null;
-    if (!empty($koristi_paket) && $koristi_paket !== 'ne') {
+    if ($tip_termina === 'pojedinacni' && !empty($koristi_paket) && $koristi_paket !== 'ne') {
         $paket_id = (int)$koristi_paket;
         
-        // Proveri da li paket postoji i ima slobodne termine
         try {
             $stmt = $pdo->prepare("
                 SELECT * FROM kupljeni_paketi 
@@ -155,7 +162,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $errors[] = 'Odabrani paket nije validan ili nema slobodnih termina.';
                 $paket_id = null;
             } else {
-                // Ako se koristi paket, postavi usluga_id iz paketa
                 $usluga_id = $paket['usluga_id'];
             }
         } catch (PDOException $e) {
@@ -164,17 +170,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
     
-    // Ako se ne koristi paket, usluga_id mora biti postavljen
-    if (empty($paket_id) && empty($usluga_id)) {
-        $errors[] = 'Usluga je obavezna kada se ne koristi paket.';
-    }
-    
-    // Spremi termin
+    // Spremi termin(e)
     if (empty($errors)) {
         try {
             $pdo->beginTransaction();
             
-            // 👉 VAŽNO: Učitaj podatke o terapeutu i pacijentu za zamrzavanje
+            // Dohvati terapeuta
             $terapeut = null;
             if (!empty($terapeut_id)) {
                 $stmt = $pdo->prepare("SELECT ime, prezime FROM users WHERE id = ?");
@@ -182,129 +183,199 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $terapeut = $stmt->fetch();
             }
             
-            $stmt = $pdo->prepare("SELECT ime, prezime FROM users WHERE id = ?");
-            $stmt->execute([$pacijent_id]);
-            $pacijent = $stmt->fetch();
-            
-            // Odredi cijenu
-            $iz_paketa = !empty($paket_id) ? 1 : 0;
+            // Dohvati cijenu usluge
             $cijena = 0;
-            $stvarna_cijena = null;
-            
-            if (!$iz_paketa) {
-                // Dohvati cijenu usluge
+            if (!empty($usluga_id)) {
                 $stmt = $pdo->prepare("SELECT cijena FROM cjenovnik WHERE id = ?");
                 $stmt->execute([$usluga_id]);
                 $cijena = $stmt->fetchColumn();
+            }
+            
+            // Odredi status - ako je retroaktivan, postavi na 'obavljen'
+            $status = $je_retroaktivan ? 'obavljen' : 'zakazan';
+            
+            $kreirani_termini = [];
+            
+            if ($tip_termina === 'pojedinacni') {
+                // ========== POJEDINAČNI TERMIN ==========
+                $stmt = $pdo->prepare("SELECT ime, prezime FROM users WHERE id = ?");
+                $stmt->execute([$pacijent_id]);
+                $pacijent = $stmt->fetch();
+                
+                $iz_paketa = !empty($paket_id) ? 1 : 0;
+                $stvarna_cijena = null;
+                
+                if (!$iz_paketa) {
+                    if ($besplatno || $poklon_bon) {
+                        $stvarna_cijena = 0;
+                    } elseif ($umanjenje_posto > 0) {
+                        $stvarna_cijena = $cijena * (100 - $umanjenje_posto) / 100;
+                    } else {
+                        $stvarna_cijena = $cijena;
+                    }
+                }
+                
+                $stmt = $pdo->prepare("
+                    INSERT INTO termini 
+                    (pacijent_id, pacijent_ime, pacijent_prezime, terapeut_id, terapeut_ime, terapeut_prezime, 
+                    usluga_id, datum_vrijeme, status, tip_termina, grupa_id, tip_zakazivanja, napomena, 
+                    placeno_iz_paketa, stvarna_cijena, placeno, besplatno, poklon_bon, umanjenje_posto) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pojedinacni', NULL, 'recepcioner', ?, ?, ?, ?, ?, ?, ?)
+                ");
+                $stmt->execute([
+                    $pacijent_id,
+                    $pacijent['ime'],
+                    $pacijent['prezime'],
+                    $terapeut_id ?: null,
+                    $terapeut ? $terapeut['ime'] : null,
+                    $terapeut ? $terapeut['prezime'] : null,
+                    $usluga_id, 
+                    $datum_vrijeme,
+                    $status,
+                    $napomena,
+                    $iz_paketa,
+                    $stvarna_cijena,
+                    $iz_paketa ? 1 : $placeno,
+                    $iz_paketa ? 0 : $besplatno,
+                    $iz_paketa ? 0 : $poklon_bon,
+                    $iz_paketa ? 0 : $umanjenje_posto
+                ]);
+                $termin_id = $pdo->lastInsertId();
+                
+                $kreirani_termini[] = [
+                    'id' => $termin_id,
+                    'pacijent_id' => $pacijent_id,
+                    'pacijent_ime' => $pacijent['ime'],
+                    'pacijent_prezime' => $pacijent['prezime']
+                ];
+                
+                // Ako se koristi paket
+                if ($paket_id) {
+                    $stmt = $pdo->prepare("
+                        INSERT INTO termini_iz_paketa (termin_id, paket_id) 
+                        VALUES (?, ?)
+                    ");
+                    $stmt->execute([$termin_id, $paket_id]);
+                }
+                
+            } else {
+                // ========== GRUPNI TERMIN ==========
+                // Generiši jedinstveni grupa_id (timestamp + random)
+                $grupa_id = time() . rand(100, 999);
                 
                 // Izračunaj stvarnu cijenu
-                if ($besplatno) {
+                $stvarna_cijena = $cijena;
+                if ($besplatno || $poklon_bon) {
                     $stvarna_cijena = 0;
                 } elseif ($umanjenje_posto > 0) {
                     $stvarna_cijena = $cijena * (100 - $umanjenje_posto) / 100;
-                } else {
-                    $stvarna_cijena = $cijena;
                 }
-            }
-            
-            // 1. Kreiraj termin SA ZAMRZNUTIM PODACIMA
-            $stmt = $pdo->prepare("
-                INSERT INTO termini 
-                (pacijent_id, pacijent_ime, pacijent_prezime, terapeut_id, terapeut_ime, terapeut_prezime, 
-                usluga_id, datum_vrijeme, status, tip_zakazivanja, napomena, placeno_iz_paketa, stvarna_cijena, placeno, besplatno, umanjenje_posto) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'zakazan', 'recepcioner', ?, ?, ?, ?, ?, ?)
-            ");
-            $stmt->execute([
-                $pacijent_id,
-                $pacijent['ime'],
-                $pacijent['prezime'],
-                $terapeut_id ?: null,
-                $terapeut ? $terapeut['ime'] : null,
-                $terapeut ? $terapeut['prezime'] : null,
-                $usluga_id, 
-                $datum_vrijeme, 
-                $napomena,
-                $iz_paketa,
-                $stvarna_cijena,
-                $iz_paketa ? 1 : $placeno,  // Ako je iz paketa, automatski je plaćeno
-                $iz_paketa ? 0 : $besplatno,
-                $iz_paketa ? 0 : $umanjenje_posto
-            ]);
-            $termin_id = $pdo->lastInsertId();
-            
-            // 2. Ako se koristi paket - poveži termin sa paketom
-            if ($paket_id) {
-                $stmt = $pdo->prepare("
-                    INSERT INTO termini_iz_paketa (termin_id, paket_id) 
-                    VALUES (?, ?)
-                ");
-                $stmt->execute([$termin_id, $paket_id]);
                 
-                // Trigger će automatski povećati iskoristeno_termina
+                // Kreiraj termin za svakog pacijenta
+                foreach ($pacijenti_ids as $pid) {
+                    $stmt = $pdo->prepare("SELECT ime, prezime FROM users WHERE id = ?");
+                    $stmt->execute([$pid]);
+                    $pacijent = $stmt->fetch();
+                    
+                    if (!$pacijent) continue;
+                    
+                    $stmt = $pdo->prepare("
+                        INSERT INTO termini 
+                        (pacijent_id, pacijent_ime, pacijent_prezime, terapeut_id, terapeut_ime, terapeut_prezime, 
+                        usluga_id, datum_vrijeme, status, tip_termina, grupa_id, tip_zakazivanja, napomena, 
+                        placeno_iz_paketa, stvarna_cijena, placeno, besplatno, poklon_bon, umanjenje_posto) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'grupni', ?, 'recepcioner', ?, 0, ?, ?, ?, ?, ?)
+                    ");
+                    $stmt->execute([
+                        $pid,
+                        $pacijent['ime'],
+                        $pacijent['prezime'],
+                        $terapeut_id ?: null,
+                        $terapeut ? $terapeut['ime'] : null,
+                        $terapeut ? $terapeut['prezime'] : null,
+                        $usluga_id, 
+                        $datum_vrijeme, 
+                        $status,
+                        $grupa_id,
+                        $napomena,
+                        $stvarna_cijena,
+                        $placeno,
+                        $besplatno,
+                        $poklon_bon,
+                        $umanjenje_posto
+                    ]);
+                    
+                    $kreirani_termini[] = [
+                        'id' => $pdo->lastInsertId(),
+                        'pacijent_id' => $pid,
+                        'pacijent_ime' => $pacijent['ime'],
+                        'pacijent_prezime' => $pacijent['prezime']
+                    ];
+                }
             }
             
             $pdo->commit();
             
-            // ✉️ SLANJE EMAIL NOTIFIKACIJA
-            require_once __DIR__ . '/../helpers/mailer.php';
-
-            // Dohvati email adrese terapeuta (ako postoji) i pacijenta
-            $stmt = $pdo->prepare("
-                SELECT 
-                    p.email as pacijent_email, p.ime as pacijent_ime, p.prezime as pacijent_prezime,
-                    c.naziv as usluga_naziv
-                FROM users p
-                LEFT JOIN cjenovnik c ON c.id = ?
-                WHERE p.id = ?
-            ");
-            $stmt->execute([$usluga_id, $pacijent_id]);
-            $email_data = $stmt->fetch();
-
-            // Dohvati terapeuta ako postoji
-            $terapeut_email_data = null;
-            if (!empty($terapeut_id)) {
-                $stmt = $pdo->prepare("SELECT email, ime, prezime FROM users WHERE id = ?");
-                $stmt->execute([$terapeut_id]);
-                $terapeut_email_data = $stmt->fetch();
-            }
-
-            if ($email_data) {
+            // ✉️ SLANJE EMAIL NOTIFIKACIJA - SAMO AKO NIJE RETROAKTIVAN
+            if (!$je_retroaktivan) {
+                require_once __DIR__ . '/../helpers/mailer.php';
+                
+                // Dohvati naziv usluge
+                $stmt = $pdo->prepare("SELECT naziv FROM cjenovnik WHERE id = ?");
+                $stmt->execute([$usluga_id]);
+                $usluga_naziv = $stmt->fetchColumn();
+                
                 $datum_format = date('d.m.Y', strtotime($datum));
                 $vrijeme_format = date('H:i', strtotime($datum . ' ' . $vrijeme));
-                $paket_info = $iz_paketa ? " (plaćen iz paketa)" : "";
                 
-                // 📧 Email terapeutu (SAMO ako je odabran)
+                // Dohvati terapeut email
+                $terapeut_email_data = null;
+                if (!empty($terapeut_id)) {
+                    $stmt = $pdo->prepare("SELECT email, ime, prezime FROM users WHERE id = ?");
+                    $stmt->execute([$terapeut_id]);
+                    $terapeut_email_data = $stmt->fetch();
+                }
+                
+                // Email terapeutu
                 if ($terapeut_email_data && !empty($terapeut_email_data['email'])) {
-                    // Generiraj Google Calendar link za terapeuta
                     $start_time = strtotime($datum_vrijeme);
                     $end_time = $start_time + (60 * 60);
                     
                     $start_google = gmdate('Ymd\THis\Z', $start_time);
                     $end_google = gmdate('Ymd\THis\Z', $end_time);
                     
-                    $calendar_title_terapeut = urlencode("Termin - {$email_data['usluga_naziv']}");
-                    $calendar_details_terapeut = urlencode("Pacijent: {$email_data['pacijent_ime']} {$email_data['pacijent_prezime']}");
+                    // Lista pacijenata za email
+                    $pacijenti_lista = array_map(function($t) {
+                        return $t['pacijent_ime'] . ' ' . $t['pacijent_prezime'];
+                    }, $kreirani_termini);
+                    $pacijenti_str = implode(', ', $pacijenti_lista);
+                    
+                    $tip_label = $tip_termina === 'grupni' ? ' (GRUPNI TERMIN)' : '';
+                    
+                    $calendar_title = urlencode("Termin - {$usluga_naziv}{$tip_label}");
+                    $calendar_details = urlencode("Pacijent(i): {$pacijenti_str}");
                     $calendar_location = urlencode("SPES Fizioterapija, Sarajevo");
                     
-                    $google_calendar_link_terapeut = "https://calendar.google.com/calendar/render?action=TEMPLATE&text={$calendar_title_terapeut}&dates={$start_google}/{$end_google}&details={$calendar_details_terapeut}&location={$calendar_location}&sf=true&output=xml";
+                    $google_calendar_link = "https://calendar.google.com/calendar/render?action=TEMPLATE&text={$calendar_title}&dates={$start_google}/{$end_google}&details={$calendar_details}&location={$calendar_location}&sf=true&output=xml";
                     
-                    $subject_terapeut = "Novi termin zakazan - " . $datum_format . " u " . $vrijeme_format;
+                    $subject_terapeut = "Novi termin zakazan{$tip_label} - " . $datum_format . " u " . $vrijeme_format;
                     $body_terapeut = "
                     <h3>Poštovani {$terapeut_email_data['ime']} {$terapeut_email_data['prezime']},</h3>
                     
                     <p>Zakazan je novi termin:</p>
                     
                     <ul>
-                        <li><strong>Pacijent:</strong> {$email_data['pacijent_ime']} {$email_data['pacijent_prezime']}</li>
+                        <li><strong>Tip:</strong> " . ($tip_termina === 'grupni' ? 'Grupni termin (' . count($kreirani_termini) . ' pacijenata)' : 'Pojedinačni termin') . "</li>
+                        <li><strong>Pacijent(i):</strong> {$pacijenti_str}</li>
                         <li><strong>Datum:</strong> {$datum_format}</li>
                         <li><strong>Vrijeme:</strong> {$vrijeme_format}</li>
-                        <li><strong>Usluga:</strong> {$email_data['usluga_naziv']}{$paket_info}</li>
+                        <li><strong>Usluga:</strong> {$usluga_naziv}</li>
                         " . (!empty($napomena) ? "<li><strong>Napomena:</strong> " . htmlspecialchars($napomena) . "</li>" : "") . "
                     </ul>
                     
                     <div style=\"text-align: center; margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 8px;\">
                         <p style=\"margin: 0 0 10px 0; font-weight: bold; color: #333;\">Dodaj u kalendar:</p>
-                        <a href=\"{$google_calendar_link_terapeut}\" target=\"_blank\" 
+                        <a href=\"{$google_calendar_link}\" target=\"_blank\" 
                         style=\"display: inline-block; background: #4285f4; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold;\">
                         Dodaj u Google Calendar
                         </a>
@@ -314,71 +385,75 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <small>Ova poruka je automatski generirana iz SPES aplikacije.</small>
                     ";
                     
-                    $mail_sent_terapeut = send_mail($terapeut_email_data['email'], $subject_terapeut, $body_terapeut);
-                    if (!$mail_sent_terapeut) {
-                        error_log("Greška pri slanju maila terapeutu: " . $terapeut_email_data['email']);
-                    }
+                    send_mail($terapeut_email_data['email'], $subject_terapeut, $body_terapeut);
                 }
-
-                // 📧 Email pacijentu (uvijek, ako ima email)
-                if (!empty($email_data['pacijent_email'])) {
-                    $start_time = strtotime($datum_vrijeme);
-                    $end_time = $start_time + (60 * 60);
+                
+                // Email svakom pacijentu
+                foreach ($kreirani_termini as $termin_info) {
+                    $stmt = $pdo->prepare("SELECT email FROM users WHERE id = ?");
+                    $stmt->execute([$termin_info['pacijent_id']]);
+                    $pacijent_email = $stmt->fetchColumn();
                     
-                    $start_google = gmdate('Ymd\THis\Z', $start_time);
-                    $end_google = gmdate('Ymd\THis\Z', $end_time);
-                    
-                    $calendar_title_pacijent = urlencode("Termin - {$email_data['usluga_naziv']}");
-                    $calendar_details_pacijent = $terapeut_email_data 
-                        ? urlencode("Terapeut: {$terapeut_email_data['ime']} {$terapeut_email_data['prezime']}")
-                        : urlencode("Terapeut: Bit će dodijeljen");
-                    $calendar_location = urlencode("SPES Fizioterapija, Sarajevo");
-                    
-                    $google_calendar_link_pacijent = "https://calendar.google.com/calendar/render?action=TEMPLATE&text={$calendar_title_pacijent}&dates={$start_google}/{$end_google}&details={$calendar_details_pacijent}&location={$calendar_location}&sf=true&output=xml";
-                    
-                    // Terapeut info za email
-                    $terapeut_line = $terapeut_email_data 
-                        ? "<li><strong>Terapeut:</strong> {$terapeut_email_data['ime']} {$terapeut_email_data['prezime']}</li>"
-                        : "<li><strong>Terapeut:</strong> <em>Bit će dodijeljen</em></li>";
-                    
-                    $subject_pacijent = "Potvrda termina - " . $datum_format . " u " . $vrijeme_format;
-                    $body_pacijent = "
-                    <h3>Poštovani/a {$email_data['pacijent_ime']} {$email_data['pacijent_prezime']},</h3>
-                    
-                    <p>Vaš termin je uspješno zakazan:</p>
-                    
-                    <ul>
-                        <li><strong>Datum:</strong> {$datum_format}</li>
-                        <li><strong>Vrijeme:</strong> {$vrijeme_format}</li>
-                        {$terapeut_line}
-                        <li><strong>Usluga:</strong> {$email_data['usluga_naziv']}{$paket_info}</li>
-                        " . (!empty($napomena) ? "<li><strong>Napomena:</strong> " . htmlspecialchars($napomena) . "</li>" : "") . "
-                    </ul>
-                    
-                    <p>Molimo dođite 10 minuta prije termina.</p>
-                    
-                    <p>Za sve izmjene ili otkazivanja kontaktirajte recepciju.</p>
-                    
-                    <div style=\"text-align: center; margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 8px;\">
-                        <p style=\"margin: 0 0 10px 0; font-weight: bold; color: #333;\">Dodaj u kalendar:</p>
-                        <a href=\"{$google_calendar_link_pacijent}\" target=\"_blank\" 
-                        style=\"display: inline-block; background: #4285f4; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold;\">
-                        Dodaj u Google Calendar
-                        </a>
-                    </div>
-                    
-                    <hr>
-                    <small>Ova poruka je automatski generirana iz SPES aplikacije.</small>
-                    ";
-                    
-                    $mail_sent_pacijent = send_mail($email_data['pacijent_email'], $subject_pacijent, $body_pacijent);
-                    if (!$mail_sent_pacijent) {
-                        error_log("Greška pri slanju maila pacijentu: " . $email_data['pacijent_email']);
+                    if (!empty($pacijent_email)) {
+                        $start_time = strtotime($datum_vrijeme);
+                        $end_time = $start_time + (60 * 60);
+                        
+                        $start_google = gmdate('Ymd\THis\Z', $start_time);
+                        $end_google = gmdate('Ymd\THis\Z', $end_time);
+                        
+                        $calendar_title = urlencode("Termin - {$usluga_naziv}");
+                        $calendar_details = $terapeut_email_data 
+                            ? urlencode("Terapeut: {$terapeut_email_data['ime']} {$terapeut_email_data['prezime']}")
+                            : urlencode("Terapeut: Bit će dodijeljen");
+                        $calendar_location = urlencode("SPES Fizioterapija, Sarajevo");
+                        
+                        $google_calendar_link = "https://calendar.google.com/calendar/render?action=TEMPLATE&text={$calendar_title}&dates={$start_google}/{$end_google}&details={$calendar_details}&location={$calendar_location}&sf=true&output=xml";
+                        
+                        $terapeut_line = $terapeut_email_data 
+                            ? "<li><strong>Terapeut:</strong> {$terapeut_email_data['ime']} {$terapeut_email_data['prezime']}</li>"
+                            : "<li><strong>Terapeut:</strong> <em>Bit će dodijeljen</em></li>";
+                        
+                        $grupni_info = $tip_termina === 'grupni' ? "<li><strong>Tip:</strong> Grupni termin</li>" : "";
+                        
+                        $subject_pacijent = "Potvrda termina - " . $datum_format . " u " . $vrijeme_format;
+                        $body_pacijent = "
+                        <h3>Poštovani/a {$termin_info['pacijent_ime']} {$termin_info['pacijent_prezime']},</h3>
+                        
+                        <p>Vaš termin je uspješno zakazan:</p>
+                        
+                        <ul>
+                            {$grupni_info}
+                            <li><strong>Datum:</strong> {$datum_format}</li>
+                            <li><strong>Vrijeme:</strong> {$vrijeme_format}</li>
+                            {$terapeut_line}
+                            <li><strong>Usluga:</strong> {$usluga_naziv}</li>
+                            " . (!empty($napomena) ? "<li><strong>Napomena:</strong> " . htmlspecialchars($napomena) . "</li>" : "") . "
+                        </ul>
+                        
+                        <p>Molimo dođite 10 minuta prije termina.</p>
+                        
+                        <p>Za sve izmjene ili otkazivanja kontaktirajte recepciju.</p>
+                        
+                        <div style=\"text-align: center; margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 8px;\">
+                            <p style=\"margin: 0 0 10px 0; font-weight: bold; color: #333;\">Dodaj u kalendar:</p>
+                            <a href=\"{$google_calendar_link}\" target=\"_blank\" 
+                            style=\"display: inline-block; background: #4285f4; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold;\">
+                            Dodaj u Google Calendar
+                            </a>
+                        </div>
+                        
+                        <hr>
+                        <small>Ova poruka je automatski generirana iz SPES aplikacije.</small>
+                        ";
+                        
+                        send_mail($pacijent_email, $subject_pacijent, $body_pacijent);
                     }
                 }
             }
             
-            header('Location: /termini?msg=kreiran');
+            $msg = $tip_termina === 'grupni' ? 'kreiran_grupni' : 'kreiran';
+            if ($je_retroaktivan) $msg .= '_retroaktivan';
+            header('Location: /termini?msg=' . $msg);
             exit;
             
         } catch (PDOException $e) {
