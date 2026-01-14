@@ -30,7 +30,8 @@
   <table class="table-standard">
     <thead>
       <tr>
-        <th>Datum</th>
+        <th>Datum unosa</th>
+        <th>Datum tretmana</th>
         <th>Stanje prije</th>
         <th>Terapija</th>
         <th>Stanje poslije</th>
@@ -42,7 +43,12 @@
       <?php if ($tretmani): ?>
         <?php foreach ($tretmani as $t): ?>
           <tr>
-            <td><?= date('d.m.Y. H:i', strtotime($t['datum'])) ?></td>
+            <td>
+              <small style="color: #7f8c8d;"><?= date('d.m.Y. H:i', strtotime($t['datum'])) ?></small>
+            </td>
+            <td>
+              <strong><?= $t['datum_tretmana'] ? date('d.m.Y.', strtotime($t['datum_tretmana'])) : '-' ?></strong>
+            </td>
             <td><?= mb_strimwidth(strip_tags($t['stanje_prije']), 0, 50, '...') ?></td>
             <td><?= mb_strimwidth(strip_tags($t['terapija']), 0, 50, '...') ?></td>
             <td><?= mb_strimwidth(strip_tags($t['stanje_poslije']), 0, 50, '...') ?></td>
@@ -81,7 +87,7 @@
           </tr>
         <?php endforeach; ?>
       <?php else: ?>
-        <tr><td colspan="5">Nema unesenih tretmana.</td></tr>
+        <tr><td colspan="7">Nema unesenih tretmana.</td></tr>
       <?php endif; ?>
     </tbody>
   </table>

@@ -55,7 +55,7 @@ if ($user['uloga'] === 'pacijent') {
 if ($user['uloga'] === 'pacijent') {
     // Pacijent vidi ograničene informacije o tretmanima
     $tretmani = $pdo->prepare("
-        SELECT t.id, t.datum, t.stanje_prije, t.terapija, t.stanje_poslije,
+        SELECT t.id, t.datum, t.datum_tretmana, t.stanje_prije, t.terapija, t.stanje_poslije,
                COALESCE(CONCAT(ter.ime, ' ', ter.prezime), 
                         CONCAT(t.terapeut_ime, ' ', t.terapeut_prezime), 
                         'N/A') AS terapeut_ime_prezime,
@@ -63,7 +63,7 @@ if ($user['uloga'] === 'pacijent') {
         FROM tretmani t
         LEFT JOIN users ter ON t.terapeut_id = ter.id
         WHERE t.karton_id = ?
-        ORDER BY t.datum DESC
+        ORDER BY COALESCE(t.datum_tretmana, t.datum) DESC
     ");
     $tretmani->execute([$karton_id]);
     $tretmani = $tretmani->fetchAll(PDO::FETCH_ASSOC);
@@ -84,7 +84,7 @@ if ($user['uloga'] === 'pacijent') {
         LEFT JOIN users u ON t.unio_id = u.id
         LEFT JOIN users ter ON t.terapeut_id = ter.id
         WHERE t.karton_id = ?
-        ORDER BY t.datum DESC
+        ORDER BY COALESCE(t.datum_tretmana, t.datum) DESC
     ");
     $tretmani->execute([$karton_id]);
     $tretmani = $tretmani->fetchAll(PDO::FETCH_ASSOC);

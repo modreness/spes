@@ -64,12 +64,13 @@ try {
                CONCAT(p.ime, ' ', p.prezime) as pacijent_ime,
                k.broj_upisa,
                k.dijagnoza,
-               DATE_FORMAT(tr.datum, '%d.%m.%Y') as datum_format
+               DATE_FORMAT(tr.datum, '%d.%m.%Y') as datum_format,
+               DATE_FORMAT(tr.datum_tretmana, '%d.%m.%Y') as datum_tretmana_format
         FROM tretmani tr
         JOIN kartoni k ON tr.karton_id = k.id
         JOIN users p ON k.pacijent_id = p.id
         WHERE $where_clause
-        ORDER BY tr.datum DESC, tr.id DESC
+        ORDER BY COALESCE(tr.datum_tretmana, tr.datum) DESC, tr.id DESC
         LIMIT $per_page OFFSET $offset
     ");
     $stmt->execute($params);

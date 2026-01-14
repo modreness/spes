@@ -96,7 +96,8 @@
             <table class="table-standard">
                 <thead>
                     <tr>
-                        <th>Datum</th>
+                        <th>Datum unosa</th>
+                        <th>Datum tretmana</th>
                         <th>Pacijent</th>
                         <th>Broj kartona</th>
                         <th>Stanje prije</th>
@@ -109,7 +110,10 @@
                     <?php foreach ($moji_tretmani as $tretman): ?>
                     <tr>
                         <td>
-                            <strong><?= $tretman['datum_format'] ?></strong>
+                            <small style="color: #7f8c8d;"><?= $tretman['datum_format'] ?></small>
+                        </td>
+                        <td>
+                            <strong><?= $tretman['datum_tretmana_format'] ?: '-' ?></strong>
                         </td>
                         <td>
                             <strong><?= htmlspecialchars($tretman['pacijent_ime']) ?></strong>
@@ -216,7 +220,8 @@ function prikaziTretman(tretmanId) {
                 <div style="display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 20px;">
                     <div>
                         <p><strong>Pacijent:</strong> ${tretman.pacijent_ime}</p>
-                        <p><strong>Datum:</strong> ${tretman.datum_format}</p>
+                        <p><strong>Datum tretmana:</strong> ${tretman.datum_tretmana_format || '-'}</p>
+                        <p><strong>Datum unosa:</strong> <small style="color: #7f8c8d;">${tretman.datum_format}</small></p>
                         <p><strong>Karton:</strong> ${tretman.broj_upisa}</p>
                         ${tretman.dijagnoza ? '<p><strong>Dijagnoza:</strong> ' + tretman.dijagnoza + '</p>' : ''}
                     </div>
