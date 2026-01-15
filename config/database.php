@@ -1,7 +1,7 @@
 <?php
 return [
     'host' => 'localhost',
-    'user' => 'spesba_appuser',
+    'user' => 'appspesba_spesba_appuser',
     'pass' => '1faIgNjfMuLR',
-    'db'   => 'spesba_app',
+    'db'   => 'appspesba_spesba_app',
 ];
