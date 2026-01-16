@@ -306,6 +306,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
             }
             
+            // Ako je termin bio iz paketa i status se promijenio u 'otkazan'
+            // Vrati termin na paket (smanji iskoristeno_termina)
+            if ($termin['placeno_iz_paketa'] && $old_status !== 'otkazan' && $status === 'otkazan') {
+                // Pronađi paket_id iz termini_iz_paketa
+                $stmt = $pdo->prepare("SELECT paket_id FROM termini_iz_paketa WHERE termin_id = ?");
+                $stmt->execute([$termin_id]);
+                $paket_veza = $stmt->fetch();
+                
+                if ($paket_veza) {
+                    $paket_id = $paket_veza['paket_id'];
+                    
+                    // Smanji broj iskorištenih termina
+                    $stmt = $pdo->prepare("
+                        UPDATE kupljeni_paketi 
+                        SET iskoristeno_termina = GREATEST(0, iskoristeno_termina - 1)
+                        WHERE id = ?
+                    ");
+                    $stmt->execute([$paket_id]);
+                    
+                    // Vrati status paketa na 'aktivan' ako je bio 'zavrsen'
+                    $stmt = $pdo->prepare("
+                        UPDATE kupljeni_paketi 
+                        SET status = 'aktivan' 
+                        WHERE id = ? AND status = 'zavrsen'
+                    ");
+                    $stmt->execute([$paket_id]);
+                    
+                    // Obriši vezu iz junction tabele
+                    $stmt = $pdo->prepare("DELETE FROM termini_iz_paketa WHERE termin_id = ?");
+                    $stmt->execute([$termin_id]);
+                    
+                    // Ažuriraj termin da više nije iz paketa
+                    $stmt = $pdo->prepare("UPDATE termini SET placeno_iz_paketa = 0 WHERE id = ?");
+                    $stmt->execute([$termin_id]);
+                }
+            }
+            
             $pdo->commit();
             
             // SLANJE EMAIL NOTIFIKACIJA ZA PROMENU STATUSA

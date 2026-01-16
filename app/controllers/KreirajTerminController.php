@@ -278,11 +278,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 // Ako se koristi paket
                 if ($paket_id) {
+                    // 1. Upiši u junction tabelu
                     $stmt = $pdo->prepare("
                         INSERT INTO termini_iz_paketa (termin_id, paket_id) 
                         VALUES (?, ?)
                     ");
                     $stmt->execute([$termin_id, $paket_id]);
+                    
+                    // 2. Ažuriraj broj iskorištenih termina
+                    $stmt = $pdo->prepare("
+                        UPDATE kupljeni_paketi 
+                        SET iskoristeno_termina = iskoristeno_termina + 1 
+                        WHERE id = ?
+                    ");
+                    $stmt->execute([$paket_id]);
+                    
+                    // 3. Provjeri da li je paket iskorišten i ažuriraj status
+                    $stmt = $pdo->prepare("
+                        UPDATE kupljeni_paketi 
+                        SET status = 'zavrsen' 
+                        WHERE id = ? AND iskoristeno_termina >= ukupno_termina
+                    ");
+                    $stmt->execute([$paket_id]);
                 }
                 
             } else {
