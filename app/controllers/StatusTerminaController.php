@@ -95,11 +95,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 // 📧 Email terapeutu
                 if (!empty($email_data['terapeut_email'])) {
-                    $subject_terapeut = "Status termina promenjen - " . $datum_format;
+                    $subject_terapeut = "Status termina promijenjen - " . $datum_format;
                     $body_terapeut = "
                     <h3>Poštovani dr. {$email_data['terapeut_ime']} {$email_data['terapeut_prezime']},</h3>
                     
-                    <p>Status termina je promenjen:</p>
+                    <p>Status termina je promijenjen:</p>
                     
                     <ul>
                         <li><strong>Pacijent:</strong> {$email_data['pacijent_ime']} {$email_data['pacijent_prezime']}</li>
