@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pacijent_id = $_POST['pacijent_id'] ?? '';
     $pacijenti_ids = $_POST['pacijenti_ids'] ?? []; // Za grupne termine
     $terapeut_id = $_POST['terapeut_id'] ?? '';
-    $usluga_id = $_POST['usluga_id'] ?? '';
+    $usluge_ids = $_POST['usluge_ids'] ?? []; // MULTISELECT - više usluga
     $datum = $_POST['datum'] ?? '';
     $vrijeme = $_POST['vrijeme'] ?? '';
     $napomena = trim($_POST['napomena'] ?? '');
@@ -109,12 +109,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
     
-    // Usluga je obavezna samo ako se NE koristi paket
+    // Usluge su obavezne samo ako se NE koristi paket
     if ($tip_termina === 'pojedinacni' && (!empty($koristi_paket) && $koristi_paket !== 'ne')) {
-        // Paket se koristi, usluga nije obavezna
+        // Paket se koristi, usluge nisu obavezne
     } else {
-        if (empty($usluga_id)) {
-            $errors[] = 'Usluga je obavezna.';
+        if (empty($usluge_ids)) {
+            $errors[] = 'Morate odabrati barem jednu uslugu.';
         }
     }
     
@@ -188,7 +188,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $errors[] = 'Odabrani paket nije validan ili nema slobodnih termina.';
                 $paket_id = null;
             } else {
-                $usluga_id = $paket['usluga_id'];
+                // Postavi usluge iz paketa
+                $usluge_ids = [$paket['usluga_id']];
             }
         } catch (PDOException $e) {
             error_log("Greška: " . $e->getMessage());
@@ -209,12 +210,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $terapeut = $stmt->fetch();
             }
             
-            // Dohvati cijenu usluge
-            $cijena = 0;
-            if (!empty($usluga_id)) {
-                $stmt = $pdo->prepare("SELECT cijena FROM cjenovnik WHERE id = ?");
-                $stmt->execute([$usluga_id]);
-                $cijena = $stmt->fetchColumn();
+            // Dohvati cijene svih odabranih usluga
+            $ukupna_cijena = 0;
+            $usluge_podaci = [];
+            $prva_usluga_id = null;
+            
+            if (!empty($usluge_ids)) {
+                $placeholders = implode(',', array_fill(0, count($usluge_ids), '?'));
+                $stmt = $pdo->prepare("SELECT id, naziv, cijena FROM cjenovnik WHERE id IN ($placeholders)");
+                $stmt->execute($usluge_ids);
+                $usluge_podaci = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                
+                foreach ($usluge_podaci as $usluga) {
+                    $ukupna_cijena += $usluga['cijena'];
+                }
+                
+                // Prva usluga za kompatibilnost sa starim kodom
+                $prva_usluga_id = $usluge_podaci[0]['id'] ?? null;
             }
             
             // Odredi status - ako je retroaktivan, postavi na 'obavljen'
@@ -235,9 +247,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if ($besplatno || $poklon_bon) {
                         $stvarna_cijena = 0;
                     } elseif ($umanjenje_posto > 0) {
-                        $stvarna_cijena = $cijena * (100 - $umanjenje_posto) / 100;
+                        $stvarna_cijena = $ukupna_cijena * (100 - $umanjenje_posto) / 100;
                     } else {
-                        $stvarna_cijena = $cijena;
+                        $stvarna_cijena = $ukupna_cijena;
                     }
                 }
                 
@@ -245,8 +257,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     INSERT INTO termini 
                     (pacijent_id, pacijent_ime, pacijent_prezime, terapeut_id, terapeut_ime, terapeut_prezime, 
                     usluga_id, datum_vrijeme, status, tip_termina, grupa_id, tip_zakazivanja, napomena, dozvoli_pridruzivanje,
-                    placeno_iz_paketa, stvarna_cijena, placeno, besplatno, poklon_bon, umanjenje_posto) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pojedinacni', NULL, 'recepcioner', ?, ?, ?, ?, ?, ?, ?, ?)
+                    placeno_iz_paketa, stvarna_cijena, ukupna_cijena, placeno, besplatno, poklon_bon, umanjenje_posto) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pojedinacni', NULL, 'recepcioner', ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ");
                 $stmt->execute([
                     $pacijent_id,
@@ -255,19 +267,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $terapeut_id ?: null,
                     $terapeut ? $terapeut['ime'] : null,
                     $terapeut ? $terapeut['prezime'] : null,
-                    $usluga_id, 
+                    $prva_usluga_id,  // Prva usluga za kompatibilnost
                     $datum_vrijeme,
                     $status,
                     $napomena,
                     $dozvoli_pridruzivanje,
                     $iz_paketa,
                     $stvarna_cijena,
+                    $ukupna_cijena,  // Nova kolona - ukupna cijena svih usluga
                     $iz_paketa ? 1 : $placeno,
                     $iz_paketa ? 0 : $besplatno,
                     $iz_paketa ? 0 : $poklon_bon,
                     $iz_paketa ? 0 : $umanjenje_posto
                 ]);
                 $termin_id = $pdo->lastInsertId();
+                
+                // Spremi sve usluge u junction tabelu
+                if (!empty($usluge_podaci)) {
+                    $stmt_usluge = $pdo->prepare("
+                        INSERT INTO termin_usluge (termin_id, usluga_id, naziv_usluge, cijena) 
+                        VALUES (?, ?, ?, ?)
+                    ");
+                    foreach ($usluge_podaci as $usluga) {
+                        $stmt_usluge->execute([
+                            $termin_id,
+                            $usluga['id'],
+                            $usluga['naziv'],
+                            $usluga['cijena']
+                        ]);
+                    }
+                }
                 
                 $kreirani_termini[] = [
                     'id' => $termin_id,
@@ -307,12 +336,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Generiši jedinstveni grupa_id (timestamp + random)
                 $grupa_id = time() . rand(100, 999);
                 
-                // Izračunaj stvarnu cijenu
-                $stvarna_cijena = $cijena;
+                // Izračunaj stvarnu cijenu (za sve usluge zajedno)
+                $stvarna_cijena = $ukupna_cijena;
                 if ($besplatno || $poklon_bon) {
                     $stvarna_cijena = 0;
                 } elseif ($umanjenje_posto > 0) {
-                    $stvarna_cijena = $cijena * (100 - $umanjenje_posto) / 100;
+                    $stvarna_cijena = $ukupna_cijena * (100 - $umanjenje_posto) / 100;
                 }
                 
                 // Kreiraj termin za svakog pacijenta
@@ -327,8 +356,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         INSERT INTO termini 
                         (pacijent_id, pacijent_ime, pacijent_prezime, terapeut_id, terapeut_ime, terapeut_prezime, 
                         usluga_id, datum_vrijeme, status, tip_termina, grupa_id, tip_zakazivanja, napomena, dozvoli_pridruzivanje,
-                        placeno_iz_paketa, stvarna_cijena, placeno, besplatno, poklon_bon, umanjenje_posto) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'grupni', ?, 'recepcioner', ?, ?, 0, ?, ?, ?, ?, ?)
+                        placeno_iz_paketa, stvarna_cijena, ukupna_cijena, placeno, besplatno, poklon_bon, umanjenje_posto) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'grupni', ?, 'recepcioner', ?, ?, 0, ?, ?, ?, ?, ?, ?)
                     ");
                     $stmt->execute([
                         $pid,
@@ -337,21 +366,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $terapeut_id ?: null,
                         $terapeut ? $terapeut['ime'] : null,
                         $terapeut ? $terapeut['prezime'] : null,
-                        $usluga_id, 
+                        $prva_usluga_id,  // Prva usluga za kompatibilnost
                         $datum_vrijeme, 
                         $status,
                         $grupa_id,
                         $napomena,
                         $dozvoli_pridruzivanje,
                         $stvarna_cijena,
+                        $ukupna_cijena,  // Nova kolona
                         $placeno,
                         $besplatno,
                         $poklon_bon,
                         $umanjenje_posto
                     ]);
                     
+                    $termin_id_grupni = $pdo->lastInsertId();
+                    
+                    // Spremi sve usluge u junction tabelu
+                    if (!empty($usluge_podaci)) {
+                        $stmt_usluge = $pdo->prepare("
+                            INSERT INTO termin_usluge (termin_id, usluga_id, naziv_usluge, cijena) 
+                            VALUES (?, ?, ?, ?)
+                        ");
+                        foreach ($usluge_podaci as $usluga) {
+                            $stmt_usluge->execute([
+                                $termin_id_grupni,
+                                $usluga['id'],
+                                $usluga['naziv'],
+                                $usluga['cijena']
+                            ]);
+                        }
+                    }
+                    
                     $kreirani_termini[] = [
-                        'id' => $pdo->lastInsertId(),
+                        'id' => $termin_id_grupni,
                         'pacijent_id' => $pid,
                         'pacijent_ime' => $pacijent['ime'],
                         'pacijent_prezime' => $pacijent['prezime']
@@ -365,10 +413,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!$je_retroaktivan) {
                 require_once __DIR__ . '/../helpers/mailer.php';
                 
-                // Dohvati naziv usluge
-                $stmt = $pdo->prepare("SELECT naziv FROM cjenovnik WHERE id = ?");
-                $stmt->execute([$usluga_id]);
-                $usluga_naziv = $stmt->fetchColumn();
+                // Dohvati nazive svih usluga
+                $usluga_nazivi = array_column($usluge_podaci, 'naziv');
+                $usluga_naziv = implode(', ', $usluga_nazivi);
+                if (empty($usluga_naziv)) $usluga_naziv = 'N/A';
                 
                 $datum_format = date('d.m.Y', strtotime($datum));
                 $vrijeme_format = date('H:i', strtotime($datum . ' ' . $vrijeme));

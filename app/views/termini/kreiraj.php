@@ -139,9 +139,8 @@
         </div>
 
         <div class="form-group" id="usluga-polje">
-            <label for="usluga_id">Usluga *</label>
-            <select id="usluga_id" name="usluga_id" class="select2" onchange="azurirajCijenu()">
-                <option value="" data-cijena="0">Odaberite uslugu</option>
+            <label for="usluge_ids">Usluge * <small style="color: #7f8c8d;">(možete odabrati više usluga)</small></label>
+            <select id="usluge_ids" name="usluge_ids[]" class="select2" multiple onchange="izracunajCijenu()">
                 <?php 
                 $trenutna_kategorija = '';
                 foreach ($usluge as $u): 
@@ -153,12 +152,24 @@
                 ?>
                     <option value="<?= $u['id'] ?>" 
                             data-cijena="<?= $u['cijena'] ?>"
-                            <?= ($_POST['usluga_id'] ?? '') == $u['id'] ? 'selected' : '' ?>>
+                            data-naziv="<?= htmlspecialchars($u['naziv']) ?>"
+                            <?= (isset($_POST['usluge_ids']) && in_array($u['id'], $_POST['usluge_ids'])) ? 'selected' : '' ?>>
                         <?= htmlspecialchars($u['naziv']) ?> - <?= number_format($u['cijena'], 2) ?> KM
                     </option>
                 <?php endforeach; ?>
                 <?php if ($trenutna_kategorija !== '') echo '</optgroup>'; ?>
             </select>
+        </div>
+        
+        <!-- Prikaz odabranih usluga i cijena -->
+        <div id="odabrane-usluge" style="display: none; background: #e8f4f8; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            <h5 style="margin: 0 0 10px 0; color: #2c3e50;">
+                <i class="fa-solid fa-list-check"></i> Odabrane usluge:
+            </h5>
+            <div id="lista-usluga"></div>
+            <div style="border-top: 2px solid #289CC6; margin-top: 10px; padding-top: 10px;">
+                <strong style="font-size: 1.1em;">Ukupno: <span id="ukupna-cijena-usluge">0,00 KM</span></strong>
+            </div>
         </div>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
@@ -188,21 +199,6 @@
                     <div style="font-size: 0.9em;">Termin je u prošlosti. Status će automatski biti postavljen na "Obavljen" i email notifikacije neće biti poslane.</div>
                 </div>
             </div>
-        </div>
-
-        <!-- Dozvoli pridruživanje -->
-        <div style="background: #e8f4fd; border: 1px solid #bee5eb; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                <input type="checkbox" name="dozvoli_pridruzivanje" id="dozvoli_pridruzivanje" value="1" 
-                    <?= isset($_POST['dozvoli_pridruzivanje']) ? 'checked' : '' ?>
-                    style="width: 20px; height: 20px;">
-                <div>
-                    <strong style="color: #0c5460;"><i class="fa-solid fa-user-plus"></i> Dozvoli pridruživanje drugog pacijenta</strong>
-                    <div style="color: #0c5460; font-size: 0.9em;">
-                        Omogućite ako želite da se još jedan pacijent može dodati u isto vrijeme kod istog terapeuta
-                    </div>
-                </div>
-            </label>
         </div>
 
         <!-- Plaćanje i popusti -->
@@ -258,7 +254,7 @@
                     <label for="umanjenje_posto" style="font-weight: 600;">Procenat umanjenja</label>
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <input type="number" id="umanjenje_posto" name="umanjenje_posto" 
-                               min="0" max="100" step="1" disabled
+                               min="1" max="100" step="1"
                                value="<?= htmlspecialchars($_POST['umanjenje_posto'] ?? '50') ?>"
                                onchange="izracunajCijenu()"
                                oninput="izracunajCijenu()"
@@ -391,7 +387,6 @@ function toggleTipTermina() {
 function toggleTipPlacanja() {
     const tipPlacanja = document.querySelector('input[name="tip_placanja"]:checked').value;
     const umanjenjePolje = document.getElementById('umanjenje-polje');
-    const umanjenjeInput = document.getElementById('umanjenje_posto');
     
     // Reset svih labela
     document.querySelectorAll('.tip-placanja-label').forEach(label => {
@@ -413,17 +408,11 @@ function toggleTipPlacanja() {
         selectedLabel.style.background = colors[tipPlacanja] + '10';
     }
     
-    // Prikaži/sakrij polje za umanjenje i DISABLE kad je skriveno
+    // Prikaži/sakrij polje za umanjenje
     if (tipPlacanja === 'umanjenje') {
         umanjenjePolje.style.display = 'block';
-        umanjenjeInput.disabled = false;
-        // Postavi default ako je 0
-        if (parseFloat(umanjenjeInput.value) === 0) {
-            umanjenjeInput.value = '50';
-        }
     } else {
         umanjenjePolje.style.display = 'none';
-        umanjenjeInput.disabled = true;
     }
     
     izracunajCijenu();
@@ -449,8 +438,9 @@ function toggleUslugaPolje() {
     const tipPojedinacni = document.querySelector('input[name="tip_termina"][value="pojedinacni"]').checked;
     const paketRadios = document.querySelectorAll('input[name="koristi_paket"]');
     const uslugaPolje = document.getElementById('usluga-polje');
-    const uslugaSelect = document.getElementById('usluga_id');
+    const uslugaSelect = document.getElementById('usluge_ids');
     const placanjeSekcija = document.getElementById('placanje-sekcija');
+    const odabraneUsluge = document.getElementById('odabrane-usluge');
     
     let koristiPaket = false;
     
@@ -464,12 +454,13 @@ function toggleUslugaPolje() {
     
     if (koristiPaket) {
         uslugaPolje.style.display = 'none';
-        uslugaSelect.removeAttribute('required');
-        uslugaSelect.value = '';
+        if (odabraneUsluge) odabraneUsluge.style.display = 'none';
+        if (typeof $ !== 'undefined' && $('#usluge_ids').data('select2')) {
+            $('#usluge_ids').val(null).trigger('change');
+        }
         if (placanjeSekcija) placanjeSekcija.style.display = 'none';
     } else {
         uslugaPolje.style.display = 'block';
-        uslugaSelect.setAttribute('required', 'required');
         if (placanjeSekcija) placanjeSekcija.style.display = 'block';
     }
     
@@ -481,45 +472,71 @@ function azurirajCijenu() {
     izracunajCijenu();
 }
 
-// Izračunaj i prikaži konačnu cijenu
+// Izračunaj i prikaži konačnu cijenu - MULTISELECT VERZIJA
 function izracunajCijenu() {
-    const uslugaSelect = document.getElementById('usluga_id');
+    const uslugaSelect = document.getElementById('usluge_ids');
     const tipPlacanja = document.querySelector('input[name="tip_placanja"]:checked')?.value || 'puna_cijena';
-    const umanjenjeInput = document.getElementById('umanjenje_posto');
-    const umanjenje = umanjenjeInput && !umanjenjeInput.disabled ? (parseFloat(umanjenjeInput.value) || 0) : 0;
+    const umanjenje = parseFloat(document.getElementById('umanjenje_posto').value) || 0;
     const cijenaPrikaz = document.getElementById('cijena-prikaz');
     const originalnaEl = document.getElementById('originalna-cijena');
     const konacnaEl = document.getElementById('konacna-cijena');
+    const odabraneUsluge = document.getElementById('odabrane-usluge');
+    const listaUsluga = document.getElementById('lista-usluga');
+    const ukupnaCijenaUsluge = document.getElementById('ukupna-cijena-usluge');
     
-    const selectedOption = uslugaSelect.options[uslugaSelect.selectedIndex];
-    const cijena = parseFloat(selectedOption?.dataset?.cijena) || 0;
+    // Dohvati sve odabrane opcije
+    const selectedOptions = Array.from(uslugaSelect.selectedOptions);
     
-    if (cijena > 0 || uslugaSelect.value) {
-        cijenaPrikaz.style.display = 'block';
-        originalnaEl.textContent = cijena.toFixed(2).replace('.', ',') + ' KM';
-        
-        let konacnaCijena = cijena;
-        
-        if (tipPlacanja === 'besplatno' || tipPlacanja === 'poklon_bon') {
-            konacnaCijena = 0;
-            konacnaEl.style.color = tipPlacanja === 'besplatno' ? '#e74c3c' : '#9b59b6';
-        } else if (tipPlacanja === 'umanjenje' && umanjenje > 0) {
-            konacnaCijena = cijena * (100 - umanjenje) / 100;
-            konacnaEl.style.color = '#f39c12';
-        } else {
-            konacnaEl.style.color = '#27ae60';
-        }
-        
-        konacnaEl.textContent = konacnaCijena.toFixed(2).replace('.', ',') + ' KM';
-        
-        // Prikaži/sakrij originalnu cijenu
-        if (tipPlacanja !== 'puna_cijena') {
-            originalnaEl.style.display = 'inline';
-        } else {
-            originalnaEl.style.display = 'none';
-        }
-    } else {
+    if (selectedOptions.length === 0) {
+        if (odabraneUsluge) odabraneUsluge.style.display = 'none';
         cijenaPrikaz.style.display = 'none';
+        return;
+    }
+    
+    // Izračunaj ukupnu cijenu i prikaži listu
+    let ukupnaCijena = 0;
+    let listaHTML = '';
+    
+    selectedOptions.forEach(option => {
+        const cijena = parseFloat(option.dataset.cijena) || 0;
+        const naziv = option.dataset.naziv || option.text.split(' - ')[0];
+        ukupnaCijena += cijena;
+        listaHTML += `<div style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #d4e8ef;">
+            <span>${naziv}</span>
+            <span style="font-weight: 500;">${cijena.toFixed(2).replace('.', ',')} KM</span>
+        </div>`;
+    });
+    
+    // Prikaži listu odabranih usluga
+    if (odabraneUsluge && listaUsluga) {
+        odabraneUsluge.style.display = 'block';
+        listaUsluga.innerHTML = listaHTML;
+        ukupnaCijenaUsluge.textContent = ukupnaCijena.toFixed(2).replace('.', ',') + ' KM';
+    }
+    
+    // Prikaži prikaz cijene
+    cijenaPrikaz.style.display = 'block';
+    originalnaEl.textContent = ukupnaCijena.toFixed(2).replace('.', ',') + ' KM';
+    
+    let konacnaCijena = ukupnaCijena;
+    
+    if (tipPlacanja === 'besplatno' || tipPlacanja === 'poklon_bon') {
+        konacnaCijena = 0;
+        konacnaEl.style.color = tipPlacanja === 'besplatno' ? '#e74c3c' : '#9b59b6';
+    } else if (tipPlacanja === 'umanjenje' && umanjenje > 0) {
+        konacnaCijena = ukupnaCijena * (100 - umanjenje) / 100;
+        konacnaEl.style.color = '#f39c12';
+    } else {
+        konacnaEl.style.color = '#27ae60';
+    }
+    
+    konacnaEl.textContent = konacnaCijena.toFixed(2).replace('.', ',') + ' KM';
+    
+    // Prikaži/sakrij originalnu cijenu
+    if (tipPlacanja !== 'puna_cijena') {
+        originalnaEl.style.display = 'inline';
+    } else {
+        originalnaEl.style.display = 'none';
     }
 }
 
@@ -527,7 +544,19 @@ function izracunajCijenu() {
 document.addEventListener('DOMContentLoaded', function() {
     toggleTipTermina();
     toggleTipPlacanja();
-    izracunajCijenu();
     provjeriDatum();
+    
+    // Inicijalizuj Select2 za usluge (multiselect)
+    if (typeof $ !== 'undefined') {
+        $('#usluge_ids').select2({
+            placeholder: 'Odaberite usluge',
+            allowClear: true,
+            closeOnSelect: false
+        }).on('change', function() {
+            izracunajCijenu();
+        });
+    }
+    
+    izracunajCijenu();
 });
 </script>
