@@ -18,14 +18,14 @@ function send_mail($to, $subject, $body) {
 
     try {
         // SMTP konfiguracija
-        /*$mail->isSMTP();
+        $mail->isSMTP();
         $mail->Host = 'mail.app.spes.ba';              // <-- SMTP host
         $mail->SMTPAuth = true;
         $mail->Username = 'web@app.spes.ba';      // <-- SMTP username
         $mail->Password = 'uS+[^G]QeWLll;^!';           // <-- SMTP password
         $mail->SMTPSecure = 'ssl';                 // 'ssl' ili 'tls'
         $mail->Port = 465;                         // 465 za SSL, 587 za TLS
-        */
+        
         /*
         // SSL opcije za shared hosting - FIX ZA CERTIFIKAT PROBLEM
         $mail->SMTPOptions = array(
@@ -36,13 +36,7 @@ function send_mail($to, $subject, $body) {
             )
         );
         */
-        $mail->isSMTP();
-        $mail->Host = 'smtp.gmail.com';
-        $mail->SMTPAuth = true;
-        $mail->Username = 'admin@spes.ba';  // Google Workspace email
-        $mail->Password = 'mpzs iobd shkb nwcf';          // App Password (16 znakova)
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port = 587;
+
 
         // Sender i recipient
         $mail->setFrom('admin@spes.ba', 'SPES aplikacija');
