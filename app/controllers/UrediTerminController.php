@@ -420,10 +420,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             $pdo->commit();
             
-            // SLANJE EMAIL NOTIFIKACIJA ZA PROMENU STATUSA
+            // SLANJE EMAIL NOTIFIKACIJA
             $terapeut_dodan = (empty($termin['terapeut_id']) && !empty($terapeut_id));
+            $terapeut_promijenjen = (!empty($termin['terapeut_id']) && !empty($terapeut_id) && $termin['terapeut_id'] != $terapeut_id);
 
-            if (($old_status !== $status && in_array($status, ['obavljen', 'otkazan'])) || $terapeut_dodan) {
+            if (($old_status !== $status && in_array($status, ['obavljen', 'otkazan'])) || $terapeut_dodan || $terapeut_promijenjen) {
                 require_once __DIR__ . '/../helpers/mailer.php';
                 
                 // Dohvati fresh email podatke
@@ -440,7 +441,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $usluga_nazivi = array_column($usluge_podaci, 'naziv');
                 $usluga_naziv = !empty($usluga_nazivi) ? implode(', ', $usluga_nazivi) : 'N/A';
                 
-                // Dohvati terapeuta ako postoji
+                // Dohvati NOVOG terapeuta ako postoji
                 $terapeut_email_data = null;
                 if (!empty($terapeut_id)) {
                     $stmt = $pdo->prepare("SELECT email, ime, prezime FROM users WHERE id = ?");
@@ -448,12 +449,111 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $terapeut_email_data = $stmt->fetch();
                 }
                 
+                // Dohvati STAROG terapeuta ako je promijenjen
+                $stari_terapeut_email_data = null;
+                if ($terapeut_promijenjen) {
+                    $stmt = $pdo->prepare("SELECT email, ime, prezime FROM users WHERE id = ?");
+                    $stmt->execute([$termin['terapeut_id']]);
+                    $stari_terapeut_email_data = $stmt->fetch();
+                }
+                
                 if ($email_data) {
                     $datum_format = date('d.m.Y', strtotime($datum));
                     $vrijeme_format = date('H:i', strtotime($datum . ' ' . $vrijeme));
                     
-                    // Ako je terapeut dodan (a nije promijenjen status)
-                    if ($terapeut_dodan && $old_status === $status) {
+                    // Ako je terapeut PROMIJENJEN (bio je jedan, sad je drugi)
+                    if ($terapeut_promijenjen && $old_status === $status) {
+                        // Email STAROM terapeutu - obavijest da je skinut
+                        if ($stari_terapeut_email_data && !empty($stari_terapeut_email_data['email'])) {
+                            $subject_stari = "Termin promijenjen - " . $datum_format . " u " . $vrijeme_format;
+                            $body_stari = "
+                            <h3>Poštovani {$stari_terapeut_email_data['ime']} {$stari_terapeut_email_data['prezime']},</h3>
+                            
+                            <p>Obavještavamo vas da je termin promijenjen i dodijeljen drugom terapeutu:</p>
+                            
+                            <ul>
+                                <li><strong>Pacijent:</strong> {$email_data['pacijent_ime']} {$email_data['pacijent_prezime']}</li>
+                                <li><strong>Datum:</strong> {$datum_format}</li>
+                                <li><strong>Vrijeme:</strong> {$vrijeme_format}</li>
+                                <li><strong>Usluge:</strong> {$usluga_naziv}</li>
+                            </ul>
+                            
+                            <hr>
+                            <small>Ova poruka je automatski generirana iz SPES aplikacije.</small>
+                            ";
+                            
+                            send_mail($stari_terapeut_email_data['email'], $subject_stari, $body_stari);
+                        }
+                        
+                        // Email NOVOM terapeutu - dodijeljen termin
+                        if ($terapeut_email_data && !empty($terapeut_email_data['email'])) {
+                            $start_time = strtotime($datum_vrijeme);
+                            $end_time = $start_time + (60 * 60);
+                            
+                            $start_google = gmdate('Ymd\THis\Z', $start_time);
+                            $end_google = gmdate('Ymd\THis\Z', $end_time);
+                            
+                            $calendar_title = urlencode("Termin - {$usluga_naziv}");
+                            $calendar_details = urlencode("Pacijent: {$email_data['pacijent_ime']} {$email_data['pacijent_prezime']}");
+                            $calendar_location = urlencode("SPES Fizioterapija, Sarajevo");
+                            
+                            $google_calendar_link = "https://calendar.google.com/calendar/render?action=TEMPLATE&text={$calendar_title}&dates={$start_google}/{$end_google}&details={$calendar_details}&location={$calendar_location}&sf=true&output=xml";
+                            
+                            $subject_terapeut = "Dodijeljen vam je termin - " . $datum_format . " u " . $vrijeme_format;
+                            $body_terapeut = "
+                            <h3>Poštovani {$terapeut_email_data['ime']} {$terapeut_email_data['prezime']},</h3>
+                            
+                            <p>Dodijeljen vam je termin:</p>
+                            
+                            <ul>
+                                <li><strong>Pacijent:</strong> {$email_data['pacijent_ime']} {$email_data['pacijent_prezime']}</li>
+                                <li><strong>Datum:</strong> {$datum_format}</li>
+                                <li><strong>Vrijeme:</strong> {$vrijeme_format}</li>
+                                <li><strong>Usluge:</strong> {$usluga_naziv}</li>
+                                " . (!empty($napomena) ? "<li><strong>Napomena:</strong> " . htmlspecialchars($napomena) . "</li>" : "") . "
+                            </ul>
+                            
+                            <div style=\"text-align: center; margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 8px;\">
+                                <p style=\"margin: 0 0 10px 0; font-weight: bold; color: #333;\">Dodaj u kalendar:</p>
+                                <a href=\"{$google_calendar_link}\" target=\"_blank\" 
+                                style=\"display: inline-block; background: #4285f4; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold;\">
+                                Dodaj u Google Calendar
+                                </a>
+                            </div>
+                            
+                            <hr>
+                            <small>Ova poruka je automatski generirana iz SPES aplikacije.</small>
+                            ";
+                            
+                            send_mail($terapeut_email_data['email'], $subject_terapeut, $body_terapeut);
+                        }
+                        
+                        // Email pacijentu o promjeni terapeuta
+                        if (!empty($email_data['pacijent_email']) && $terapeut_email_data) {
+                            $subject_pacijent = "Ažuriranje termina - promijenjen terapeut";
+                            $body_pacijent = "
+                            <h3>Poštovani/a {$email_data['pacijent_ime']} {$email_data['pacijent_prezime']},</h3>
+                            
+                            <p>Obavještavamo vas da je promijenjen terapeut za vaš termin:</p>
+                            
+                            <ul>
+                                <li><strong>Datum:</strong> {$datum_format}</li>
+                                <li><strong>Vrijeme:</strong> {$vrijeme_format}</li>
+                                <li><strong>Novi terapeut:</strong> {$terapeut_email_data['ime']} {$terapeut_email_data['prezime']}</li>
+                                <li><strong>Usluge:</strong> {$usluga_naziv}</li>
+                            </ul>
+                            
+                            <p>Molimo dođite 10 minuta prije termina.</p>
+                            
+                            <hr>
+                            <small>Ova poruka je automatski generirana iz SPES aplikacije.</small>
+                            ";
+                            
+                            send_mail($email_data['pacijent_email'], $subject_pacijent, $body_pacijent);
+                        }
+                    }
+                    // Ako je terapeut DODAN (prije nije bilo terapeuta)
+                    else if ($terapeut_dodan && $old_status === $status) {
                         if ($terapeut_email_data && !empty($terapeut_email_data['email'])) {
                             $start_time = strtotime($datum_vrijeme);
                             $end_time = $start_time + (60 * 60);
@@ -507,7 +607,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <li><strong>Datum:</strong> {$datum_format}</li>
                                 <li><strong>Vrijeme:</strong> {$vrijeme_format}</li>
                                 <li><strong>Terapeut:</strong> {$terapeut_email_data['ime']} {$terapeut_email_data['prezime']}</li>
-                                <li><strong>Usluga:</strong> {$usluga_naziv}</li>
+                                <li><strong>Usluge:</strong> {$usluga_naziv}</li>
                             </ul>
                             
                             <p>Molimo dođite 10 minuta prije termina.</p>
@@ -519,6 +619,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             send_mail($email_data['pacijent_email'], $subject_pacijent, $body_pacijent);
                         }
                     }
+                    // Ako je promijenjen STATUS
                     else if ($old_status !== $status && in_array($status, ['obavljen', 'otkazan'])) {
                         $status_labels = [
                             'zakazan' => 'Zakazan',
