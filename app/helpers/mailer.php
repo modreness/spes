@@ -19,7 +19,7 @@ function send_mail($to, $subject, $body) {
     try {
         // SMTP konfiguracija
         $mail->isSMTP();
-        $mail->Host = 'localhost';              // <-- SMTP host
+        $mail->Host = 'server.galopdigital.com';              // <-- SMTP host
         $mail->SMTPAuth = true;
         $mail->Username = 'web@app.spes.ba';      // <-- SMTP username
         $mail->Password = 'uS+[^G]QeWLll;^!';           // <-- SMTP password
