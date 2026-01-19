@@ -77,6 +77,12 @@ try {
         $trenutni_tip_placanja = 'umanjenje';
     }
     
+    // Dohvati postojeće usluge ovog termina iz junction tabele
+    $termin_usluge = [];
+    $stmt = $pdo->prepare("SELECT * FROM termin_usluge WHERE termin_id = ?");
+    $stmt->execute([$termin_id]);
+    $termin_usluge = $stmt->fetchAll();
+    
 } catch (PDOException $e) {
     error_log("Greška pri dohvaćanju termina: " . $e->getMessage());
     header('Location: /termini?msg=greska');
@@ -113,7 +119,7 @@ try {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pacijent_id = $_POST['pacijent_id'] ?? '';
     $terapeut_id = $_POST['terapeut_id'] ?? '';
-    $usluga_id = $_POST['usluga_id'] ?? '';
+    $usluge_ids = $_POST['usluge_ids'] ?? [];  // MULTISELECT - više usluga
     $datum = $_POST['datum'] ?? '';
     $vrijeme = $_POST['vrijeme'] ?? '';
     $status = $_POST['status'] ?? '';
@@ -138,8 +144,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Pacijent je obavezan.';
     }
     
-    if (empty($usluga_id)) {
-        $errors[] = 'Usluga je obavezna.';
+    if (empty($usluge_ids)) {
+        $errors[] = 'Morate odabrati barem jednu uslugu.';
     }
     
     if (empty($datum)) {
@@ -212,20 +218,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([$pacijent_id]);
             $pacijent = $stmt->fetch();
             
+            // Dohvati cijene svih odabranih usluga
+            $ukupna_cijena = 0;
+            $usluge_podaci = [];
+            $prva_usluga_id = null;
+            
+            if (!empty($usluge_ids)) {
+                $placeholders = implode(',', array_fill(0, count($usluge_ids), '?'));
+                $stmt = $pdo->prepare("SELECT id, naziv, cijena FROM cjenovnik WHERE id IN ($placeholders)");
+                $stmt->execute($usluge_ids);
+                $usluge_podaci = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                
+                foreach ($usluge_podaci as $usluga) {
+                    $ukupna_cijena += $usluga['cijena'];
+                }
+                
+                // Prva usluga za kompatibilnost sa starim kodom
+                $prva_usluga_id = $usluge_podaci[0]['id'] ?? null;
+            }
+            
             // Izračunaj stvarnu cijenu (samo ako nije iz paketa)
             $stvarna_cijena = $termin['stvarna_cijena'];
             
             if (!$termin['placeno_iz_paketa']) {
-                $stmt = $pdo->prepare("SELECT cijena FROM cjenovnik WHERE id = ?");
-                $stmt->execute([$usluga_id]);
-                $cijena = $stmt->fetchColumn();
-                
                 if ($besplatno || $poklon_bon) {
                     $stvarna_cijena = 0;
                 } elseif ($umanjenje_posto > 0) {
-                    $stvarna_cijena = $cijena * (100 - $umanjenje_posto) / 100;
+                    $stvarna_cijena = $ukupna_cijena * (100 - $umanjenje_posto) / 100;
                 } else {
-                    $stvarna_cijena = $cijena;
+                    $stvarna_cijena = $ukupna_cijena;
                 }
             }
             
@@ -247,7 +268,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     besplatno = ?,
                     poklon_bon = ?,
                     umanjenje_posto = ?,
-                    stvarna_cijena = ?
+                    stvarna_cijena = ?,
+                    ukupna_cijena = ?
                 WHERE id = ?
             ");
             $stmt->execute([
@@ -257,7 +279,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $terapeut_id ?: null,
                 $terapeut['ime'] ?? null,
                 $terapeut['prezime'] ?? null,
-                $usluga_id, 
+                $prva_usluga_id,  // Prva usluga za kompatibilnost
                 $datum_vrijeme, 
                 $status, 
                 $napomena,
@@ -267,11 +289,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $termin['placeno_iz_paketa'] ? 0 : $poklon_bon,
                 $termin['placeno_iz_paketa'] ? 0 : $umanjenje_posto,
                 $stvarna_cijena,
+                $ukupna_cijena,
                 $termin_id
             ]);
             
+            // Ažuriraj usluge u junction tabeli
+            // 1. Obriši postojeće
+            $stmt = $pdo->prepare("DELETE FROM termin_usluge WHERE termin_id = ?");
+            $stmt->execute([$termin_id]);
+            
+            // 2. Dodaj nove
+            if (!empty($usluge_podaci)) {
+                $stmt_usluge = $pdo->prepare("
+                    INSERT INTO termin_usluge (termin_id, usluga_id, naziv_usluge, cijena) 
+                    VALUES (?, ?, ?, ?)
+                ");
+                foreach ($usluge_podaci as $usluga) {
+                    $stmt_usluge->execute([
+                        $termin_id,
+                        $usluga['id'],
+                        $usluga['naziv'],
+                        $usluga['cijena']
+                    ]);
+                }
+            }
+            
             // Ako je grupni termin i korisnik želi ažurirati cijelu grupu
             if (!empty($termin['grupa_id']) && $azuriraj_grupu) {
+                // Dohvati sve termine iz grupe (osim trenutnog)
+                $stmt = $pdo->prepare("SELECT id FROM termini WHERE grupa_id = ? AND id != ?");
+                $stmt->execute([$termin['grupa_id'], $termin_id]);
+                $grupa_termini = $stmt->fetchAll(PDO::FETCH_COLUMN);
+                
+                // Ažuriraj svaki termin u grupi
                 $stmt = $pdo->prepare("
                     UPDATE termini 
                     SET terapeut_id = ?, 
@@ -285,14 +335,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         besplatno = ?,
                         poklon_bon = ?,
                         umanjenje_posto = ?,
-                        stvarna_cijena = ?
+                        stvarna_cijena = ?,
+                        ukupna_cijena = ?
                     WHERE grupa_id = ? AND id != ?
                 ");
                 $stmt->execute([
                     $terapeut_id ?: null,
                     $terapeut['ime'] ?? null,
                     $terapeut['prezime'] ?? null,
-                    $usluga_id, 
+                    $prva_usluga_id, 
                     $datum_vrijeme, 
                     $status, 
                     $napomena,
@@ -301,9 +352,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $poklon_bon,
                     $umanjenje_posto,
                     $stvarna_cijena,
+                    $ukupna_cijena,
                     $termin['grupa_id'],
                     $termin_id
                 ]);
+                
+                // Ažuriraj usluge za sve termine u grupi
+                foreach ($grupa_termini as $gid) {
+                    // Obriši postojeće
+                    $stmt = $pdo->prepare("DELETE FROM termin_usluge WHERE termin_id = ?");
+                    $stmt->execute([$gid]);
+                    
+                    // Dodaj nove
+                    if (!empty($usluge_podaci)) {
+                        $stmt_usluge = $pdo->prepare("
+                            INSERT INTO termin_usluge (termin_id, usluga_id, naziv_usluge, cijena) 
+                            VALUES (?, ?, ?, ?)
+                        ");
+                        foreach ($usluge_podaci as $usluga) {
+                            $stmt_usluge->execute([
+                                $gid,
+                                $usluga['id'],
+                                $usluga['naziv'],
+                                $usluga['cijena']
+                            ]);
+                        }
+                    }
+                }
             }
             
             // Ako je termin bio iz paketa i status se promijenio u 'otkazan'
@@ -354,14 +429,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Dohvati fresh email podatke
                 $stmt = $pdo->prepare("
                     SELECT 
-                        p.email as pacijent_email, p.ime as pacijent_ime, p.prezime as pacijent_prezime,
-                        c.naziv as usluga_naziv
+                        p.email as pacijent_email, p.ime as pacijent_ime, p.prezime as pacijent_prezime
                     FROM users p
-                    LEFT JOIN cjenovnik c ON c.id = ?
                     WHERE p.id = ?
                 ");
-                $stmt->execute([$usluga_id, $pacijent_id]);
+                $stmt->execute([$pacijent_id]);
                 $email_data = $stmt->fetch();
+                
+                // Nazivi svih usluga
+                $usluga_nazivi = array_column($usluge_podaci, 'naziv');
+                $usluga_naziv = !empty($usluga_nazivi) ? implode(', ', $usluga_nazivi) : 'N/A';
                 
                 // Dohvati terapeuta ako postoji
                 $terapeut_email_data = null;
@@ -384,7 +461,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $start_google = gmdate('Ymd\THis\Z', $start_time);
                             $end_google = gmdate('Ymd\THis\Z', $end_time);
                             
-                            $calendar_title = urlencode("Termin - {$email_data['usluga_naziv']}");
+                            $calendar_title = urlencode("Termin - {$usluga_naziv}");
                             $calendar_details = urlencode("Pacijent: {$email_data['pacijent_ime']} {$email_data['pacijent_prezime']}");
                             $calendar_location = urlencode("SPES Fizioterapija, Sarajevo");
                             
@@ -400,7 +477,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <li><strong>Pacijent:</strong> {$email_data['pacijent_ime']} {$email_data['pacijent_prezime']}</li>
                                 <li><strong>Datum:</strong> {$datum_format}</li>
                                 <li><strong>Vrijeme:</strong> {$vrijeme_format}</li>
-                                <li><strong>Usluga:</strong> {$email_data['usluga_naziv']}</li>
+                                <li><strong>Usluge:</strong> {$usluga_naziv}</li>
                                 " . (!empty($napomena) ? "<li><strong>Napomena:</strong> " . htmlspecialchars($napomena) . "</li>" : "") . "
                             </ul>
                             
@@ -430,7 +507,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <li><strong>Datum:</strong> {$datum_format}</li>
                                 <li><strong>Vrijeme:</strong> {$vrijeme_format}</li>
                                 <li><strong>Terapeut:</strong> {$terapeut_email_data['ime']} {$terapeut_email_data['prezime']}</li>
-                                <li><strong>Usluga:</strong> {$email_data['usluga_naziv']}</li>
+                                <li><strong>Usluga:</strong> {$usluga_naziv}</li>
                             </ul>
                             
                             <p>Molimo dođite 10 minuta prije termina.</p>
@@ -464,7 +541,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <li><strong>Pacijent:</strong> {$email_data['pacijent_ime']} {$email_data['pacijent_prezime']}</li>
                                 <li><strong>Datum:</strong> {$datum_format}</li>
                                 <li><strong>Vrijeme:</strong> {$vrijeme_format}</li>
-                                <li><strong>Usluga:</strong> {$email_data['usluga_naziv']}</li>
+                                <li><strong>Usluga:</strong> {$usluga_naziv}</li>
                                 <li><strong>Status:</strong> {$old_status_label} → {$new_status_label}</li>
                             </ul>
                             
@@ -497,7 +574,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <li><strong>Datum:</strong> {$datum_format}</li>
                                 <li><strong>Vrijeme:</strong> {$vrijeme_format}</li>
                                 {$terapeut_line}
-                                <li><strong>Usluga:</strong> {$email_data['usluga_naziv']}</li>
+                                <li><strong>Usluga:</strong> {$usluga_naziv}</li>
                                 <li><strong>Status:</strong> {$old_status_label} → {$new_status_label}</li>
                             </ul>
                             
