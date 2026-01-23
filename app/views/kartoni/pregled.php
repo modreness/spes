@@ -23,7 +23,7 @@
   <div class="card-wrapper">
     <div class="card-head">
         <h3><i class="fa fa-user"></i> Pacijent: <?= htmlspecialchars($karton['ime'] ?? '') ?> <?= htmlspecialchars($karton['prezime'] ?? '') ?></h3>
-        <div>
+        <div class="card-head-buttons">
             <?php if ($user['uloga'] !== 'pacijent'): ?>
                 <a href="/kartoni/uredi?id=<?= $karton['id'] ?>" class="btn btn-edit-yellow">Uredi podatke</a>
             <?php endif; ?>

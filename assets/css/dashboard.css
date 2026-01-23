@@ -3890,8 +3890,16 @@ margin-bottom:20px;
     .card-info-fw {
         width: 100% !important;
         min-width: auto !important;
+        box-sizing:border-box;
     }
-    
+    .card-head-buttons {
+        display:flex;
+        flex-direction:column;
+        row-gap:10px;
+    }
+    .card-head-buttons a {
+        margin-left:0px !important;
+    }
     /* Modals */
     .modal {
         width: 95% !important;
