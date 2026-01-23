@@ -3836,6 +3836,11 @@ margin-bottom:20px;
         flex-direction: column !important;
         align-items: flex-start !important;
         gap: 15px !important;
+        margin-bottom:20px;
+    }
+    .naslov-dugme a {
+        width:100%;
+        margin:0 !important;
     }
     
     .naslov-dugme .btn,
