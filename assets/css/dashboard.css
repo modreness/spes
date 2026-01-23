@@ -3892,6 +3892,11 @@ margin-bottom:20px;
         min-width: auto !important;
         box-sizing:border-box;
     }
+    .card-head {
+        display:flex;
+        flex-direction: column;
+        row-gap:20px;
+    }
     .card-head-buttons {
         display:flex;
         flex-direction:column;
