@@ -3770,6 +3770,7 @@ margin-bottom:20px;
     .pacijent-btn {
         width: 100% !important;
         justify-content: center !important;
+        box-sizing:border-box;
     }
     
     /* Activity grid */

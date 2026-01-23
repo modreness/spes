@@ -25,6 +25,8 @@ function send_mail($to, $subject, $body) {
         $mail->Password = 'uS+[^G]QeWLll;^!';           // <-- SMTP password
         $mail->SMTPSecure = 'ssl';                 // 'ssl' ili 'tls'
         $mail->Port = 465;                         // 465 za SSL, 587 za TLS
+        $mail->CharSet = 'UTF-8';
+        $mail->Encoding = 'base64';
         
         /*
         // SSL opcije za shared hosting - FIX ZA CERTIFIKAT PROBLEM
