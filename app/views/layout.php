@@ -166,9 +166,10 @@ $user = current_user();
                 </svg>
             </span>
             </a>
-            <ul class="user-dropdown-menu">
-            <li><a href="/moj-profil"><i class="fa-solid fa-user"></i> Moj profil</a></li>
-            <li><a href="/logout"><i class="fa-solid fa-sign-out-alt"></i> Odjava</a></li>
+            <ul class="user-menu">
+              <li><a href="/profil/uredi">Uredi profil</a></li>
+              <li><a href="/profil/lozinka">Promijeni lozinku</a></li>
+              <li><a href="/logout">Odjava</a></li>
             </ul>
         </div>
 
@@ -187,25 +188,11 @@ document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
   });
 });
 
-// Zatvori dropdown ako se klikne negdje drugo
-document.addEventListener('click', function(e) {
-  document.querySelectorAll('.dropdown').forEach(dropdown => {
-    if (!dropdown.contains(e.target)) {
-      dropdown.classList.remove('open');
-    }
+document.querySelectorAll('.user-toggle').forEach(toggle => {
+  toggle.addEventListener('click', function(e) {
+    e.preventDefault();
+    this.parentElement.classList.toggle('open');
   });
-});
-</script>
-
-<script>
-document.querySelector('.user-toggle').addEventListener('click', function(e) {
-  e.preventDefault();
-  document.querySelector('.user-dropdown').classList.toggle('open');
-});
-document.addEventListener('click', function(e) {
-  if (!document.querySelector('.user-dropdown').contains(e.target)) {
-    document.querySelector('.user-dropdown').classList.remove('open');
-  }
 });
 </script>
 <script>
