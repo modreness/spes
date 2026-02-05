@@ -161,69 +161,71 @@ $user = current_user();
           <div class="user-dropdown">
             <a href="#" class="user-toggle">
              <img src="/uploads/profilne/<?= htmlspecialchars($user['slika'] ?? 'default.jpg') ?>" alt="Profil" style="height:30px; border-radius:50%;"> <?= htmlspecialchars($user['ime']) ?> <?= htmlspecialchars($user['prezime']) ?> <span class="arrow">
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <polyline points="6 9 12 15 18 9" />
-  </svg>
-</span>
-
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9" />
+                </svg>
+            </span>
             </a>
-            <ul class="user-menu">
-              <li><a href="/profil/uredi">Uredi profil</a></li>
-              <li><a href="/profil/lozinka">Promijeni lozinku</a></li>
-              <li><a href="/logout">Odjava</a></li>
+            <ul class="user-dropdown-menu">
+            <li><a href="/moj-profil"><i class="fa-solid fa-user"></i> Moj profil</a></li>
+            <li><a href="/logout"><i class="fa-solid fa-sign-out-alt"></i> Odjava</a></li>
             </ul>
-          </div>
-        </nav>
+        </div>
+
+      </nav>
     </header>
-
-    
-      <?= $content ?? '' ?>
-    
+    <?= $content ?? '' ?>
   </main>
-
 </div>
+
 <script>
-  document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
-    toggle.addEventListener('click', function(e) {
-      e.preventDefault();
-      this.parentElement.classList.toggle('open');
-    });
+// Dropdown menu functionality
+document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+  toggle.addEventListener('click', function(e) {
+    e.preventDefault();
+    this.parentElement.classList.toggle('open');
   });
-  
-  document.querySelectorAll('.user-toggle').forEach(toggle => {
-    toggle.addEventListener('click', function(e) {
-      e.preventDefault();
-      this.parentElement.classList.toggle('open');
-    });
+});
+
+// Zatvori dropdown ako se klikne negdje drugo
+document.addEventListener('click', function(e) {
+  document.querySelectorAll('.dropdown').forEach(dropdown => {
+    if (!dropdown.contains(e.target)) {
+      dropdown.classList.remove('open');
+    }
   });
+});
 </script>
 
-
-<!--UPLOAD IMAGE-->
-
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-  const fileInput = document.getElementById('profilna');
-  const uploadBtn = document.getElementById('uploadBtn');
-  const fileName = document.getElementById('fileName');
-  const previewImage = document.getElementById('previewImage');
-  const filePreview = document.getElementById('filePreview');
+document.querySelector('.user-toggle').addEventListener('click', function(e) {
+  e.preventDefault();
+  document.querySelector('.user-dropdown').classList.toggle('open');
+});
+document.addEventListener('click', function(e) {
+  if (!document.querySelector('.user-dropdown').contains(e.target)) {
+    document.querySelector('.user-dropdown').classList.remove('open');
+  }
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.querySelector('.upload-form');
+  if (!form) return;
 
-  const progressContainer = document.getElementById('progress-container');
+  const fileInput = form.querySelector('input[type="file"]');
+  const progressContainer = document.querySelector('.progress-container');
   const progressBar = document.querySelector('.progress-bar');
   const progressText = document.querySelector('.progress-text');
-  const loadingIndicator = document.getElementById('loading-indicator');
-  const notification = document.getElementById('notification');
-
-  const form = document.querySelector('form');
-
-  uploadBtn.addEventListener('click', () => fileInput.click());
+  const notification = document.querySelector('.notification');
+  const filePreview = document.querySelector('.file-preview');
+  const previewImage = document.querySelector('.preview-image');
+  const loadingIndicator = document.querySelector('.loading-indicator');
 
   fileInput.addEventListener('change', () => {
     const file = fileInput.files[0];
     if (!file) return;
 
-    fileName.textContent = file.name;
     filePreview.style.display = 'block';
 
     const reader = new FileReader();
@@ -299,7 +301,11 @@ document.addEventListener("DOMContentLoaded", () => {
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     if (document.querySelector('#tabela')) {
-      // Provjeri da li je stranica sa terminima
+      // Provjeri da li je stranica sa terminima, kartonima ili pacijentima
+      var isListPage = window.location.pathname.includes('/termini/lista') || 
+                       window.location.pathname.includes('/kartoni/lista') ||
+                       window.location.pathname.includes('/profil/pacijent');
+      
       var orderConfig = [[0, "asc"]]; // Default: po ID-u
       
       if (window.location.pathname.includes('/termini/lista')) {
@@ -309,6 +315,11 @@ document.addEventListener("DOMContentLoaded", () => {
       $('#tabela').DataTable({
         responsive: true,
         order: orderConfig,
+        // AŽURIRANO: pageLength 100 i stateSave za liste
+        pageLength: isListPage ? 100 : 25,
+        stateSave: isListPage,  // Pamti stranicu samo za liste
+        stateDuration: 60 * 60 * 24, // Pamti 24 sata
+        lengthMenu: [[25, 50, 100, 200, -1], [25, 50, 100, 200, "Sve"]],
         language: {
           url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/hr.json"
         }

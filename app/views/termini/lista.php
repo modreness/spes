@@ -171,34 +171,7 @@
     </table>
 </div>
 
-<!-- DataTables konfiguracija sa stateSave i default 100 -->
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    if (typeof $ !== 'undefined' && $.fn.DataTable) {
-        $('#tabela').DataTable({
-            pageLength: 100,  // Default 100 prikaza
-            stateSave: true,  // Pamti stranicu, sortiranje, pretragu
-            stateDuration: 60 * 60 * 24, // Pamti 24 sata
-            lengthMenu: [[25, 50, 100, 200, -1], [25, 50, 100, 200, "Sve"]],
-            language: {
-                search: "Pretraži:",
-                lengthMenu: "Prikaži _MENU_ zapisa",
-                info: "Prikazano _START_ do _END_ od _TOTAL_ zapisa",
-                infoEmpty: "Nema podataka",
-                infoFiltered: "(filtrirano od _MAX_ ukupno)",
-                paginate: {
-                    first: "Prva",
-                    last: "Zadnja",
-                    next: "Sljedeća",
-                    previous: "Prethodna"
-                },
-                zeroRecords: "Nema rezultata pretrage"
-            },
-            order: [[1, 'asc']] // Sortiraj po datumu
-        });
-    }
-});
-
 function promeniStatus(terminId, noviStatus) {
     let poruka;
     switch(noviStatus) {
