@@ -19,16 +19,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $termin_id = $_POST['id'] ?? null;
     $novi_status = $_POST['status'] ?? null;
     
-    if (!$termin_id || !$novi_status) {
-        header('Location: /termini/lista?msg=greska');
+    // 👉 DODANO: Dohvati return_url za povratak na istu stranicu
+    $return_url = $_POST['return_url'] ?? '/termini/lista';
+    // Validiraj - mora početi sa /
+    if (strpos($return_url, '/') !== 0) {
+        $return_url = '/termini/lista';
+    }
+    
+    // Helper funkcija za redirect sa porukom
+    function redirectWithMsg($url, $msg) {
+        $separator = (strpos($url, '?') !== false) ? '&' : '?';
+        header('Location: ' . $url . $separator . 'msg=' . $msg);
         exit;
+    }
+    
+    if (!$termin_id || !$novi_status) {
+        redirectWithMsg($return_url, 'greska');
     }
     
     // Validacija dozvoljenih statusa
     $dozvoljeni_statusi = ['zakazan', 'otkazan', 'obavljen', 'slobodan'];
     if (!in_array($novi_status, $dozvoljeni_statusi)) {
-        header('Location: /termini/lista?msg=greska');
-        exit;
+        redirectWithMsg($return_url, 'greska');
     }
     
     try {
@@ -43,8 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $termin = $stmt->fetch();
         
         if (!$termin) {
-            header('Location: /termini/lista?msg=greska');
-            exit;
+            redirectWithMsg($return_url, 'greska');
         }
         
         // 👉 Sačuvaj stari status za email poređenje
@@ -52,8 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         // DODATNA PROVJERA - terapeut može mijenjati samo svoje termine
         if ($user['uloga'] === 'terapeut' && $termin['terapeut_id'] != $user['id']) {
-            header('Location: /termini/lista?msg=greska');
-            exit;
+            redirectWithMsg($return_url, 'greska');
         }
         
         // Ažuriraj status
@@ -82,10 +92,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $datum_format = date('d.m.Y', strtotime($termin['datum']));
                 $vrijeme_format = date('H:i', strtotime($termin['datum'] . ' ' . $termin['vrijeme']));
                 
-                // Status labeli (primijetiti da se ovdje koristi 'obavljen' umjesto 'obavljeno')
+                // Status labeli
                 $status_labels = [
                     'zakazan' => 'Zakazan',
-                    'obavljen' => 'Obavljeno',  // ← Mapira 'obavljen' na 'Obavljeno' 
+                    'obavljen' => 'Obavljeno',
                     'otkazan' => 'Otkazano',
                     'slobodan' => 'Slobodan'
                 ];
@@ -124,10 +134,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (!empty($email_data['pacijent_email'])) {
                     $subject_pacijent = "Status termina: " . $new_status_label;
                     
-                    // Različite poruke za različite statusse
+                    // Različite poruke za različite statuse
                     $status_message = '';
-                    if ($novi_status === 'obavljen') {  // ← Primijetiti 'obavljen'
-                        $status_message = "<p><strong>Vaš termin je uspješno obavljeno.</strong> Hvala što ste došli!</p>";
+                    if ($novi_status === 'obavljen') {
+                        $status_message = "<p><strong>Vaš termin je uspješno obavljen.</strong> Hvala što ste došli!</p>";
                     } elseif ($novi_status === 'otkazan') {
                         $status_message = "<p><strong>Vaš termin je otkazan.</strong> Za nova zakazivanja kontaktirajte recepciju.</p>";
                     }
@@ -135,7 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $body_pacijent = "
                     <h3>Poštovani/a {$email_data['pacijent_ime']} {$email_data['pacijent_prezime']},</h3>
                     
-                    <p>Obavještavamo vas o promjeni status vašeg termina:</p>
+                    <p>Obavještavamo vas o promjeni statusa vašeg termina:</p>
                     
                     <ul>
                         <li><strong>Datum:</strong> {$datum_format}</li>
@@ -161,17 +171,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
         
-        // Redirekt sa porukom
+        // 👉 AŽURIRANO: Redirekt na return_url umjesto hardkodirane putanje
         $msg = $novi_status === 'otkazan' ? 'otkazan' : 
                ($novi_status === 'obavljen' ? 'obavljen' : 'azuriran');
         
-        header("Location: /termini/lista?msg=$msg");
-        exit;
+        redirectWithMsg($return_url, $msg);
         
     } catch (PDOException $e) {
         error_log("Greška pri ažuriranju statusa termina: " . $e->getMessage());
-        header('Location: /termini/lista?msg=greska');
-        exit;
+        redirectWithMsg($return_url, 'greska');
     }
 }
 

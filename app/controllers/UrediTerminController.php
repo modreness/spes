@@ -21,7 +21,11 @@ if (!$termin_id) {
     header('Location: /termini');
     exit;
 }
-
+// Dohvati return_url za povratak
+$return_url = $_GET['return_url'] ?? $_POST['return_url'] ?? '/termini/lista';
+if (strpos($return_url, '/') !== 0) {
+    $return_url = '/termini/lista';
+}
 // Dohvati termin
 try {
     $stmt = $pdo->prepare("
@@ -691,7 +695,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
             
-            header('Location: /termini?msg=azuriran');
+            $separator = (strpos($return_url, '?') !== false) ? '&' : '?';
+header('Location: ' . $return_url . $separator . 'msg=azuriran');
             exit;
             
         } catch (PDOException $e) {

@@ -133,7 +133,7 @@
                     <td>
                         <?php if ($user['uloga'] !== 'terapeut'): ?>
                         <!-- Admin/recepcioner vidi sve opcije -->
-                        <a href="/termini/uredi?id=<?= $t['id'] ?>" class="btn btn-sm btn-edit" title="Uredi">
+                        <a href="/termini/uredi?id=<?= $t['id'] ?>&return_url=<?= urlencode($_SERVER['REQUEST_URI']) ?>" class="btn btn-sm btn-edit" title="Uredi">
                             <i class="fa-solid fa-edit"></i>
                         </a>
                         <button class="btn btn-sm btn-danger" onclick="potvrdiBrisanje(<?= $t['id'] ?>)" title="Obriši">
@@ -171,9 +171,36 @@
     </table>
 </div>
 
+<!-- DataTables konfiguracija sa stateSave i default 100 -->
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof $ !== 'undefined' && $.fn.DataTable) {
+        $('#tabela').DataTable({
+            pageLength: 100,  // Default 100 prikaza
+            stateSave: true,  // Pamti stranicu, sortiranje, pretragu
+            stateDuration: 60 * 60 * 24, // Pamti 24 sata
+            lengthMenu: [[25, 50, 100, 200, -1], [25, 50, 100, 200, "Sve"]],
+            language: {
+                search: "Pretraži:",
+                lengthMenu: "Prikaži _MENU_ zapisa",
+                info: "Prikazano _START_ do _END_ od _TOTAL_ zapisa",
+                infoEmpty: "Nema podataka",
+                infoFiltered: "(filtrirano od _MAX_ ukupno)",
+                paginate: {
+                    first: "Prva",
+                    last: "Zadnja",
+                    next: "Sljedeća",
+                    previous: "Prethodna"
+                },
+                zeroRecords: "Nema rezultata pretrage"
+            },
+            order: [[1, 'asc']] // Sortiraj po datumu
+        });
+    }
+});
+
 function promeniStatus(terminId, noviStatus) {
-    let poruka = '';
+    let poruka;
     switch(noviStatus) {
         case 'otkazan': poruka = 'otkazati'; break;
         case 'obavljen': poruka = 'označiti kao obavljen'; break;
@@ -182,7 +209,7 @@ function promeniStatus(terminId, noviStatus) {
     }
     
     if (confirm(`Da li ste sigurni da želite ${poruka} ovaj termin?`)) {
-        // Kreiraj form i pošalji
+        // Kreiraj form i pošalji - dodaj return_url za povratak na istu stranicu
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = '/termini/status';
@@ -197,8 +224,15 @@ function promeniStatus(terminId, noviStatus) {
         statusInput.name = 'status';
         statusInput.value = noviStatus;
         
+        // Dodaj return URL sa trenutnom stranicom i filterima
+        const returnInput = document.createElement('input');
+        returnInput.type = 'hidden';
+        returnInput.name = 'return_url';
+        returnInput.value = window.location.href;
+        
         form.appendChild(idInput);
         form.appendChild(statusInput);
+        form.appendChild(returnInput);
         document.body.appendChild(form);
         form.submit();
     }
@@ -214,6 +248,7 @@ function promeniStatus(terminId, noviStatus) {
         <p>Da li ste sigurni da želite obrisati ovaj termin?</p>
         <form method="post" action="/termini/obrisi" style="margin-top: 20px;">
             <input type="hidden" name="id" id="id-brisanja">
+            <input type="hidden" name="return_url" value="<?= htmlspecialchars($_SERVER['REQUEST_URI']) ?>">
             <div style="text-align: center;">
                 <button type="button" class="btn btn-secondary" onclick="zatvoriModal()">Otkaži</button>
                 <button type="submit" class="btn btn-danger">Da, obriši</button>
@@ -260,6 +295,7 @@ document.getElementById('modal-overlay').addEventListener('click', function() {
         <form method="post" action="/kartoni/dodaj-tretman">
             <input type="hidden" name="karton_id" id="modal-karton-id">
             <input type="hidden" name="termin_id" id="modal-termin-id">
+            <input type="hidden" name="return_url" value="<?= htmlspecialchars($_SERVER['REQUEST_URI']) ?>">
             
             <div class="form-group">
                 <label for="terapeut_id">Terapeut</label>

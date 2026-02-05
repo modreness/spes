@@ -18,7 +18,7 @@
         <div style="background: linear-gradient(135deg, #289cc6, #255AA5); padding: 20px; border-radius: 8px; color: white; margin-bottom: 25px;">
             <h4 style="margin: 0 0 10px 0;"><i class="fa-solid fa-magic"></i> Automatsko generiranje</h4>
             <p style="margin: 0; opacity: 0.9; font-size: 0.95rem;">
-                Sistem će automatski kreirati raspored za odabrani period sa naizmjeničnim smjenama (Jutro ↔ Večer) svake sedmice.
+                Sistem će automatski kreirati raspored za odabrani period sa naizmjeničnim smjenama svake sedmice.
             </p>
         </div>
 
@@ -96,19 +96,38 @@
                 </div>
             </div>
 
-            <!-- Početna smjena -->
+            <!-- Početna smjena - AŽURIRANO sa "Popodne" -->
             <div class="form-group" id="pocetna-smjena-wrapper">
                 <label for="pocetna_smjena"><i class="fa-solid fa-sun"></i> Početna smjena *</label>
                 <select id="pocetna_smjena" name="pocetna_smjena" required>
                     <option value="jutro" <?= ($_POST['pocetna_smjena'] ?? 'jutro') == 'jutro' ? 'selected' : '' ?>>
-                        Jutro
+                        ☀️ Jutro
+                    </option>
+                    <option value="popodne" <?= ($_POST['pocetna_smjena'] ?? '') == 'popodne' ? 'selected' : '' ?>>
+                        🌤️ Popodne
                     </option>
                     <option value="vecer" <?= ($_POST['pocetna_smjena'] ?? '') == 'vecer' ? 'selected' : '' ?>>
-                        Večer
+                        🌙 Večer
                     </option>
                 </select>
                 <small id="pocetna-smjena-hint" style="color: #7f8c8d; display: block; margin-top: 5px;">
                     Prva sedmica će biti ova smjena, sljedeća suprotna, i tako naizmjenično
+                </small>
+            </div>
+
+            <!-- Tip rotacije -->
+            <div class="form-group">
+                <label for="tip_rotacije"><i class="fa-solid fa-sync"></i> Tip rotacije</label>
+                <select id="tip_rotacije" name="tip_rotacije">
+                    <option value="dvo_smjenska" <?= ($_POST['tip_rotacije'] ?? 'dvo_smjenska') == 'dvo_smjenska' ? 'selected' : '' ?>>
+                        Dvo-smjenska (Jutro ↔ Večer)
+                    </option>
+                    <option value="fiksna" <?= ($_POST['tip_rotacije'] ?? '') == 'fiksna' ? 'selected' : '' ?>>
+                        Fiksna (uvijek ista smjena)
+                    </option>
+                </select>
+                <small style="color: #7f8c8d; display: block; margin-top: 5px;">
+                    "Fiksna" je za vlasnike koji imaju uvijek isto radno vrijeme (npr. Popodne 10:00-18:30)
                 </small>
             </div>
 
@@ -200,6 +219,7 @@ function toggleDanStyle(checkbox) {
 function azurirajPreview() {
     const brojSedmica = parseInt(document.getElementById('broj_sedmica').value) || 26;
     const pocetnaSmjena = document.getElementById('pocetna_smjena').value;
+    const tipRotacije = document.getElementById('tip_rotacije').value;
     const terapeutId = document.getElementById('terapeut_id').value;
     const previewDiv = document.getElementById('rotacija-preview');
     
@@ -207,8 +227,8 @@ function azurirajPreview() {
     let html = '';
     let trenutnaSmjena = pocetnaSmjena;
     
-    const smjenaLabels = {'jutro': 'Jutro', 'vecer': 'Večer'};
-    const smjenaBoje = {'jutro': '#289cc6', 'vecer': '#255AA5'};
+    const smjenaLabels = {'jutro': 'Jutro', 'vecer': 'Večer', 'popodne': 'Popodne'};
+    const smjenaBoje = {'jutro': '#289cc6', 'vecer': '#255AA5', 'popodne': '#f39c12'};
     
     // Ako su svi terapeuti
     let prefixTekst = '';
@@ -225,7 +245,17 @@ function azurirajPreview() {
                 <div style="font-weight: 600;">${smjenaLabels[trenutnaSmjena]}</div>
             </div>
         `;
-        trenutnaSmjena = (trenutnaSmjena === 'jutro') ? 'vecer' : 'jutro';
+        
+        // Rotacija samo ako nije fiksna
+        if (tipRotacije !== 'fiksna') {
+            // Dvo-smjenska rotacija: jutro <-> vecer, popodne ostaje fiksno
+            if (trenutnaSmjena === 'popodne') {
+                // Popodne je obično fiksno, ali ako je dvo-smjenska rotacija, može se rotirati
+                trenutnaSmjena = 'popodne'; // Ostaje isto
+            } else {
+                trenutnaSmjena = (trenutnaSmjena === 'jutro') ? 'vecer' : 'jutro';
+            }
+        }
     }
     
     if (brojSedmica > 8) {
@@ -242,6 +272,7 @@ function azurirajPreview() {
 // Event listeneri
 document.getElementById('broj_sedmica').addEventListener('change', azurirajPreview);
 document.getElementById('pocetna_smjena').addEventListener('change', azurirajPreview);
+document.getElementById('tip_rotacije').addEventListener('change', azurirajPreview);
 
 // Inicijalno
 document.addEventListener('DOMContentLoaded', function() {

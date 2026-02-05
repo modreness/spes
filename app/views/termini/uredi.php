@@ -1,6 +1,6 @@
 <div class="naslov-dugme">
     <h2>Uredi termin</h2>
-    <a href="/termini" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Povratak</a>
+    <a href="<?= htmlspecialchars($return_url ?? '/termini/lista') ?>" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Povratak</a>
 </div>
 
 <?php if (!empty($errors)): ?>
@@ -70,7 +70,7 @@
                         <?= $clan['placeno'] ? ' • Plaćeno ✓' : '' ?>
                     </div>
                 </div>
-                <a href="/termini/uredi?id=<?= $clan['id'] ?>" 
+                <a href="/termini/uredi?id=<?= $clan['id'] ?>&return_url=<?= urlencode($return_url ?? '/termini/lista') ?>" 
                    style="background: rgba(255,255,255,0.2); color: white; padding: 5px 12px; border-radius: 5px; text-decoration: none; font-size: 0.85em;">
                     <i class="fa-solid fa-edit"></i> Uredi
                 </a>
@@ -82,6 +82,8 @@
 
     <form method="post" action="/termini/uredi">
         <input type="hidden" name="id" value="<?= $termin['id'] ?>">
+        <!-- DODANO: return_url za povratak na istu stranicu -->
+        <input type="hidden" name="return_url" value="<?= htmlspecialchars($return_url ?? '/termini/lista') ?>">
         
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
             
@@ -165,125 +167,104 @@
                 <select id="status" name="status" required>
                     <option value="">Odaberite status</option>
                     <option value="zakazan" <?= ($_POST['status'] ?? $termin['status']) == 'zakazan' ? 'selected' : '' ?>>Zakazan</option>
-                    <option value="otkazan" <?= ($_POST['status'] ?? $termin['status']) == 'otkazan' ? 'selected' : '' ?>>Otkazan</option>
                     <option value="obavljen" <?= ($_POST['status'] ?? $termin['status']) == 'obavljen' ? 'selected' : '' ?>>Obavljen</option>
+                    <option value="otkazan" <?= ($_POST['status'] ?? $termin['status']) == 'otkazan' ? 'selected' : '' ?>>Otkazan</option>
                     <option value="slobodan" <?= ($_POST['status'] ?? $termin['status']) == 'slobodan' ? 'selected' : '' ?>>Slobodan</option>
                 </select>
             </div>
 
         </div>
-
-        <!-- Dozvoli pridruživanje -->
-        <div style="background: #e8f4fd; border: 1px solid #bee5eb; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+        
+        <!-- Checkbox za dozvoli pridruživanje -->
+        <div class="form-group" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
             <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                <input type="checkbox" name="dozvoli_pridruzivanje" id="dozvoli_pridruzivanje" value="1" 
-                    <?= ($_POST['dozvoli_pridruzivanje'] ?? $termin['dozvoli_pridruzivanje'] ?? 0) ? 'checked' : '' ?>
-                    style="width: 20px; height: 20px;">
+                <input type="checkbox" name="dozvoli_pridruzivanje" value="1" 
+                       <?= (!empty($termin['dozvoli_pridruzivanje']) || isset($_POST['dozvoli_pridruzivanje'])) ? 'checked' : '' ?>
+                       style="width: 20px; height: 20px;">
                 <div>
-                    <strong style="color: #0c5460;"><i class="fa-solid fa-user-plus"></i> Dozvoli pridruživanje drugog pacijenta</strong>
-                    <div style="color: #0c5460; font-size: 0.9em;">
-                        Omogućite ako želite da se još jedan pacijent može dodati u isto vrijeme kod istog terapeuta
+                    <strong style="color: #2c3e50;"><i class="fa-solid fa-user-plus"></i> Dozvoli pridruživanje</strong>
+                    <div style="color: #7f8c8d; font-size: 0.9em;">
+                        Omogućava kreiranje drugog termina u isto vrijeme za istog terapeuta
                     </div>
                 </div>
             </label>
         </div>
 
-        <!-- Plaćanje i popusti - samo ako NIJE iz paketa -->
         <?php if (!$termin['placeno_iz_paketa']): ?>
-        <div id="placanje-sekcija" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-            <h4 style="margin: 0 0 15px 0; color: #2c3e50;">
-                <i class="fa-solid fa-money-bill-wave"></i> Plaćanje i popusti
-            </h4>
-            
-            <!-- Tip plaćanja - Radio buttons -->
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;">
-                <label class="tip-placanja-label" id="label-puna-cijena" style="display: flex; flex-direction: column; align-items: center; padding: 15px; background: white; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; text-align: center;">
+        <!-- Tip plaćanja -->
+        <div class="form-group">
+            <label>Tip plaćanja</label>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
+                <label id="label-puna-cijena" class="tip-placanja-label" style="display: flex; flex-direction: column; align-items: center; padding: 15px; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
                     <input type="radio" name="tip_placanja" value="puna_cijena" 
-                           <?= ($trenutni_tip_placanja ?? 'puna_cijena') === 'puna_cijena' ? 'checked' : '' ?>
-                           onchange="toggleTipPlacanja()" style="margin-bottom: 8px;">
-                    <i class="fa-solid fa-money-bill" style="font-size: 1.5em; color: #27ae60; margin-bottom: 5px;"></i>
-                    <strong>Puna cijena</strong>
+                           <?= ($trenutni_tip_placanja ?? 'puna_cijena') == 'puna_cijena' ? 'checked' : '' ?>
+                           onchange="toggleTipPlacanja()" style="display: none;">
+                    <i class="fa-solid fa-money-bill" style="font-size: 24px; color: #27ae60; margin-bottom: 8px;"></i>
+                    <span style="font-weight: 500;">Puna cijena</span>
                 </label>
                 
-                <label class="tip-placanja-label" id="label-besplatno" style="display: flex; flex-direction: column; align-items: center; padding: 15px; background: white; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; text-align: center;">
+                <label id="label-besplatno" class="tip-placanja-label" style="display: flex; flex-direction: column; align-items: center; padding: 15px; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
                     <input type="radio" name="tip_placanja" value="besplatno" 
-                           <?= ($trenutni_tip_placanja ?? '') === 'besplatno' ? 'checked' : '' ?>
-                           onchange="toggleTipPlacanja()" style="margin-bottom: 8px;">
-                    <i class="fa-solid fa-hand-holding-heart" style="font-size: 1.5em; color: #e74c3c; margin-bottom: 5px;"></i>
-                    <strong>Besplatno</strong>
+                           <?= ($trenutni_tip_placanja ?? '') == 'besplatno' ? 'checked' : '' ?>
+                           onchange="toggleTipPlacanja()" style="display: none;">
+                    <i class="fa-solid fa-hand-holding-heart" style="font-size: 24px; color: #e74c3c; margin-bottom: 8px;"></i>
+                    <span style="font-weight: 500;">Besplatno</span>
                 </label>
                 
-                <label class="tip-placanja-label" id="label-poklon-bon" style="display: flex; flex-direction: column; align-items: center; padding: 15px; background: white; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; text-align: center;">
+                <label id="label-poklon-bon" class="tip-placanja-label" style="display: flex; flex-direction: column; align-items: center; padding: 15px; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
                     <input type="radio" name="tip_placanja" value="poklon_bon" 
-                           <?= ($trenutni_tip_placanja ?? '') === 'poklon_bon' ? 'checked' : '' ?>
-                           onchange="toggleTipPlacanja()" style="margin-bottom: 8px;">
-                    <i class="fa-solid fa-gift" style="font-size: 1.5em; color: #9b59b6; margin-bottom: 5px;"></i>
-                    <strong>Poklon bon</strong>
+                           <?= ($trenutni_tip_placanja ?? '') == 'poklon_bon' ? 'checked' : '' ?>
+                           onchange="toggleTipPlacanja()" style="display: none;">
+                    <i class="fa-solid fa-gift" style="font-size: 24px; color: #9b59b6; margin-bottom: 8px;"></i>
+                    <span style="font-weight: 500;">Poklon bon</span>
                 </label>
                 
-                <label class="tip-placanja-label" id="label-umanjenje" style="display: flex; flex-direction: column; align-items: center; padding: 15px; background: white; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; text-align: center;">
+                <label id="label-umanjenje" class="tip-placanja-label" style="display: flex; flex-direction: column; align-items: center; padding: 15px; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
                     <input type="radio" name="tip_placanja" value="umanjenje" 
-                           <?= ($trenutni_tip_placanja ?? '') === 'umanjenje' ? 'checked' : '' ?>
-                           onchange="toggleTipPlacanja()" style="margin-bottom: 8px;">
-                    <i class="fa-solid fa-percent" style="font-size: 1.5em; color: #f39c12; margin-bottom: 5px;"></i>
-                    <strong>Umanjenje %</strong>
+                           <?= ($trenutni_tip_placanja ?? '') == 'umanjenje' ? 'checked' : '' ?>
+                           onchange="toggleTipPlacanja()" style="display: none;">
+                    <i class="fa-solid fa-percent" style="font-size: 24px; color: #f39c12; margin-bottom: 8px;"></i>
+                    <span style="font-weight: 500;">Umanjenje %</span>
                 </label>
             </div>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start;">
-                <!-- Plaćeno checkbox -->
-                <div class="form-group" style="margin: 0;">
-                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                        <input type="checkbox" name="placeno" id="placeno" value="1" 
-                            <?= ($_POST['placeno'] ?? $termin['placeno']) ? 'checked' : '' ?>
-                            style="width: 20px; height: 20px;">
-                        <span style="font-weight: 600;">Plaćeno</span>
-                    </label>
-                    <small style="color: #7f8c8d; display: block; margin-top: 5px;">Pacijent je platio</small>
-                </div>
-                
-                <!-- Umanjenje posto -->
-                <div class="form-group" style="margin: 0; display: none;" id="umanjenje-polje">
-                    <label for="umanjenje_posto" style="font-weight: 600;">Procenat umanjenja</label>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <input type="number" id="umanjenje_posto" name="umanjenje_posto" 
-                               min="0" max="100" step="1" disabled
-                               value="<?= htmlspecialchars($_POST['umanjenje_posto'] ?? $termin['umanjenje_posto'] ?? '50') ?>"
-                               onchange="izracunajCijenu()"
-                               oninput="izracunajCijenu()"
-                               style="width: 80px;">
-                        <span>%</span>
-                    </div>
-                    <small style="color: #7f8c8d; display: block; margin-top: 5px;">Npr. 50% za pola termina</small>
-                </div>
+        </div>
+        
+        <!-- Polje za procenat umanjenja -->
+        <div id="umanjenje-polje" style="display: none; margin-bottom: 20px;">
+            <div class="form-group">
+                <label for="umanjenje_posto">Procenat umanjenja (%)</label>
+                <input type="number" id="umanjenje_posto" name="umanjenje_posto" min="1" max="100" step="1"
+                       value="<?= htmlspecialchars($_POST['umanjenje_posto'] ?? $termin['umanjenje_posto'] ?? '50') ?>"
+                       onchange="izracunajCijenu()" oninput="izracunajCijenu()"
+                       style="max-width: 150px;">
+                <small style="color: #7f8c8d;">Unesite procenat umanjenja (1-100%)</small>
             </div>
-            
-            <!-- Prikaz izračunate cijene -->
-            <div id="cijena-prikaz" style="margin-top: 15px; padding: 15px; background: white; border-radius: 8px;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <span style="color: #7f8c8d;">Originalna cijena:</span>
-                        <span id="originalna-cijena" style="text-decoration: line-through; margin-left: 10px;">0,00 KM</span>
-                    </div>
-                    <div style="font-size: 1.3em; font-weight: 600; color: #27ae60;">
-                        <span>Konačna cijena:</span>
-                        <span id="konacna-cijena" style="margin-left: 10px;">0,00 KM</span>
-                    </div>
+        </div>
+        
+        <!-- Prikaz cijene -->
+        <div id="cijena-prikaz" style="display: none; background: linear-gradient(135deg, #289CC6, #255AA5); padding: 20px; border-radius: 12px; color: white; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <div style="font-size: 0.9em; opacity: 0.9;">Konačna cijena</div>
+                    <div style="font-size: 1.8em; font-weight: 700;" id="konacna-cijena">0,00 KM</div>
+                </div>
+                <div style="text-align: right;">
+                    <span id="originalna-cijena" style="text-decoration: line-through; opacity: 0.7; display: none;"></span>
                 </div>
             </div>
         </div>
-        <?php else: ?>
-        <!-- Poruka za termine iz paketa -->
-        <div style="background: linear-gradient(135deg, #3498db, #2980b9); color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-            <h4 style="margin: 0 0 10px 0;">
-                <i class="fa-solid fa-box"></i> Termin iz paketa
-            </h4>
-            <p style="margin: 0; opacity: 0.9;">
-                Ovaj termin je plaćen iz paketa. Opcije za plaćanje i popuste nisu dostupne.
-            </p>
+        
+        <!-- Checkbox za plaćeno -->
+        <div class="form-group" style="margin-bottom: 20px;">
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                <input type="checkbox" name="placeno" value="1" 
+                       <?= ($termin['placeno'] || isset($_POST['placeno'])) ? 'checked' : '' ?>
+                       style="width: 20px; height: 20px;">
+                <span style="font-weight: 500;"><i class="fa-solid fa-check-circle" style="color: #27ae60;"></i> Plaćeno</span>
+            </label>
         </div>
         <?php endif; ?>
-        
+
         <!-- Opcija za ažuriranje cijele grupe -->
         <?php if (!empty($grupa_clanovi)): ?>
         <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
@@ -310,7 +291,7 @@
             <button type="submit" class="btn btn-edit">
                 <i class="fa-solid fa-save"></i> Spremi izmjene
             </button>
-            <a href="/termini" class="btn btn-secondary">Otkaži</a>
+            <a href="<?= htmlspecialchars($return_url ?? '/termini/lista') ?>" class="btn btn-secondary">Otkaži</a>
         </div>
     </form>
 </div>

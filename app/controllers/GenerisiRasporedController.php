@@ -35,8 +35,12 @@ if (isset($_GET['ajax']) && $_GET['ajax'] === 'zadnja_smjena') {
         $zadnja = $stmt->fetch();
         
         if ($zadnja) {
-            // Predloži suprotnu smjenu
-            $predlozena = ($zadnja['smjena'] === 'jutro') ? 'vecer' : 'jutro';
+            // Predloži suprotnu smjenu (osim za popodne koje je fiksno)
+            if ($zadnja['smjena'] === 'popodne') {
+                $predlozena = 'popodne'; // Fiksna smjena
+            } else {
+                $predlozena = ($zadnja['smjena'] === 'jutro') ? 'vecer' : 'jutro';
+            }
             echo json_encode([
                 'success' => true,
                 'zadnja_smjena' => $zadnja['smjena'],
@@ -65,6 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $broj_sedmica = (int)($_POST['broj_sedmica'] ?? 26);
     $radni_dani = $_POST['radni_dani'] ?? [];
     $pocetna_smjena = $_POST['pocetna_smjena'] ?? 'jutro';
+    $tip_rotacije = $_POST['tip_rotacije'] ?? 'dvo_smjenska';
     
     $errors = [];
     
@@ -80,6 +85,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     if (empty($radni_dani)) {
         $errors[] = 'Odaberite barem jedan radni dan.';
+    }
+    
+    // Validiraj smjenu
+    if (!in_array($pocetna_smjena, ['jutro', 'popodne', 'vecer'])) {
+        $errors[] = 'Neispravna smjena.';
     }
     
     // Provjeri da li je datum ponedjeljak
@@ -133,7 +143,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $zadnja = $stmt_zadnja->fetchColumn();
                     
                     if ($zadnja) {
-                        $trenutna_smjena = ($zadnja === 'jutro') ? 'vecer' : 'jutro';
+                        // Ako je fiksna rotacija ili popodne, zadrži istu smjenu
+                        if ($tip_rotacije === 'fiksna' || $zadnja === 'popodne') {
+                            $trenutna_smjena = $zadnja;
+                        } else {
+                            $trenutna_smjena = ($zadnja === 'jutro') ? 'vecer' : 'jutro';
+                        }
                     } else {
                         // Nema prethodnih - koristi odabranu početnu smjenu
                         $trenutna_smjena = $pocetna_smjena;
@@ -197,8 +212,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $ukupno_dodano++;
                     }
                     
-                    // Rotiraj smjenu za sljedeću sedmicu
-                    $trenutna_smjena = ($trenutna_smjena === 'jutro') ? 'vecer' : 'jutro';
+                    // Rotiraj smjenu za sljedeću sedmicu - SAMO ako nije fiksna
+                    if ($tip_rotacije !== 'fiksna' && $trenutna_smjena !== 'popodne') {
+                        $trenutna_smjena = ($trenutna_smjena === 'jutro') ? 'vecer' : 'jutro';
+                    }
+                    // Popodne ostaje fiksno jer je to za vlasnike
                 }
             }
             

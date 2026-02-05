@@ -33,7 +33,20 @@ if ($user['uloga'] === 'recepcioner' && in_array($rola, ['admin', 'recepcioner']
     exit;
 }
 
-$stmt = $pdo->prepare("SELECT * FROM users WHERE uloga = ?");
+// Dohvati korisnike - za pacijente dodaj info o kartonu
+if ($rola === 'pacijent') {
+    $stmt = $pdo->prepare("
+        SELECT u.*, 
+               CASE WHEN k.id IS NOT NULL THEN 1 ELSE 0 END as ima_karton,
+               k.id as karton_id
+        FROM users u
+        LEFT JOIN kartoni k ON k.pacijent_id = u.id
+        WHERE u.uloga = ?
+        ORDER BY u.ime, u.prezime
+    ");
+} else {
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE uloga = ? ORDER BY ime, prezime");
+}
 $stmt->execute([$rola]);
 $korisnici = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
